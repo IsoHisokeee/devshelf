@@ -54,7 +54,8 @@ resources.push(...(window.DEVSHELF_REFERENCE_TOPICS || []).filter(topic => topic
   official: false,
   rank: 0,
   internal: true,
-  reference: true
+  reference: true,
+  searchText: [topic.when, topic.alternatives, ...(topic.points || [])].filter(Boolean).join(" ")
 })));
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -70,7 +71,7 @@ function render() {
   $("#total-count").textContent = resources.length;
   $("#favorite-count").textContent = state.favorites.length;
   const q = state.query.trim().replace(/[<>]/g,"").trim().toLocaleLowerCase("ru");
-  let list = resources.filter(r => (state.filter === "all" || (state.filter === "favorites" ? state.favorites.includes(r.id) : r.category === state.filter)) && (!q || [r.title,r.brand,r.description,r.category,...r.tags].join(" ").replace(/[<>]/g,"").toLocaleLowerCase("ru").includes(q)));
+  let list = resources.filter(r => (state.filter === "all" || (state.filter === "favorites" ? state.favorites.includes(r.id) : r.category === state.filter)) && (!q || [r.title,r.brand,r.description,r.category,...r.tags,r.searchText].join(" ").replace(/[<>]/g,"").toLocaleLowerCase("ru").includes(q)));
   list.sort(state.sort === "az" ? (a,b) => a.title.localeCompare(b.title,"ru") : (a,b) => a.rank - b.rank);
   $("#summary").textContent = state.query ? "Результаты по запросу «" + state.query + "»: " + list.length : "Материалов: " + list.length + ". Открывай первоисточник и изучай детали.";
   $("#clear-search").hidden = !state.query;
