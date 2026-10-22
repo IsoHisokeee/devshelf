@@ -58,8 +58,8 @@ jobs:
               "script.js",
               "playground.html",
               "playground.css",
-              "playground.js"
-      - "reference.html",
+              "playground.js",
+              "reference.html",
           )
 
           class SessionReuseFTP_TLS(ftplib.FTP_TLS):
