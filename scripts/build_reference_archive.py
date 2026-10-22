@@ -93,7 +93,7 @@ def fetch_mdn(item):
     last_error = None
     for attempt in range(4):
         try:
-            response = SESSION.get(url, timeout=45)
+            response = requests.get(url, headers=SESSION.headers, timeout=45)
             if response.status_code == 404:
                 return slug, meta, None, f"HTTP 404: {url}"
             response.raise_for_status()
@@ -176,6 +176,8 @@ def download_php():
     for path in html_files:
         raw = path.read_text(encoding="utf-8", errors="replace")
         relative_manual = path.relative_to(php_dir).as_posix()
+        if relative_manual.startswith("php-chunked-xhtml/"):
+            relative_manual = relative_manual[len("php-chunked-xhtml/"):]
         source_url = "https://www.php.net/manual/ru/" + quote(relative_manual, safe="/")
         attribution = PHP_ATTRIBUTION.replace("Русский перевод", f'<a href="{source_url}">Оригинальная страница руководства</a>. Русский перевод')
         if "</body>" in raw.lower():
