@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10151f"><meta name="description" content="Русская справка DevShelf по PHP: синтаксис, примеры и объяснения.">
-<title>Справочник PHP — DevShelf</title>
+<meta name="theme-color" content="#10151f"><meta name="description" content="Русские справочные статьи и примеры по HTML, CSS, JavaScript и PHP.">
+<title>Справочник веб-разработки — DevShelf</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -14,27 +14,36 @@
 <body>
 <header class="ref-top"><a class="brand" href="index.html"><span class="brand-icon">&lt;/&gt;</span><span>dev<span>shelf</span><small>YOUR WEB DEV LIBRARY</small></span></a><a class="back-link" href="index.html">← Вернуться в библиотеку</a></header>
 <main class="ref-main">
-<div class="eyebrow"><span></span>РУССКАЯ СПРАВКА · PHP</div>
-<h1 id="title">PHP</h1><p class="lead" id="summary"></p>
-<div class="php-notice"><b>Обрати внимание:</b> это статическая учебная страница. Она показывает PHP-примеры, но не исполняет их в браузере. Для запуска нужен PHP на сервере или локально. Все пояснения и примеры здесь на русском.</div>
-<nav class="topic-nav" id="topic-nav" aria-label="Темы PHP"></nav>
+<div class="eyebrow" id="reference-kicker"><span></span>РУССКАЯ СПРАВКА</div>
+<h1 id="title">Справочник</h1><p class="lead" id="summary"></p>
+<div class="php-notice" id="reference-note">Это русскоязычные справочные статьи DevShelf. Для интерактивных JavaScript-примеров используй песочницу; PHP-код здесь показан как пример и не исполняется в браузере.</div>
+<nav class="topic-nav language-nav" id="language-nav" aria-label="Языки справочника"></nav>
+<nav class="topic-nav" id="topic-nav" aria-label="Темы раздела"></nav>
 <div class="ref-grid"><section class="ref-panel"><h2>Пример</h2><pre class="ref-code"><code id="code"></code></pre><h3>Ещё один пример</h3><pre class="ref-code"><code id="example"></code></pre></section>
 <section class="ref-panel"><h2>Как это работает</h2><ul id="points"></ul><div class="ref-actions"><a id="source" href="#" target="_blank" rel="noopener noreferrer">Официальная документация PHP на русском ↗</a></div></section></div>
 </main>
+<script src="reference-data.js?v=20261023-1"></script>
 <script>
-const topics={"array":{"title":"PHP: массивы","summary":"Храни несколько значений в одном упорядоченном наборе.","code":"$languages = ['PHP', 'JavaScript', 'HTML'];\n$languages[] = 'CSS';\necho $languages[0];","points":["Индексы обычного массива начинаются с 0.","Для добавления в конец используй $array[].","Массивы с ключами удобно хранить как пары ключ => значение."],"example":"$user = [\n    'name' => 'Анна',\n    'role' => 'разработчик',\n];\n\necho $user['name']; // Анна","url":"https://www.php.net/manual/ru/language.types.array.php"},"foreach":{"title":"PHP: цикл foreach","summary":"Перебирай элементы массива без ручного управления индексом.","code":"$fruits = ['яблоко', 'груша', 'слива'];\n\nforeach ($fruits as $fruit) {\n    echo $fruit . PHP_EOL;\n}","points":["В каждой итерации переменная $fruit получает очередное значение.","Для ассоциативного массива доступны ключ и значение: foreach ($items as $key => $value).","Изменение массива внутри цикла делай осознанно; для изменения элемента используй ссылку & только когда она нужна."],"example":"$prices = ['чай' => 120, 'кофе' => 180];\n\nforeach ($prices as $product => $price) {\n    echo $product . ': ' . $price . ' ₽' . PHP_EOL;\n}","url":"https://www.php.net/manual/ru/control-structures.foreach.php"},"function":{"title":"PHP: функции","summary":"Выноси повторяемые действия в именованные блоки кода.","code":"function greet(string $name): string\n{\n    return 'Привет, ' . $name . '!';\n}\n\necho greet('Мир');","points":["Имя функции обычно описывает действие.","Параметры передают входные данные; return возвращает результат.","Типы параметров и результата помогают явно задать контракт функции."],"example":"function total(float $price, int $count = 1): float\n{\n    return $price * $count;\n}\n\necho total(99.5, 2); // 199","url":"https://www.php.net/manual/ru/language.functions.php"},"form":{"title":"PHP: обработка HTML-форм","summary":"Получай данные формы на сервере через GET или POST.","code":"if ($_SERVER['REQUEST_METHOD'] === 'POST') {\n    $name = trim($_POST['name'] ?? '');\n    echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8');\n}","points":["У поля формы должен быть атрибут name.","POST-данные читают из $_POST, GET-параметры — из $_GET.","Проверяй и очищай данные; при выводе в HTML экранируй их через htmlspecialchars."],"example":"\u003cform method=\"post\">\n  \u003clabel>Имя \u003cinput name=\"name\" required>\u003c/label>\n  \u003cbutton type=\"submit\">Отправить\u003c/button>\n\u003c/form>","url":"https://www.php.net/manual/ru/tutorial.forms.php"},"pdo":{"title":"PHP: PDO и подготовленные запросы","summary":"Подключайся к базе данных и передавай параметры безопасно.","code":"$statement = $pdo->prepare(\n    'SELECT id, name FROM users WHERE email = :email'\n);\n$statement->execute(['email' => $email]);\n$user = $statement->fetch();","points":["Передавай пользовательские значения отдельными параметрами, а не склеивай SQL-строку.","PDO поддерживает несколько драйверов баз данных.","При ошибках соединения обрабатывай исключения и не показывай посетителям секреты или трассировку."],"example":"$pdo = new PDO($dsn, $username, $password, [\n    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,\n    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,\n]);","url":"https://www.php.net/manual/ru/book.pdo.php"},"class":{"title":"PHP: классы и объекты","summary":"Объединяй данные и поведение в классах.","code":"class User\n{\n    public function __construct(\n        public string $name\n    ) {}\n\n    public function greet(): string\n    {\n        return 'Привет, ' . $this->name;\n    }\n}\n\n$user = new User('Мир');\necho $user->greet();","points":["Класс описывает свойства и методы; объект создают оператором new.","$this обращается к текущему объекту.","Видимость public, protected и private управляет доступом к членам класса."],"example":"class Counter\n{\n    private int $value = 0;\n\n    public function increment(): void\n    {\n        $this->value++;\n    }\n\n    public function value(): int\n    {\n        return $this->value;\n    }\n}","url":"https://www.php.net/manual/ru/language.oop5.php"},"echo":{"title":"PHP: echo и вывод данных","summary":"Выводи текст и значения из PHP в ответ страницы.","code":"$name = 'Мир';\necho 'Привет, ' . $name . '!';","points":["echo может выводить несколько строковых выражений.","В PHP точка . соединяет строки.","Перед включением пользовательского текста в HTML экранируй его через htmlspecialchars."],"example":"$title = 'Моя страница';\n?>\n\u003ch1>\u003c?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?>\u003c/h1>\n\u003c?php","url":"https://www.php.net/manual/ru/function.echo.php"}};
-const query=new URLSearchParams(location.search).get("topic")||"array";
-const key=topics[query]?query:"array";
-const topic=topics[key];
+const allTopics=window.DEVSHELF_REFERENCE_TOPICS||[];
+const topics=Object.fromEntries(allTopics.map(item=>[item.id,item]));
+const languages={html:"HTML",css:"CSS",javascript:"JavaScript",php:"PHP"};
+const params=new URLSearchParams(location.search);
+const topic=topics[params.get("topic")]||topics[params.get("lang")==="php"?"array":"html-document"]||allTopics[0];
+const lang=topic.lang;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 document.title=topic.title+" — DevShelf";
+document.querySelector("#reference-kicker").textContent="РУССКАЯ СПРАВКА · "+languages[lang].toUpperCase();
 document.querySelector("#title").textContent=topic.title;
 document.querySelector("#summary").textContent=topic.summary;
 document.querySelector("#code").textContent=topic.code;
 document.querySelector("#example").textContent=topic.example;
 document.querySelector("#points").innerHTML=topic.points.map(x=>"<li>"+esc(x)+"</li>").join("");
 document.querySelector("#source").href=topic.url;
-document.querySelector("#topic-nav").innerHTML=Object.entries(topics).map(([id,item])=>'<a href="reference.html?topic='+encodeURIComponent(id)+'"'+(id===key?' aria-current="page"':'')+'>'+esc(item.title.replace("PHP: ",""))+'</a>').join("");
+document.querySelector("#source").textContent="Дополнительный первоисточник ↗";
+document.querySelector("#reference-note").hidden=lang!=="php";
+const currentTopics=allTopics.filter(item=>item.lang===lang);
+document.querySelector("#language-nav").innerHTML=Object.entries(languages).map(([key,label])=>'<a href="reference.html?topic='+encodeURIComponent(allTopics.find(item=>item.lang===key).id)+'"'+(key===lang?' aria-current="page"':'')+'>'+label+'</a>').join("");
+document.querySelector("#topic-nav").innerHTML=currentTopics.map(item=>'<a href="reference.html?topic='+encodeURIComponent(item.id)+'"'+(item.id===topic.id?' aria-current="page"':'')+'>'+esc(item.title.replace(/^(HTML|CSS|JavaScript|PHP): /,""))+'</a>').join("");
 const saved=(()=>{try{return localStorage.getItem("devshelf-theme")}catch{return null}})();
 if(saved==="light")document.body.classList.add("light");
 </script>
