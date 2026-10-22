@@ -60,8 +60,19 @@ jobs:
               "playground.js",
           )
 
+          class SessionReuseFTP_TLS(ftplib.FTP_TLS):
+              def ntransfercmd(self, cmd, rest=None):
+                  conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)
+                  if self._prot_p:
+                      conn = self.context.wrap_socket(
+                          conn,
+                          server_hostname=self.host,
+                          session=self.sock.session,
+                      )
+                  return conn, size
+
           context = ssl.create_default_context()
-          with ftplib.FTP_TLS(context=context, timeout=30) as ftp:
+          with SessionReuseFTP_TLS(context=context, timeout=30) as ftp:
               ftp.connect(host, port)
               ftp.login(username, password)
               ftp.prot_p()
