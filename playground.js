@@ -43,7 +43,7 @@ function runCode(){
   const html = currentCode.html;
   const css = currentCode.css.replace(/<\/style/gi,"<\\/style");
   const js = currentCode.js.replace(/<\/script/gi,"<\\/script");
-  const srcdoc = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:system-ui,sans-serif;color:#202938}'+css+'</style></head><body>'+html+'<script>const send=(type,args)=>parent.postMessage({devshelf:true,type,args:Array.from(args).map(x=>{try{return typeof x==="object"?JSON.stringify(x):String(x)}catch{return String(x)}})}, "*");["log","info","warn","error"].forEach(k=>{const old=console[k];console[k]=function(){send(k,arguments);old.apply(console,arguments)}});window.addEventListener("error",e=>send("error",[e.message+" (строка "+e.lineno+")"]));<\\/script><script>'+js+'<\\/script></body></html>';
+  const srcdoc = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:system-ui,sans-serif;color:#202938}'+css+'</style></head><body>'+html+'<script>const send=(type,args)=>parent.postMessage({devshelf:true,type,args:Array.from(args).map(x=>{try{return typeof x==="object"?JSON.stringify(x):String(x)}catch{return String(x)}})}, "*");["log","info","warn","error"].forEach(k=>{const old=console[k];console[k]=function(){send(k,arguments);old.apply(console,arguments)}});window.addEventListener("error",e=>send("error",[e.message+" (строка "+e.lineno+")"]));<\/script><script>'+js+'<\/script></body></html>';
   $("#preview").srcdoc = srcdoc;
   showConsole("Запуск…");
   $("#run-status").textContent = "Код обновлён";
