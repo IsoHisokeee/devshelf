@@ -177,7 +177,7 @@ def download_php():
                 continue
             members.append(member)
         archive.extractall(php_dir, members=members, filter="data")
-    shutil.rmtree(PHP_TAR.parent, ignore_errors=True)
+    PHP_TAR.unlink(missing_ok=True)
     html_files = list(php_dir.rglob("*.html")) + list(php_dir.rglob("*.xhtml"))
     if len(html_files) < 1000:
         candidates = [path.relative_to(php_dir).as_posix() for path in list(php_dir.rglob("*"))[:40] if path.is_file()]
