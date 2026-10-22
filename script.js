@@ -75,14 +75,15 @@ function render() {
   list.sort(state.sort === "az" ? (a,b) => a.title.localeCompare(b.title,"ru") : (a,b) => a.rank - b.rank);
   $("#summary").textContent = state.query ? "Результаты по запросу «" + state.query + "»: " + list.length : "Материалов: " + list.length + ". Открывай первоисточник и изучай детали.";
   $("#clear-search").hidden = !state.query;
-  $("#resource-grid").innerHTML = list.map(r => '<article class="resource-card" data-url="' + safe(r.url) + '" tabindex="0" role="link"><div class="resource-top"><div class="source-brand"><span class="source-logo ' + r.logoClass + '">' + safe(r.logo) + '</span>' + safe(r.brand) + '</div><button class="favorite-button ' + (state.favorites.includes(r.id) ? "is-favorite" : "") + '" data-favorite="' + r.id + '" aria-label="Избранное" title="Избранное">' + (state.favorites.includes(r.id) ? "★" : "☆") + '</button></div><h3>' + safe(r.title) + '</h3><p>' + safe(r.description) + '</p><div class="resource-tags">' + r.tags.map(t => '<span class="resource-tag">' + safe(t) + '</span>').join("") + '</div><div class="resource-bottom"><span class="official-label"><span>●</span>' + (r.reference ? "Русская справка" : (r.internal ? "Интерактивный урок" : (r.official ? "Первоисточник" : "Учебный материал"))) + '</span><a class="resource-link" href="' + r.url + '" target="' + (r.internal ? '_self' : '_blank') + '" rel="noopener noreferrer">' + (r.reference ? 'Открыть справку' : (r.internal ? 'Изучить и попробовать' : 'Открыть ресурс')) + ' ↗</a></div></article>').join("");
+  $("#resource-grid").innerHTML = list.map(r => '<article class="resource-card" data-url="' + safe(r.url) + '"><div class="resource-top"><div class="source-brand"><span class="source-logo ' + r.logoClass + '">' + safe(r.logo) + '</span>' + safe(r.brand) + '</div><button class="favorite-button ' + (state.favorites.includes(r.id) ? "is-favorite" : "") + '" data-favorite="' + safe(r.id) + '" aria-pressed="' + (state.favorites.includes(r.id) ? "true" : "false") + '" aria-label="Избранное: ' + safe(r.title) + '" title="Избранное">' + (state.favorites.includes(r.id) ? "★" : "☆") + '</button></div><h3>' + safe(r.title) + '</h3><p>' + safe(r.description) + '</p><div class="resource-tags">' + r.tags.map(t => '<span class="resource-tag">' + safe(t) + '</span>').join("") + '</div><div class="resource-bottom"><span class="official-label"><span>●</span>' + (r.reference ? "Русская справка" : (r.internal ? "Интерактивный урок" : (r.official ? "Первоисточник" : "Учебный материал"))) + '</span><a class="resource-link" href="' + safe(r.url) + '" target="' + (r.internal ? '_self' : '_blank') + '" rel="noopener noreferrer">' + (r.reference ? 'Открыть справку' : (r.internal ? 'Изучить и попробовать' : 'Открыть ресурс')) + ' ↗</a></div></article>').join("");
   $("#empty-state").hidden = list.length > 0;
   $("#resource-grid").hidden = list.length === 0;
 }
 let toastTimer;
 function toast(message) { const el = $("#toast"); el.textContent = message; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 1900); }
 $$("[data-filter]").forEach(b => b.addEventListener("click", () => { state.filter = b.dataset.filter; render(); $("#sidebar").classList.remove("open"); if (innerWidth < 760) $("#resources-title").scrollIntoView({behavior:"smooth",block:"start"}); }));
-$("#search").addEventListener("input", e => { state.query = e.target.value; render(); });
+let searchTimer;
+$("#search").addEventListener("input", e => { state.query = e.target.value; clearTimeout(searchTimer); searchTimer = setTimeout(render, 150); });
 $("#search").addEventListener("keydown", e => { if (e.key === "Enter") $("#resources-title").scrollIntoView({behavior:"smooth",block:"start"}); });
 $("#clear-search").addEventListener("click", () => { state.query = ""; $("#search").value = ""; render(); $("#search").focus(); });
 $$("[data-query]").forEach(b => b.addEventListener("click", () => { $("#search").value = b.dataset.query; state.query = b.dataset.query; render(); $("#search").focus(); }));
@@ -96,21 +97,17 @@ $("#resource-grid").addEventListener("click", e => {
     write("devshelf-favorites",state.favorites);
     toast(state.favorites.includes(id) ? "Сохранено в избранное ★" : "Убрано из избранного");
     render();
+    const again = [...document.querySelectorAll("[data-favorite]")].find(x => x.dataset.favorite === id);
+    if (again) again.focus({ preventScroll: true });
     return;
   }
   const card = e.target.closest(".resource-card");
   if (card && !e.target.closest("a,button")) location.href = card.dataset.url;
-});
-$("#resource-grid").addEventListener("keydown", e => {
-  const card = e.target.closest(".resource-card");
-  if (card && !e.target.closest("a,button") && (e.key === "Enter" || e.key === " ")) {
-    e.preventDefault();
-    location.href = card.dataset.url;
-  }
 });
 $("#theme-toggle").addEventListener("click", () => { document.body.classList.toggle("light"); const light = document.body.classList.contains("light"); $("#theme-toggle").textContent = light ? "☀" : "☾"; write("devshelf-theme",light ? "light" : "dark"); });
 if (read("devshelf-theme","dark") === "light") { document.body.classList.add("light"); $("#theme-toggle").textContent = "☀"; }
 $("#menu-toggle").addEventListener("click", () => $("#sidebar").classList.toggle("open"));
 document.addEventListener("keydown", e => { if (e.key === "/" && !["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) { e.preventDefault(); $("#search").focus(); } if (e.key === "Escape") { $("#sidebar").classList.remove("open"); if (document.activeElement === $("#search")) $("#search").blur(); } });
 document.addEventListener("click", e => { if (innerWidth < 760 && $("#sidebar").classList.contains("open") && !$("#sidebar").contains(e.target) && !$("#menu-toggle").contains(e.target)) $("#sidebar").classList.remove("open"); });
+if (/\.github\.io$/.test(location.hostname)) { const lib = $("#library-link"); if (lib) lib.remove(); }
 render();

@@ -71,7 +71,7 @@ window.addEventListener("message",e=>{
  el.textContent=(el.textContent?el.textContent+"\n":"")+line;
 });
 const keys=Object.keys(topics);
-$("#topic-links").innerHTML=keys.filter(k=>k!==topicKey && topics[k].kind===topic.kind).concat(keys.filter(k=>k!==topicKey && topics[k].kind!==topic.kind)).slice(0,8).map(k=>'<a href="playground.html?topic='+k+'">'+escapeHTML(topics[k].title)+' <span>↗</span></a>').join("");
+$("#topic-links").innerHTML=keys.filter(k=>k!==topicKey && topics[k].kind===topic.kind).concat(keys.filter(k=>k!==topicKey && topics[k].kind!==topic.kind)).slice(0,8).map(k=>'<a href="playground.html?topic='+encodeURIComponent(k)+'">'+escapeHTML(topics[k].title)+' <span>↗</span></a>').join("");
 $("#theme-toggle").addEventListener("click",()=>{document.body.classList.toggle("light");const light=document.body.classList.contains("light");$("#theme-toggle").textContent=light?"☀":"☾";write("devshelf-theme",light?"light":"dark");});
 if(read("devshelf-theme","dark")==="light"){document.body.classList.add("light");$("#theme-toggle").textContent="☀";}
 renderTopic();loadEditor();runCode();

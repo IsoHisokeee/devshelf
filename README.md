@@ -15,7 +15,9 @@
 Откройте index.html в браузере.
 
 ## Публикация
-Проект настроен на GitHub Pages через GitHub Actions. После первого запуска workflow проверьте Settings → Pages. PHP-код на GitHub Pages не исполняется; справочник PHP и ссылки на документацию работают как обычно.
+Проект настроен на GitHub Pages через GitHub Actions. После первого запуска workflow проверьте Settings → Pages. На GitHub Pages публикуются только файлы сайта; архив `reference-library/` создаётся отдельным workflow только на Beget, поэтому на Pages ссылка на него скрывается.
+
+Основной хостинг — Beget: workflow `beget-deploy.yml` загружает файлы сайта по FTPS при каждом изменении этих файлов. PHP-код на GitHub Pages не исполняется; справочник PHP и ссылки на документацию работают как обычно.
 
 ## Основные источники
 - [MDN Web Docs](https://developer.mozilla.org/ru/)
