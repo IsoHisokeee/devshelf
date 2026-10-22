@@ -96,6 +96,10 @@ def fetch_mdn(item):
             response = requests.get(url, headers=SESSION.headers, timeout=45)
             if response.status_code == 404:
                 return slug, meta, None, f"HTTP 404: {url}"
+            if response.status_code in (429, 500, 502, 503, 504):
+                delay = response.headers.get("Retry-After")
+                time.sleep(max(float(delay) if delay and delay.isdigit() else 0, 5 * (attempt + 1)))
+                continue
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "html.parser")
             article = soup.select_one("main article") or soup.select_one("article") or soup.select_one("main")
@@ -132,7 +136,7 @@ def fetch_mdn(item):
 
 def write_mdn(pages):
     successes, failures = [], []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
         for slug, meta, document, error in pool.map(fetch_mdn, pages.items()):
             if error:
                 failures.append({"slug": slug, "error": error})
@@ -144,6 +148,9 @@ def write_mdn(pages):
     # Fail closed on an incomplete corpus. A transient upstream error must never publish a partial library.
     if failures:
         Path("build/mdn-failures.json").write_text(json.dumps(failures, ensure_ascii=False, indent=2), encoding="utf-8")
+        print("Failed MDN page samples:")
+        for failure in failures[:30]:
+            print(f"{failure['slug']}: {failure['error']}")
         raise SystemExit(f"MDN mirror incomplete: {len(failures)} of {len(pages)} pages failed; see build/mdn-failures.json")
     return successes
 
