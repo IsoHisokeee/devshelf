@@ -1,0 +1,119 @@
+name: Publish complete licensed reference archive
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build_reference_archive.py"
+      - ".github/workflows/reference-archive.yml"
+  schedule:
+    - cron: "20 5 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: beget-reference-archive
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out DevShelf
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Get Russian MDN reference source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: mdn/translated-content
+          ref: main
+          path: mdn-source
+          sparse-checkout: |
+            files/ru/web/html/reference
+            files/ru/web/css/reference
+            files/ru/web/javascript/reference
+            files/ru/web/api
+          sparse-checkout-cone-mode: false
+
+      - name: Build complete offline page collection
+        run: |
+          python -m pip install --disable-pip-version-check beautifulsoup4 requests
+          python scripts/build_reference_archive.py
+
+      - name: Upload only to the managed reference-library folder over FTPS
+        env:
+          BEGET_FTP_HOST: ${{ secrets.BEGET_FTP_HOST }}
+          BEGET_FTP_PORT: ${{ secrets.BEGET_FTP_PORT }}
+          BEGET_FTP_USERNAME: ${{ secrets.BEGET_FTP_USERNAME }}
+          BEGET_FTP_PASSWORD: ${{ secrets.BEGET_FTP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import ftplib
+          import os
+          import ssl
+          from pathlib import Path
+
+          required = ("BEGET_FTP_HOST", "BEGET_FTP_USERNAME", "BEGET_FTP_PASSWORD")
+          missing = [name for name in required if not os.environ.get(name)]
+          if missing:
+              raise SystemExit("Missing GitHub Actions secrets: " + ", ".join(missing))
+
+          host = os.environ["BEGET_FTP_HOST"]
+          port = int(os.environ.get("BEGET_FTP_PORT") or "21")
+          username = os.environ["BEGET_FTP_USERNAME"]
+          password = os.environ["BEGET_FTP_PASSWORD"]
+          local_root = Path("build/reference-library")
+          marker_name = ".devshelf-managed-reference-library"
+          marker_value = b"DevShelf licensed reference archive. Managed only by the reference-archive GitHub Action.\n"
+
+          class SessionReuseFTP_TLS(ftplib.FTP_TLS):
+              def ntransfercmd(self, cmd, rest=None):
+                  conn, size = ftplib.FTP.ntransfercmd(self, cmd, rest)
+                  if self._prot_p:
+                      conn = self.context.wrap_socket(conn, server_hostname=self.host, session=self.sock.session)
+                  return conn, size
+
+          context = ssl.create_default_context()
+          with SessionReuseFTP_TLS(context=context, timeout=45) as ftp:
+              ftp.connect(host, port)
+              ftp.login(username, password)
+              ftp.prot_p()
+              try:
+                  ftp.cwd("reference-library")
+                  existing = bytearray()
+                  ftp.retrbinary(f"RETR {marker_name}", existing.extend)
+                  if bytes(existing) != marker_value:
+                      raise SystemExit("Target folder exists but is not the managed DevShelf archive; refusing to overwrite.")
+              except ftplib.error_perm as exc:
+                  if str(exc).startswith("550"):
+                      try:
+                          ftp.cwd("..")
+                          ftp.mkd("reference-library")
+                          ftp.cwd("reference-library")
+                      except ftplib.error_perm:
+                          raise SystemExit("Target path exists or is inaccessible; refusing to overwrite it.")
+                      from io import BytesIO
+                      ftp.storbinary(f"STOR {marker_name}", BytesIO(marker_value))
+                  else:
+                      raise
+
+              for path in sorted(local_root.rglob("*")):
+                  if not path.is_file():
+                      continue
+                  relative = path.relative_to(local_root)
+                  parts = relative.parts
+                  for directory in parts[:-1]:
+                      try:
+                          ftp.mkd(directory)
+                      except ftplib.error_perm:
+                          pass
+                      ftp.cwd(directory)
+                  with path.open("rb") as stream:
+                      ftp.storbinary(f"STOR {parts[-1]}", stream)
+                  for _ in parts[:-1]:
+                      ftp.cwd("..")
+                  print(f"Uploaded {relative.as_posix()}")
+          PY
