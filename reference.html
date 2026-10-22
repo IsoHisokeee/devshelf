@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <style>
-.ref-main{width:min(1100px,calc(100% - 36px));margin:48px auto 80px}.ref-main h1{font-size:clamp(30px,5vw,48px);margin:10px 0}.ref-main .lead{color:var(--muted,#91a0b5);max-width:760px;line-height:1.7}.php-notice{padding:16px 18px;margin:24px 0;border:1px solid #82652c;border-radius:12px;background:rgba(140,102,24,.13);color:var(--text,#e8edf6);line-height:1.65}.ref-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.72fr);gap:20px;margin-top:24px}.ref-panel{padding:22px;border:1px solid var(--border,#293447);border-radius:14px;background:var(--panel,#121b29)}.ref-panel h2{margin:0 0 14px}.ref-code{overflow:auto;padding:16px;border-radius:10px;background:#090e17;color:#cce7ff;font:14px/1.7 "DM Mono",monospace;white-space:pre-wrap}.ref-panel ul{padding-left:22px;line-height:1.7;color:var(--muted,#aab7c8)}.ref-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.ref-actions a{color:#a6f078}.ref-top{width:min(1100px,calc(100% - 36px));margin:24px auto 0;display:flex;align-items:center;justify-content:space-between}.ref-top .brand{color:inherit;text-decoration:none}.topic-nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}.topic-nav a{padding:7px 10px;border:1px solid var(--border,#293447);border-radius:8px;color:var(--muted,#b9c6d7);text-decoration:none}.topic-nav a:hover{border-color:#a6f078;color:#a6f078}@media(max-width:760px){.ref-grid{grid-template-columns:1fr}.ref-main{margin-top:32px}}
+.ref-main{width:min(1100px,calc(100% - 36px));margin:48px auto 80px}.ref-main h1{font-size:clamp(30px,5vw,48px);margin:10px 0}.ref-main .lead{color:var(--muted,#91a0b5);max-width:760px;line-height:1.7}.php-notice{padding:16px 18px;margin:24px 0;border:1px solid #82652c;border-radius:12px;background:rgba(140,102,24,.13);color:var(--text,#e8edf6);line-height:1.65}.ref-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.72fr);gap:20px;margin-top:24px}.ref-panel{padding:22px;border:1px solid var(--border,#293447);border-radius:14px;background:var(--panel,#121b29)}.ref-panel h2{margin:0 0 14px}.ref-code{overflow:auto;padding:16px;border-radius:10px;background:#090e17;color:#cce7ff;font:14px/1.7 "DM Mono",monospace;white-space:pre-wrap}.ref-panel ul{padding-left:22px;line-height:1.7;color:var(--muted,#aab7c8)}.ref-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.ref-actions a{color:#a6f078}.ref-practical{margin-top:22px;padding-top:16px;border-top:1px solid var(--border,#293447)}.ref-practical p{color:var(--muted,#aab7c8);line-height:1.7}.ref-credit{font-size:13px}.ref-credit a{color:#a6f078}.ref-top{width:min(1100px,calc(100% - 36px));margin:24px auto 0;display:flex;align-items:center;justify-content:space-between}.ref-top .brand{color:inherit;text-decoration:none}.topic-nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}.topic-nav a{padding:7px 10px;border:1px solid var(--border,#293447);border-radius:8px;color:var(--muted,#b9c6d7);text-decoration:none}.topic-nav a:hover{border-color:#a6f078;color:#a6f078}@media(max-width:760px){.ref-grid{grid-template-columns:1fr}.ref-main{margin-top:32px}}
 </style>
 </head>
 <body>
@@ -20,9 +20,9 @@
 <nav class="topic-nav language-nav" id="language-nav" aria-label="Языки справочника"></nav>
 <nav class="topic-nav" id="topic-nav" aria-label="Темы раздела"></nav>
 <div class="ref-grid"><section class="ref-panel"><h2>Пример</h2><pre class="ref-code"><code id="code"></code></pre><h3>Ещё один пример</h3><pre class="ref-code"><code id="example"></code></pre></section>
-<section class="ref-panel"><h2>Как это работает</h2><ul id="points"></ul><div class="ref-actions"><a id="source" href="#" target="_blank" rel="noopener noreferrer">Официальная документация PHP на русском ↗</a></div></section></div>
+<section class="ref-panel"><h2>Как это работает</h2><ul id="points"></ul><section class="ref-practical"><h3>Когда применять</h3><p id="when"></p><h3>Альтернативы и выбор</h3><p id="alternatives"></p><p class="ref-credit" id="credit"></p><div class="ref-actions"><a id="source" href="#" target="_blank" rel="noopener noreferrer">Открыть первоисточник ↗</a></div></section></section></div>
 </main>
-<script src="reference-data.js?v=20261023-1"></script>
+<script src="reference-data.js?v=20261023-2"></script>
 <script>
 const allTopics=window.DEVSHELF_REFERENCE_TOPICS||[];
 const topics=Object.fromEntries(allTopics.map(item=>[item.id,item]));
@@ -38,8 +38,11 @@ document.querySelector("#summary").textContent=topic.summary;
 document.querySelector("#code").textContent=topic.code;
 document.querySelector("#example").textContent=topic.example;
 document.querySelector("#points").innerHTML=topic.points.map(x=>"<li>"+esc(x)+"</li>").join("");
+document.querySelector("#when").textContent=topic.when||"";
+document.querySelector("#alternatives").textContent=topic.alternatives||"";
+document.querySelector("#credit").textContent="Источник: "+topic.sourceName+". Русское изложение и дополнения: DevShelf. Лицензия источника: "+topic.licenseName+".";
 document.querySelector("#source").href=topic.url;
-document.querySelector("#source").textContent="Дополнительный первоисточник ↗";
+document.querySelector("#source").textContent="Первоисточник на русском ↗";
 document.querySelector("#reference-note").hidden=lang!=="php";
 const currentTopics=allTopics.filter(item=>item.lang===lang);
 document.querySelector("#language-nav").innerHTML=Object.entries(languages).map(([key,label])=>'<a href="reference.html?topic='+encodeURIComponent(allTopics.find(item=>item.lang===key).id)+'"'+(key===lang?' aria-current="page"':'')+'>'+label+'</a>').join("");
