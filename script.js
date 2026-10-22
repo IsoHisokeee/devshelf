@@ -61,53 +61,152 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const read = (k, fallback) => { try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch { return fallback; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
-const state = { filter:"all", query:"", sort:"recommended", favorites:read("devshelf-favorites",[]) };
-const names = {all:"Обзор",favorites:"Избранное",html:"HTML",css:"CSS",javascript:"JavaScript",php:"PHP"};
+const MARKS = {html:"H", css:"C", javascript:"JS", php:"php"};
+const NAMES = {all:"Подборка", favorites:"Избранное", html:"HTML", css:"CSS", javascript:"JavaScript", php:"PHP"};
+const ARCHIVE_SECTIONS = {html:["HTML"], css:["CSS"], javascript:["JavaScript","Web API"], php:["PHP"]};
+const SECTION_CLASS = {"HTML":"html","CSS":"css","JavaScript":"javascript","Web API":"api","PHP":"php"};
+const SECTION_MARK = {"HTML":"H","CSS":"C","JavaScript":"JS","Web API":"API","PHP":"php"};
+const ARCHIVE_STEP = 50;
+const state = { filter:"all", query:"", sort:"recommended", favorites:read("devshelf-favorites",[]), archiveLimit:ARCHIVE_STEP };
+const fmt = n => n.toLocaleString("ru");
 function safe(s) { return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+const normalize = s => String(s).replace(/[<>]/g, "").toLocaleLowerCase("ru");
+
+/* ---- полный справочник: индекс загружается один раз, при первом поиске ---- */
+const ARCHIVE_URL = "reference-library/search-index.json";
+const canUseArchive = location.protocol !== "file:" && !/\.github\.io$/.test(location.hostname);
+const archive = { status: canUseArchive ? "idle" : "off", rows: [] };
+function loadArchive() {
+  if (archive.status !== "idle") return;
+  archive.status = "loading"; render();
+  fetch(ARCHIVE_URL)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(rows => {
+      archive.rows = rows.map(([title, section, path]) => ({
+        title, section, path,
+        key: normalize(title + " " + path.replace(/^mdn\/Web\//i, "").replace(/^php\/(php-chunked-xhtml\/)?/, "").replace(/\.x?html$/i, ""))
+      }));
+      archive.status = "ready"; render();
+    })
+    .catch(() => { archive.status = "missing"; render(); });
+}
+function searchArchive(q) {
+  const terms = q.split(/\s+/).filter(Boolean);
+  const sections = ARCHIVE_SECTIONS[state.filter];
+  const found = [];
+  for (const row of archive.rows) {
+    if (sections && !sections.includes(row.section)) continue;
+    if (!terms.every(t => row.key.includes(t))) continue;
+    const title = normalize(row.title);
+    found.push({ row, score: title === q ? 0 : title.startsWith(q) ? 1 : title.includes(q) ? 2 : 3 });
+  }
+  found.sort((a, b) => a.score - b.score || a.row.title.length - b.row.title.length || a.row.title.localeCompare(b.row.title, "ru"));
+  return found.map(x => x.row);
+}
+const archiveHref = path => "reference-library/" + path.split("/").map(encodeURIComponent).join("/");
+
+/* ---- строки списков ---- */
+function curatedRow(r) {
+  const fav = state.favorites.includes(r.id);
+  const kind = r.reference ? "Справка" : r.internal ? "Урок" : r.official ? "Первоисточник" : "Материал";
+  const ext = r.internal ? "" : ' target="_blank" rel="noopener noreferrer"';
+  return '<li class="row"><span class="mark m-' + safe(r.category) + '" aria-hidden="true">' + safe(MARKS[r.category] || "•") + '</span>'
+    + '<div class="row-main"><a class="row-title" href="' + safe(r.url) + '"' + ext + '>' + safe(r.title) + (r.internal ? "" : '<span class="ext" aria-hidden="true"> ↗</span>') + '</a>'
+    + '<span class="row-desc">' + safe(r.description) + '</span></div>'
+    + '<div class="row-meta"><span class="badge' + (r.official ? " official" : "") + '">' + kind + '</span><span>' + safe(r.brand) + '</span></div>'
+    + '<button class="fav" data-favorite="' + safe(r.id) + '" aria-pressed="' + fav + '" aria-label="Избранное: ' + safe(r.title) + '" title="Избранное">' + (fav ? "★" : "☆") + '</button></li>';
+}
+function archiveRow(r) {
+  const where = r.path.replace(/^mdn\/Web\//i, "").replace(/^php\/(php-chunked-xhtml\/)?/, "").replace(/\.x?html$/i, "");
+  return '<li class="row archive"><span class="mark m-' + SECTION_CLASS[r.section] + '" aria-hidden="true">' + SECTION_MARK[r.section] + '</span>'
+    + '<div class="row-main"><a class="row-title" href="' + safe(archiveHref(r.path)) + '">' + safe(r.title) + '</a><span class="row-desc">' + safe(where) + '</span></div>'
+    + '<div class="row-meta"><span class="badge">' + (r.section === "PHP" ? "PHP Manual" : "MDN") + '</span></div></li>';
+}
+
 function render() {
-  $$(".nav-item").forEach(b => b.classList.toggle("active", b.dataset.filter === state.filter));
-  $("#current-section").textContent = names[state.filter] || "Обзор";
-  $("#resources-title").textContent = state.filter === "all" ? "Полезные источники" : state.filter === "favorites" ? "Избранное" : "Источники: " + names[state.filter];
+  $$(".tab").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.filter === state.filter)));
   $("#total-count").textContent = resources.length;
   $("#favorite-count").textContent = state.favorites.length;
-  const q = state.query.trim().replace(/[<>]/g,"").trim().toLocaleLowerCase("ru");
-  let list = resources.filter(r => (state.filter === "all" || (state.filter === "favorites" ? state.favorites.includes(r.id) : r.category === state.filter)) && (!q || [r.title,r.brand,r.description,r.category,...r.tags,r.searchText].join(" ").replace(/[<>]/g,"").toLocaleLowerCase("ru").includes(q)));
-  list.sort(state.sort === "az" ? (a,b) => a.title.localeCompare(b.title,"ru") : (a,b) => a.rank - b.rank);
-  $("#summary").textContent = state.query ? "Результаты по запросу «" + state.query + "»: " + list.length : "Материалов: " + list.length + ". Открывай первоисточник и изучай детали.";
+  $("#resources-title").textContent = state.query.trim() ? "Подборка DevShelf" : NAMES[state.filter] || "Подборка";
+  const q = normalize(state.query).trim();
+  const terms = q.split(/\s+/).filter(Boolean);
+
+  const list = resources.filter(r => {
+    if (state.filter === "favorites" ? !state.favorites.includes(r.id) : state.filter !== "all" && r.category !== state.filter) return false;
+    if (!terms.length) return true;
+    const hay = normalize([r.title, r.brand, r.description, r.category, ...r.tags, r.searchText].join(" "));
+    return terms.every(t => hay.includes(t));
+  });
+  list.sort(state.sort === "az" ? (a, b) => a.title.localeCompare(b.title, "ru") : (a, b) => a.rank - b.rank);
+  $("#resource-grid").innerHTML = list.map(curatedRow).join("");
+
+  const wantArchive = q && state.filter !== "favorites" && archive.status === "ready";
+  const found = wantArchive ? searchArchive(q) : [];
+  const shown = found.slice(0, state.archiveLimit);
+  $("#archive-block").hidden = !(wantArchive && found.length);
+  $("#archive-list").innerHTML = shown.map(archiveRow).join("");
+  $("#archive-summary").textContent = found.length ? "Найдено страниц: " + fmt(found.length) + (shown.length < found.length ? ", показано " + fmt(shown.length) : "") : "";
+  $("#archive-more").hidden = shown.length >= found.length;
+
+  $("#summary").textContent = q
+    ? "Совпадений в подборке: " + list.length
+    : "Материалов: " + list.length;
+  const status = {
+    off: "Поиск по подборке DevShelf. Полный справочник доступен на основном сайте.",
+    idle: "Поиск идёт по подборке и по полному справочнику MDN и PHP.",
+    loading: "Загружаю индекс полного справочника…",
+    ready: "Поиск идёт по подборке и по полному справочнику: " + fmt(archive.rows.length) + " страниц MDN и PHP.",
+    missing: "Индекс полного справочника пока не опубликован: ищу только по подборке."
+  }[archive.status];
+  $("#archive-status").textContent = status;
   $("#clear-search").hidden = !state.query;
-  $("#resource-grid").innerHTML = list.map(r => '<article class="resource-card" data-url="' + safe(r.url) + '"><div class="resource-top"><div class="source-brand"><span class="source-logo ' + r.logoClass + '">' + safe(r.logo) + '</span>' + safe(r.brand) + '</div><button class="favorite-button ' + (state.favorites.includes(r.id) ? "is-favorite" : "") + '" data-favorite="' + safe(r.id) + '" aria-pressed="' + (state.favorites.includes(r.id) ? "true" : "false") + '" aria-label="Избранное: ' + safe(r.title) + '" title="Избранное">' + (state.favorites.includes(r.id) ? "★" : "☆") + '</button></div><h3>' + safe(r.title) + '</h3><p>' + safe(r.description) + '</p><div class="resource-tags">' + r.tags.map(t => '<span class="resource-tag">' + safe(t) + '</span>').join("") + '</div><div class="resource-bottom"><span class="official-label"><span>●</span>' + (r.reference ? "Русская справка" : (r.internal ? "Интерактивный урок" : (r.official ? "Первоисточник" : "Учебный материал"))) + '</span><a class="resource-link" href="' + safe(r.url) + '" target="' + (r.internal ? '_self' : '_blank') + '" rel="noopener noreferrer">' + (r.reference ? 'Открыть справку' : (r.internal ? 'Изучить и попробовать' : 'Открыть ресурс')) + ' ↗</a></div></article>').join("");
-  $("#empty-state").hidden = list.length > 0;
+  const archivePending = q && (archive.status === "loading" || archive.status === "idle");
+  const nothing = list.length === 0 && !(wantArchive && found.length) && !archivePending;
+  $("#empty-state").hidden = !nothing;
   $("#resource-grid").hidden = list.length === 0;
 }
+
 let toastTimer;
-function toast(message) { const el = $("#toast"); el.textContent = message; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 1900); }
-$$("[data-filter]").forEach(b => b.addEventListener("click", () => { state.filter = b.dataset.filter; render(); $("#sidebar").classList.remove("open"); if (innerWidth < 760) $("#resources-title").scrollIntoView({behavior:"smooth",block:"start"}); }));
+function toast(message) { const el = $("#toast"); el.textContent = message; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 1800); }
+function setQuery(value) { state.query = value; state.archiveLimit = ARCHIVE_STEP; if (value.trim()) loadArchive(); render(); }
+
+$$(".tab").forEach(b => b.addEventListener("click", () => { state.filter = b.dataset.filter; state.archiveLimit = ARCHIVE_STEP; render(); }));
 let searchTimer;
-$("#search").addEventListener("input", e => { state.query = e.target.value; clearTimeout(searchTimer); searchTimer = setTimeout(render, 150); });
-$("#search").addEventListener("keydown", e => { if (e.key === "Enter") $("#resources-title").scrollIntoView({behavior:"smooth",block:"start"}); });
-$("#clear-search").addEventListener("click", () => { state.query = ""; $("#search").value = ""; render(); $("#search").focus(); });
-$$("[data-query]").forEach(b => b.addEventListener("click", () => { $("#search").value = b.dataset.query; state.query = b.dataset.query; render(); $("#search").focus(); }));
+$("#search").addEventListener("focus", loadArchive);
+$("#search").addEventListener("input", e => { clearTimeout(searchTimer); const v = e.target.value; state.query = v; state.archiveLimit = ARCHIVE_STEP; if (v.trim()) loadArchive(); searchTimer = setTimeout(render, 150); });
+$("#clear-search").addEventListener("click", () => { $("#search").value = ""; setQuery(""); $("#search").focus(); });
+$$("[data-query]").forEach(b => b.addEventListener("click", () => { $("#search").value = b.dataset.query; setQuery(b.dataset.query); $("#search").focus(); }));
 $("#sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
-$("#reset").addEventListener("click", () => { state.filter = "all"; state.query = ""; $("#search").value = ""; render(); });
+$("#reset").addEventListener("click", () => { state.filter = "all"; $("#search").value = ""; setQuery(""); });
+$("#archive-more").addEventListener("click", () => { state.archiveLimit += ARCHIVE_STEP; render(); $("#archive-more").focus({ preventScroll: true }); });
 $("#resource-grid").addEventListener("click", e => {
   const b = e.target.closest("[data-favorite]");
-  if (b) {
-    const id = b.dataset.favorite;
-    state.favorites = state.favorites.includes(id) ? state.favorites.filter(x => x !== id) : [...state.favorites,id];
-    write("devshelf-favorites",state.favorites);
-    toast(state.favorites.includes(id) ? "Сохранено в избранное ★" : "Убрано из избранного");
-    render();
-    const again = [...document.querySelectorAll("[data-favorite]")].find(x => x.dataset.favorite === id);
-    if (again) again.focus({ preventScroll: true });
-    return;
-  }
-  const card = e.target.closest(".resource-card");
-  if (card && !e.target.closest("a,button")) location.href = card.dataset.url;
+  if (!b) return;
+  const id = b.dataset.favorite;
+  state.favorites = state.favorites.includes(id) ? state.favorites.filter(x => x !== id) : [...state.favorites, id];
+  write("devshelf-favorites", state.favorites);
+  toast(state.favorites.includes(id) ? "Сохранено в избранное ★" : "Убрано из избранного");
+  render();
+  const again = $$("[data-favorite]").find(x => x.dataset.favorite === id);
+  if (again) again.focus({ preventScroll: true });
 });
-$("#theme-toggle").addEventListener("click", () => { document.body.classList.toggle("light"); const light = document.body.classList.contains("light"); $("#theme-toggle").textContent = light ? "☀" : "☾"; write("devshelf-theme",light ? "light" : "dark"); });
-if (read("devshelf-theme","dark") === "light") { document.body.classList.add("light"); $("#theme-toggle").textContent = "☀"; }
-$("#menu-toggle").addEventListener("click", () => $("#sidebar").classList.toggle("open"));
-document.addEventListener("keydown", e => { if (e.key === "/" && !["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) { e.preventDefault(); $("#search").focus(); } if (e.key === "Escape") { $("#sidebar").classList.remove("open"); if (document.activeElement === $("#search")) $("#search").blur(); } });
-document.addEventListener("click", e => { if (innerWidth < 760 && $("#sidebar").classList.contains("open") && !$("#sidebar").contains(e.target) && !$("#menu-toggle").contains(e.target)) $("#sidebar").classList.remove("open"); });
+$("#theme-toggle").addEventListener("click", () => { document.body.classList.toggle("light"); const light = document.body.classList.contains("light"); $("#theme-toggle").textContent = light ? "☀" : "☾"; write("devshelf-theme", light ? "light" : "dark"); });
+if (read("devshelf-theme", "dark") === "light") { document.body.classList.add("light"); $("#theme-toggle").textContent = "☀"; }
+
+document.addEventListener("keydown", e => {
+  const active = document.activeElement;
+  const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(active.tagName);
+  if (e.key === "/" && !typing) { e.preventDefault(); $("#search").focus(); return; }
+  if (e.key === "Escape" && active === $("#search")) { if ($("#search").value) { $("#search").value = ""; setQuery(""); } else $("#search").blur(); return; }
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    const links = $$(".row-title");
+    const i = links.indexOf(active);
+    if (active === $("#search") && e.key === "ArrowDown" && links.length) { e.preventDefault(); links[0].focus(); }
+    else if (i >= 0) { e.preventDefault(); if (e.key === "ArrowDown") (links[i + 1] || links[i]).focus(); else (links[i - 1] || $("#search")).focus(); }
+  }
+});
+
 if (/\.github\.io$/.test(location.hostname)) { const lib = $("#library-link"); if (lib) lib.remove(); }
+const initial = new URLSearchParams(location.search).get("q");
+if (initial) { $("#search").value = initial; state.query = initial; loadArchive(); }
 render();

@@ -198,6 +198,43 @@ def download_php():
     return len(html_files)
 
 
+def section_of(slug: str) -> str:
+    if slug.startswith("Web/HTML/"):
+        return "HTML"
+    if slug.startswith("Web/CSS/"):
+        return "CSS"
+    if slug.startswith("Web/JavaScript/"):
+        return "JavaScript"
+    return "Web API"
+
+
+def php_title(path: Path) -> str:
+    """Return the page title of a PHP manual file, or an empty string."""
+    head = path.read_text(encoding="utf-8", errors="replace")[:6000]
+    match = re.search(r"<title[^>]*>(.*?)</title>", head, re.S | re.I)
+    if not match:
+        return ""
+    return " ".join(html.unescape(re.sub(r"<[^>]+>", "", match.group(1))).split())
+
+
+def build_search_index(mdn_pages, php_dir):
+    """Write search-index.json: [[title, section, relative_path], ...] for every mirrored page.
+
+    The site's search box loads this file lazily, so a query finds any page of the
+    full MDN/PHP mirror and not only the hand-picked cards on the home page.
+    """
+    entries = [[item["title"], section_of(item["slug"]), item["path"]] for item in mdn_pages]
+    php_files = sorted(list(php_dir.rglob("*.html")) + list(php_dir.rglob("*.xhtml")))
+    for path in php_files:
+        title = php_title(path)
+        if title:
+            entries.append([title, "PHP", path.relative_to(OUT).as_posix()])
+    (OUT / "search-index.json").write_text(
+        json.dumps(entries, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
+    )
+    return len(entries)
+
+
 def write_index(mdn_pages, php_count):
     sections = {}
     for item in mdn_pages:
@@ -237,6 +274,7 @@ def main():
     mdn_pages = write_mdn(pages)
     php_count = download_php()
     write_index(mdn_pages, php_count)
+    index_entries = build_search_index(mdn_pages, OUT / "php")
     all_files = [p for p in OUT.rglob("*") if p.is_file()]
     total = sum(p.stat().st_size for p in all_files)
     # Keep room for the live site, future changes, and Beget's account limits.
@@ -245,6 +283,7 @@ def main():
     manifest = {
         "mdn_pages": len(mdn_pages),
         "php_html_pages": php_count,
+        "search_index_entries": index_entries,
         "files": len(all_files) + 1,
         "bytes": total,
         "mdn_license": "CC BY-SA 2.5 or later",

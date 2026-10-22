@@ -2,31 +2,47 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10151f"><meta name="description" content="DevShelf — личная библиотека документации по HTML, CSS, JavaScript и PHP.">
+<meta name="theme-color" content="#0d1117"><meta name="description" content="DevShelf — личная библиотека документации по HTML, CSS, JavaScript и PHP.">
+<meta property="og:type" content="website"><meta property="og:title" content="DevShelf — полка разработчика"><meta property="og:description" content="DevShelf — личная библиотека документации по HTML, CSS, JavaScript и PHP.">
 <title>DevShelf — полка разработчика</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%2310151f%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-size=%2728%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3E%26lt;/%26gt;%3C/text%3E%3C/svg%3E"><meta property="og:type" content="website"><meta property="og:title" content="DevShelf — полка разработчика"><meta property="og:description" content="DevShelf — личная библиотека документации по HTML, CSS, JavaScript и PHP."><link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%2310151f%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-size=%2728%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3E%26lt;/%26gt;%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="layout">
-<aside class="sidebar" id="sidebar">
-<a class="brand" href="index.html"><span class="brand-icon">&lt;/&gt;</span><span>dev<span>shelf</span><small>ТВОЯ ВЕБ-БИБЛИОТЕКА</small></span></a>
-<div class="nav-label">БИБЛИОТЕКА</div>
-<nav class="nav"><button class="nav-item active" data-filter="all"><span>⌂</span>Обзор <small id="total-count">12</small></button><button class="nav-item" data-filter="html"><i class="dot html">H</i>HTML</button><button class="nav-item" data-filter="css"><i class="dot css">C</i>CSS</button><button class="nav-item" data-filter="javascript"><i class="dot js">JS</i>JavaScript</button><button class="nav-item" data-filter="php"><i class="dot php">php</i>PHP</button></nav>
-<div class="nav-label nav-label-later">МОЁ</div><nav class="nav"><button class="nav-item" data-filter="favorites"><span>☆</span>Избранное <small id="favorite-count">0</small></button></nav>
-<div class="sidebar-bottom"><div class="tip"><b>✳ Маленькими шагами</b><p>Сохраняй полезное. Возвращайся к важному. Пиши код увереннее.</p></div><div class="local-status"><span></span>Библиотека в браузере <em>v1.0</em></div></div>
-</aside>
-<main class="main">
-<header class="topbar"><button class="menu-button" id="menu-toggle" aria-label="Открыть меню">☰</button><div class="crumb">Твоя библиотека <span>/</span> <b id="current-section">Обзор</b></div><div class="top-actions"><span class="shortcut">Поиск <kbd>/</kbd></span><button class="theme-button" id="theme-toggle" title="Переключить тему" aria-label="Переключить тему">☾</button></div></header>
-<section class="hero"><div class="hero-copy"><div class="eyebrow"><span></span>ТВОЯ ПОЛКА ДЛЯ ВЕБ-РАЗРАБОТКИ</div><h1>Меньше искать.<br><strong>Больше создавать.</strong></h1><p>Проверенные документации, понятные справочники и полезные инструменты — всё в одном месте.</p><div class="hero-pills"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>PHP</span></div></div>
-<div class="hero-art" aria-hidden="true"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="code-window"><div class="window-top"><i></i><i></i><i></i><span>hello-world.js</span></div><div class="code"><div><label>01</label><b>const</b> idea = <strong>"something cool"</strong>;</div><div><label>02</label></div><div><label>03</label><b>function</b> <em>build</em>() {</div><div><label>04</label> &nbsp; return idea;</div><div><label>05</label>}</div><div><label>06</label></div><div><label>07</label><small>// keep learning ✦</small></div></div></div><span class="float-tag tag-html">&lt;html&gt;</span><span class="float-tag tag-js">JS ✳</span><span class="float-tag tag-php">&lt;?php</span></div></section>
-<section class="search-section"><label class="searchbox"><span>⌕</span><input id="search" type="search" aria-label="Поиск по библиотеке" placeholder="Найти тему, тег, функцию или документацию…" autocomplete="off"><kbd>Enter</kbd><button id="clear-search" aria-label="Очистить поиск" hidden>×</button></label><div class="search-hints"><span>Попробуй:</span><button data-query="массивы">массивы</button><button data-query="события">события</button><button data-query="формы">формы</button><button data-query="запросы к базе">запросы к базе</button></div></section>
-<section class="languages"><div class="section-heading"><div><div class="eyebrow muted">НАВИГАЦИЯ</div><h2>Выбери свой инструмент</h2></div><span class="section-meta">04 направления</span></div><div class="language-grid">
-<button class="language-card card-html" data-filter="html"><span class="language-mark">5</span><span><b>HTML</b><small>Структура и семантика</small></span><strong>↗</strong></button><button class="language-card card-css" data-filter="css"><span class="language-mark">#</span><span><b>CSS</b><small>Стили и адаптивность</small></span><strong>↗</strong></button><button class="language-card card-js" data-filter="javascript"><span class="language-mark">JS</span><span><b>JavaScript</b><small>Логика и интерактивность</small></span><strong>↗</strong></button><button class="language-card card-php" data-filter="php"><span class="language-mark">php</span><span><b>PHP</b><small>Серверная разработка</small></span><strong>↗</strong></button>
-</div></section>
-<section class="resources"><div class="section-heading resources-heading"><div><div class="eyebrow muted">КОЛЛЕКЦИЯ</div><h2 id="resources-title">Полезные источники</h2><p id="summary">Документации и справочники, к которым стоит возвращаться.</p></div><label class="sort-label">Сортировка <select id="sort"><option value="recommended">Сначала основные</option><option value="az">По названию А—Я</option></select></label></div><div id="resource-grid" class="resource-grid" aria-live="polite"></div><div id="empty-state" class="empty" hidden><span>⌕</span><h3>Ничего не нашлось</h3><p>Попробуй другое слово или выбери другой раздел.</p><button id="reset">Сбросить фильтры</button></div></section>
-<section class="bottom-note"><span>✦</span><div><b>Сначала — первоисточник</b><p>Ссылки ведут на официальные документации и авторитетные учебные материалы. Для важных деталей сверяйся с актуальной версией источника.</p></div><a id="library-link" href="reference-library/index.html">Полная справочная библиотека ↗</a><a href="https://developer.mozilla.org/ru/" target="_blank" rel="noopener noreferrer">MDN Web Docs ↗</a></section>
-<footer><span>© 2026 DevShelf · Сделано для любопытных</span><span>Учись · Пробуй · Создавай <b>✳</b></span></footer>
-</main></div><div id="toast" class="toast" role="status" aria-live="polite"></div><script src="reference-data.js?v=20261023-3"></script><script src="script.js?v=20261023-3"></script>
+<header class="top"><div class="top-inner">
+<a class="brand" href="index.html"><span class="brand-icon">&lt;/&gt;</span><span>dev<span>shelf</span></span></a>
+<nav class="tabs" aria-label="Разделы библиотеки">
+<button class="tab" data-filter="all" aria-pressed="true">Всё <small id="total-count"></small></button>
+<button class="tab" data-filter="html" aria-pressed="false"><i class="dot m-html"></i>HTML</button>
+<button class="tab" data-filter="css" aria-pressed="false"><i class="dot m-css"></i>CSS</button>
+<button class="tab" data-filter="javascript" aria-pressed="false"><i class="dot m-javascript"></i>JavaScript</button>
+<button class="tab" data-filter="php" aria-pressed="false"><i class="dot m-php"></i>PHP</button>
+<button class="tab" data-filter="favorites" aria-pressed="false">★ Избранное <small id="favorite-count">0</small></button>
+</nav>
+<div class="top-actions"><kbd title="Фокус на поиск">/</kbd><button class="theme-button" id="theme-toggle" title="Переключить тему" aria-label="Переключить тему">☾</button></div>
+</div></header>
+<main class="wrap">
+<section class="intro" role="search" aria-label="Поиск по справочнику">
+<h1>Справочник веб-разработчика</h1>
+<p>Русские справки, песочницы и полный справочник MDN и PHP Manual. Начни вводить название тега, свойства или функции.</p>
+<label class="searchbox"><span aria-hidden="true">⌕</span><input id="search" type="search" aria-label="Поиск по библиотеке" placeholder="Например: flex, Array.map, array_map, :has" autocomplete="off" spellcheck="false"><kbd>/</kbd><button class="clear" id="clear-search" aria-label="Очистить поиск" hidden>×</button></label>
+<div class="hints"><span>Попробуй:</span><button type="button" data-query="массивы">массивы</button><button type="button" data-query="события">события</button><button type="button" data-query="формы">формы</button><button type="button" data-query="grid">grid</button><button type="button" data-query="array_map">array_map</button></div>
+<p class="status" id="archive-status" aria-live="polite"></p>
+</section>
+<section aria-labelledby="resources-title">
+<div class="results-head"><div><h2 id="resources-title">Подборка</h2><p id="summary"></p></div>
+<label class="sort-label">Сортировка <select id="sort"><option value="recommended">Сначала основные</option><option value="az">По названию А—Я</option></select></label></div>
+<ul id="resource-grid" class="rows" aria-live="polite"></ul>
+<div id="empty-state" class="empty" hidden><h3>Ничего не нашлось</h3><p>Попробуй другое слово или выбери другой раздел.</p><button type="button" id="reset">Сбросить фильтры</button></div>
+</section>
+<section id="archive-block" class="archive-block" aria-labelledby="archive-title" hidden>
+<div class="results-head"><div><h2 id="archive-title">Полный справочник MDN и PHP</h2><p id="archive-summary"></p></div></div>
+<ul id="archive-list" class="rows"></ul>
+<button type="button" class="more" id="archive-more" hidden>Показать ещё</button>
+</section>
+<div class="note"><p><b>Сначала — первоисточник.</b> Ссылки ведут на официальные документации; для важных деталей сверяйся с актуальной версией источника.</p><a id="library-link" href="reference-library/index.html">Оглавление справочника</a><a href="https://developer.mozilla.org/ru/" target="_blank" rel="noopener noreferrer">MDN Web Docs ↗</a></div>
+</main>
+<footer><span>© 2026 DevShelf</span><span>Избранное хранится в этом браузере</span></footer>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="reference-data.js?v=20261023-4"></script><script src="script.js?v=20261023-4"></script>
 </body></html>
