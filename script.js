@@ -39,7 +39,7 @@ function render() {
   $("#resources-title").textContent = state.filter === "all" ? "Полезные источники" : state.filter === "favorites" ? "Избранное" : "Источники: " + names[state.filter];
   $("#total-count").textContent = resources.length;
   $("#favorite-count").textContent = state.favorites.length;
-  const q = state.query.trim().replace(/[<>]/g,"").toLocaleLowerCase("ru");
+  const q = state.query.trim().replace(/[<>]/g,"").trim().toLocaleLowerCase("ru");
   let list = resources.filter(r => (state.filter === "all" || (state.filter === "favorites" ? state.favorites.includes(r.id) : r.category === state.filter)) && (!q || [r.title,r.brand,r.description,r.category,...r.tags].join(" ").toLocaleLowerCase("ru").includes(q)));
   list.sort(state.sort === "az" ? (a,b) => a.title.localeCompare(b.title,"ru") : (a,b) => (a.rank || 99) - (b.rank || 99));
   $("#summary").textContent = state.query ? "Результаты по запросу «" + state.query + "»: " + list.length : "Материалов: " + list.length + ". Открывай первоисточник и изучай детали.";
@@ -57,7 +57,7 @@ $("#clear-search").addEventListener("click", () => { state.query = ""; $("#searc
 $$("[data-query]").forEach(b => b.addEventListener("click", () => { $("#search").value = b.dataset.query; state.query = b.dataset.query; render(); $("#search").focus(); }));
 $("#sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
 $("#reset").addEventListener("click", () => { state.filter = "all"; state.query = ""; $("#search").value = ""; render(); });
-$("#resource-grid").addEventListener("click", e => { const b = e.target.closest("[data-favorite]"); if (!b) return; const id = b.dataset.favorite; state.favorites = state.favorites.includes(id) ? state.favorites.filter(x => x !== id) : [...state.favorites,id]; write("devshelf-favorites",state.favorites); toast(state.favorites.includes(id) ? "Сохранено в избранное ★" : "Убрано из избранного"); render(); });
+$("#resource-grid").addEventListener("click", e => { const b = e.target.closest("[data-favorite]"); if (!b) { const card = e.target.closest(".resource-card"); if (card && !e.target.closest("a,button")) { const index = [...$("#resource-grid").children].indexOf(card); const q = state.query.trim().replace(/[<>]/g,"").trim().toLocaleLowerCase("ru"); let list = resources.filter(r => (state.filter === "all" || (state.filter === "favorites" ? state.favorites.includes(r.id) : r.category === state.filter)) && (!q || [r.title,r.brand,r.description,r.category,...r.tags].join(" ").toLocaleLowerCase("ru").includes(q))); list.sort(state.sort === "az" ? (a,b) => a.title.localeCompare(b.title,"ru") : (a,b) => (a.rank || 99) - (b.rank || 99)); if (list[index]) location.href = list[index].url; } return; } const id = b.dataset.favorite; state.favorites = state.favorites.includes(id) ? state.favorites.filter(x => x !== id) : [...state.favorites,id]; write("devshelf-favorites",state.favorites); toast(state.favorites.includes(id) ? "Сохранено в избранное ★" : "Убрано из избранного"); render(); });
 $("#theme-toggle").addEventListener("click", () => { document.body.classList.toggle("light"); const light = document.body.classList.contains("light"); $("#theme-toggle").textContent = light ? "☀" : "☾"; write("devshelf-theme",light ? "light" : "dark"); });
 if (read("devshelf-theme","dark") === "light") { document.body.classList.add("light"); $("#theme-toggle").textContent = "☀"; }
 $("#menu-toggle").addEventListener("click", () => $("#sidebar").classList.toggle("open"));
