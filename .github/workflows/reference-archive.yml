@@ -90,7 +90,6 @@ jobs:
               except ftplib.error_perm as exc:
                   if str(exc).startswith("550"):
                       try:
-                          ftp.cwd("..")
                           ftp.mkd("reference-library")
                           ftp.cwd("reference-library")
                       except ftplib.error_perm:
