@@ -40,6 +40,22 @@ const resources = [
 {"id":"php-class","title":"PHP: классы и объекты","brand":"DevShelf · справка","logo":"PHP","logoClass":"logo-mdn","category":"php","reference":true,"description":"Свойства, методы, конструктор и экземпляры классов.","tags":["PHP","class","класс","классы","объект","объекты","ООП"],"url":"reference.html?topic=class","official":false,"rank":0,"internal":true},
 {"id":"php-echo","title":"PHP: echo и вывод","brand":"DevShelf · справка","logo":"PHP","logoClass":"logo-mdn","category":"php","reference":true,"description":"Вывод строк и безопасное включение данных в HTML.","tags":["PHP","echo","вывод","строка","htmlspecialchars"],"url":"reference.html?topic=echo","official":false,"rank":0,"internal":true}
 ];
+
+resources.push(...(window.DEVSHELF_REFERENCE_TOPICS || []).filter(topic => topic.search !== false).map(topic => ({
+  id: "ref-" + topic.id,
+  title: topic.title,
+  brand: "DevShelf · справочник",
+  logo: ({html:"H",css:"C",javascript:"JS",php:"PHP"})[topic.lang],
+  logoClass: ({html:"logo-html",css:"logo-css",javascript:"logo-js",php:"logo-php"})[topic.lang],
+  category: topic.lang,
+  description: topic.summary,
+  tags: [({html:"HTML",css:"CSS",javascript:"JavaScript",php:"PHP"})[topic.lang], ...topic.tags],
+  url: "reference.html?topic=" + encodeURIComponent(topic.id),
+  official: false,
+  rank: 0,
+  internal: true,
+  reference: true
+})));
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const read = (k, fallback) => { try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch { return fallback; } };
