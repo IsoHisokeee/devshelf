@@ -167,6 +167,7 @@ def download_php():
     php_dir.mkdir(parents=True, exist_ok=True)
     with tarfile.open(PHP_TAR, "r:gz") as archive:
         root = php_dir.resolve()
+        print("PHP archive sample paths:", [member.name for member in archive.getmembers()[:30]])
         members = []
         for member in archive.getmembers():
             target = (php_dir / member.name).resolve()
@@ -177,9 +178,10 @@ def download_php():
             members.append(member)
         archive.extractall(php_dir, members=members, filter="data")
     shutil.rmtree(PHP_TAR.parent, ignore_errors=True)
-    html_files = list(php_dir.rglob("*.html"))
+    html_files = list(php_dir.rglob("*.html")) + list(php_dir.rglob("*.xhtml"))
     if len(html_files) < 1000:
-        raise SystemExit(f"PHP archive looks incomplete: only {len(html_files)} HTML pages")
+        candidates = [path.relative_to(php_dir).as_posix() for path in list(php_dir.rglob("*"))[:40] if path.is_file()]
+        raise SystemExit(f"PHP archive looks incomplete: only {len(html_files)} HTML/XHTML pages; extracted sample: {candidates}")
     for path in html_files:
         raw = path.read_text(encoding="utf-8", errors="replace")
         relative_manual = path.relative_to(php_dir).as_posix()
@@ -216,7 +218,11 @@ def write_index(mdn_pages, php_count):
             href = Path("mdn") / (item["slug"] + ".html")
             links.append(f'<li><a href="{href.as_posix()}">{html.escape(item["title"])}</a></li>')
         chunks.append(f'<h2>{html.escape(section)} — {len(items)}</h2><ul>{"".join(links)}</ul>')
-    php_index = '<h2>PHP — русское руководство</h2><p><a href="php/php-chunked-xhtml/index.html">Открыть руководство PHP</a> (' + str(php_count) + ' HTML-страниц)</p>'
+    php_home = next((p for p in (OUT / "php").rglob("index.html")), None) or next((p for p in (OUT / "php").rglob("index.xhtml")), None)
+    if not php_home:
+        raise SystemExit("PHP archive has no index.html or index.xhtml.")
+    php_href = php_home.relative_to(OUT).as_posix()
+    php_index = '<h2>PHP — русское руководство</h2><p><a href="' + php_href + '">Открыть руководство PHP</a> (' + str(php_count) + ' HTML/XHTML-страниц)</p>'
     (OUT / "index.html").write_text(
         '<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Полные справочники — DevShelf</title><style>' + STYLE + '</style><body><h1>Справочники DevShelf</h1><p>Русские справочники HTML, CSS, JavaScript, Web API и PHP с отдельными страницами и оглавлением. Внешние изображения и некоторые ссылки требуют подключения к интернету.</p>' + "".join(chunks) + php_index + '<h2>Лицензии и источники</h2><p>MDN Web Docs: Mozilla Contributors, CC BY-SA 2.5 или позднее. <a href="https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license">Атрибуция и лицензирование MDN</a>.</p><p>PHP Documentation Group, русский PHP Manual, CC BY 3.0. <a href="https://www.php.net/license/">Информация о лицензии PHP</a>. Русский перевод может содержать непереведённые или устаревшие разделы; сверяйся с <a href="https://www.php.net/manual/en/">английским руководством</a>.</p><p>Счётчик: MDN ' + str(len(mdn_pages)) + ' страниц; PHP ' + str(php_count) + ' страниц.</p></body></html>',
         encoding="utf-8",
