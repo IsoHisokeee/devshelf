@@ -41,6 +41,7 @@ a{color:#78b6ff}h1,h2,h3{line-height:1.25}pre{overflow:auto;padding:1rem;backgro
 img{max-width:100%;height:auto}.license{margin:2rem 0;padding:1rem;border:1px solid #42536b;border-radius:8px;font-size:.9rem;color:#c8d4e4}
 nav{margin:1rem 0}li{margin:.3rem 0}table{border-collapse:collapse}td,th{border:1px solid #526176;padding:.4rem}
 """
+SLUGS = set()
 SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "DevShelf-reference-mirror/1.0 (personal learning site; contact via GitHub repository)"})
 
@@ -77,6 +78,8 @@ def get_mdn_pages():
             pages[slug] = {"title": title, "source": str(source)}
     if len(pages) < 1000:
         raise SystemExit(f"Only {len(pages)} MDN pages found; refusing incomplete mirror.")
+    global SLUGS
+    SLUGS = set(pages)
     return pages
 
 
@@ -106,13 +109,20 @@ def fetch_mdn(item):
                 parts = urlsplit(absolute)
                 if parts.netloc == "developer.mozilla.org" and parts.path.startswith("/ru/docs/"):
                     target = parts.path[len("/ru/docs/"):].strip("/")
-                    if target:
+                    if target and target in SLUGS:
                         link["href"] = os.path.relpath(mdn_path(target), mdn_path(slug).parent).replace("\\", "/") + (("#" + parts.fragment) if parts.fragment else "")
+                    else:
+                        link["href"] = absolute
                 elif parts.netloc == "developer.mozilla.org" and parts.path.startswith("/en-US/docs/"):
                     link["href"] = absolute
+            for media in article.select("[src]"):
+                media["src"] = urljoin(url, media["src"])
             title = html.escape(meta["title"])
             body = str(article)
-            doc = f'<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title} — DevShelf</title><style>{STYLE}</style><body><nav><a href="../../index.html">← Справочная библиотека</a></nav><h1>{title}</h1>{body}{ATTRIBUTION}</body></html>'
+            source = f'<a href="{url}">Оригинальная страница «{title}»</a>'
+            attribution = ATTRIBUTION.replace("Материал подготовлен", source + ". Материал подготовлен")
+            index_link = os.path.relpath(OUT / "index.html", mdn_path(slug).parent).replace("\\", "/")
+            doc = f'<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title} — DevShelf</title><style>{STYLE}</style><body><nav><a href="{index_link}">← Справочная библиотека</a></nav><h1>{title}</h1>{body}{attribution}</body></html>'
             return slug, meta, doc, None
         except Exception as exc:
             last_error = str(exc)
@@ -165,9 +175,12 @@ def download_php():
         raise SystemExit(f"PHP archive looks incomplete: only {len(html_files)} HTML pages")
     for path in html_files:
         raw = path.read_text(encoding="utf-8", errors="replace")
+        relative_manual = path.relative_to(php_dir).as_posix()
+        source_url = "https://www.php.net/manual/ru/" + quote(relative_manual, safe="/")
+        attribution = PHP_ATTRIBUTION.replace("Русский перевод", f'<a href="{source_url}">Оригинальная страница руководства</a>. Русский перевод')
         if "</body>" in raw.lower():
             at = raw.lower().rfind("</body>")
-            raw = raw[:at] + PHP_ATTRIBUTION + raw[at:]
+            raw = raw[:at] + attribution + raw[at:]
         else:
             raw += PHP_ATTRIBUTION
         path.write_text(raw, encoding="utf-8")
