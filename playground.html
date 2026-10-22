@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10151f"><meta name="description" content="Изучай HTML, CSS и JavaScript с примерами и живым предпросмотром на DevShelf.">
+<title>Интерактивный справочник — DevShelf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="playground.css">
+</head>
+<body class="playground-page">
+<header class="play-top"><a class="brand" href="index.html"><span class="brand-icon">&lt;/&gt;</span><span>dev<span>shelf</span><small>YOUR WEB DEV LIBRARY</small></span></a><a class="back-link" href="index.html">← Вернуться в библиотеку</a><button class="theme-button" id="theme-toggle" aria-label="Переключить тему">☾</button></header>
+<main class="play-main">
+<div class="eyebrow"><span></span>ИНТЕРАКТИВНЫЙ СПРАВОЧНИК</div>
+<div class="play-title-row"><div><h1 id="topic-title">HTML: nav</h1><p id="topic-subtitle">Изучи элемент, измени код и посмотри на результат.</p></div><span class="topic-badge" id="topic-kind">HTML ЭЛЕМЕНТ</span></div>
+<div class="topic-layout">
+<section class="topic-info panel"><div class="panel-kicker">ЧТО ЭТО</div><h2 id="topic-heading">Элемент навигации</h2><p id="topic-description"></p><div class="syntax-block"><div class="syntax-heading">СИНТАКСИС <button id="copy-example">Копировать</button></div><pre><code id="syntax-code"></code></pre></div><h3>Как использовать</h3><ul id="topic-points"></ul><div class="tip-box"><b>💡 Запомни</b><p id="topic-tip"></p></div><a id="mdn-link" class="learn-more" href="https://developer.mozilla.org/ru/docs/Web/HTML/Reference/Elements/nav" target="_blank" rel="noopener noreferrer">Подробнее в MDN ↗</a></section>
+<section class="workbench panel"><div class="workbench-heading"><div><div class="panel-kicker">ПЕСОЧНИЦА</div><h2>Попробуй сам</h2></div><button id="reset-code" class="subtle-button">Сбросить код ↺</button></div><p class="workbench-hint">Меняй пример в редакторе. Нажми «Запустить», чтобы увидеть результат ниже.</p>
+<div class="editor-tabs"><button class="editor-tab active" data-editor="html">HTML</button><button class="editor-tab" data-editor="css">CSS</button><button class="editor-tab" data-editor="js">JavaScript</button></div>
+<div class="editor-wrap"><div class="editor-label"><span id="editor-filename">index.html</span><span>● РЕДАКТОР</span></div><textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Редактор кода"></textarea></div>
+<div class="run-row"><button id="run-code" class="run-button">▶ Запустить</button><span id="run-status">Готов к запуску</span></div>
+<div class="preview-heading"><b>Результат</b><span>LIVE PREVIEW</span></div><iframe id="preview" title="Предпросмотр твоего кода" sandbox="allow-scripts"></iframe>
+<div class="console-wrap"><div class="console-heading">КОНСОЛЬ <button id="clear-console">Очистить</button></div><pre id="console-output">Здесь появятся сообщения и ошибки твоего JavaScript.</pre></div>
+</section></div>
+<section class="next-topics"><div class="panel-kicker">ПРОДОЛЖАЙ ИЗУЧАТЬ</div><h2>Другие темы</h2><div id="topic-links" class="topic-links"></div></section>
+</main><footer class="play-footer"><span>DevShelf · Учись на практике</span><a href="index.html">← Все материалы</a></footer>
+<script src="playground.js"></script>
+</body></html>
