@@ -89,7 +89,7 @@ def mdn_path(slug: str) -> Path:
 
 def fetch_mdn(item):
     slug, meta = item
-    url = MDN_BASE + "/ru/docs/" + quote(slug, safe="/")
+    url = MDN_BASE + "/ru/docs/" + quote(slug, safe="/:")
     last_error = None
     for attempt in range(4):
         try:
