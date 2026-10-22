@@ -10,6 +10,7 @@ on:
       - "playground.html"
       - "playground.css"
       - "playground.js"
+      - "reference.html"
   workflow_dispatch:
 
 permissions:
@@ -26,7 +27,7 @@ jobs:
       - name: Check out DevShelf
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Upload the six site files over encrypted FTP
+      - name: Upload the seven site files over encrypted FTP
         env:
           BEGET_FTP_HOST: ${{ secrets.BEGET_FTP_HOST }}
           BEGET_FTP_PORT: ${{ secrets.BEGET_FTP_PORT }}
@@ -57,7 +58,8 @@ jobs:
               "script.js",
               "playground.html",
               "playground.css",
-              "playground.js",
+              "playground.js"
+      - "reference.html",
           )
 
           class SessionReuseFTP_TLS(ftplib.FTP_TLS):
