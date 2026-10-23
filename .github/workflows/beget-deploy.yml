@@ -28,6 +28,36 @@ jobs:
       - name: Check out DevShelf
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Verify site sources are valid UTF-8
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          files = (
+              "index.html",
+              "styles.css",
+              "script.js",
+              "playground.html",
+              "playground.css",
+              "playground.js",
+              "reference.html",
+              "reference-data.js",
+          )
+          broken = []
+          for name in files:
+              data = Path(name).read_bytes()
+              try:
+                  data.decode("utf-8")
+              except UnicodeDecodeError as exc:
+                  broken.append(f"{name}: {exc}")
+          if broken:
+              raise SystemExit(
+                  "These files are not valid UTF-8 (save them without a legacy codepage):\n"
+                  + "\n".join(broken)
+              )
+          print("All site sources are valid UTF-8.")
+          PY
+
       - name: Upload the eight site files over encrypted FTP
         env:
           BEGET_FTP_HOST: ${{ secrets.BEGET_FTP_HOST }}

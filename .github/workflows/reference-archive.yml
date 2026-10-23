@@ -54,6 +54,7 @@ jobs:
           import ftplib
           import os
           import ssl
+          import time
           from pathlib import Path
 
           required = ("BEGET_FTP_HOST", "BEGET_FTP_USERNAME", "BEGET_FTP_PASSWORD")
@@ -66,8 +67,11 @@ jobs:
           username = os.environ["BEGET_FTP_USERNAME"]
           password = os.environ["BEGET_FTP_PASSWORD"]
           local_root = Path("build/reference-library")
+          remote_root = "reference-library"
           marker_name = ".devshelf-managed-reference-library"
           marker_value = b"DevShelf licensed reference archive. Managed only by the reference-archive GitHub Action.\n"
+          # Files that must exist after the upload; a missing one fails the job.
+          required_remote = ("index.html", "search-index.json", "manifest.json")
 
           class SessionReuseFTP_TLS(ftplib.FTP_TLS):
               def ntransfercmd(self, cmd, rest=None):
@@ -76,43 +80,134 @@ jobs:
                       conn = self.context.wrap_socket(conn, server_hostname=self.host, session=self.sock.session)
                   return conn, size
 
-          context = ssl.create_default_context()
-          with SessionReuseFTP_TLS(context=context, timeout=45) as ftp:
+          marc = marker_value
+
+          def connect():
+              ftp = SessionReuseFTP_TLS(context=ssl.create_default_context(), timeout=60)
               ftp.connect(host, port)
               ftp.login(username, password)
               ftp.prot_p()
-              try:
-                  ftp.cwd("reference-library")
-                  existing = bytearray()
-                  ftp.retrbinary(f"RETR {marker_name}", existing.extend)
-                  if bytes(existing) != marker_value:
-                      raise SystemExit("Target folder exists but is not the managed DevShelf archive; refusing to overwrite.")
-              except ftplib.error_perm as exc:
-                  if str(exc).startswith("550"):
-                      try:
-                          ftp.mkd("reference-library")
-                          ftp.cwd("reference-library")
-                      except ftplib.error_perm:
-                          raise SystemExit("Target path exists or is inaccessible; refusing to overwrite it.")
-                      from io import BytesIO
-                      ftp.storbinary(f"STOR {marker_name}", BytesIO(marker_value))
-                  else:
-                      raise
+              return ftp
 
-              for path in sorted(local_root.rglob("*")):
-                  if not path.is_file():
-                      continue
-                  relative = path.relative_to(local_root)
-                  parts = relative.parts
-                  for directory in parts[:-1]:
+          ftp = connect()
+
+          def ensure_dir(directory):
+              """Create a remote directory if needed, then cwd into it.
+
+              Servers report an existing directory with different codes (550, 450,
+              521); treat any refusal as 'already there' and confirm it by cwd.
+              """
+              try:
+                  ftp.mkd(directory)
+              except (ftplib.error_perm, ftplib.error_temp):
+                  pass
+              ftp.cwd(directory)
+
+          # Verify or create the managed archive root.
+          try:
+              ftp.cwd(remote_root)
+              existing = bytearray()
+              ftp.retrbinary(f"RETR {marker_name}", existing.extend)
+              if bytes(existing) != marc:
+                  raise SystemExit("Target folder exists but is not the managed DevShelf archive; refusing to overwrite.")
+          except ftplib.error_perm as exc:
+              if not str(exc).startswith("550"):
+                  raise
+              ensure_dir(remote_root)
+              from io import BytesIO
+              ftp.storbinary(f"STOR {marker_name}", BytesIO(marc))
+
+          dir_cache = set()
+          files = [p for p in sorted(local_root.rglob("*")) if p.is_file()]
+          for position, path in enumerate(files, 1):
+              relative = path.relative_to(local_root)
+              parts = relative.parts
+
+              # Build remote sub-directories using absolute paths from the archive root
+              # so a dropped connection or a swallowed MKD error cannot skew the tree.
+              ftp.cwd("/" + remote_root)
+              for index in range(len(parts) - 1):
+                  prefix = "/".join(parts[: index + 1])
+                  if prefix not in dir_cache:
+                      ensure_dir(parts[index])
+                      dir_cache.add(prefix)
+                  else:
+                      ftp.cwd(parts[index])
+
+              last_error = None
+              for attempt in range(5):
+                  try:
+                      with path.open("rb") as stream:
+                          ftp.storbinary(f"STOR {parts[-1]}", stream, blocksize=1 << 16)
+                      last_error = None
+                      break
+                  except (ftplib.error_temp, ftplib.error_perm, OSError, EOFError, ssl.SSLError) as exc:
+                      last_error = exc
+                      time.sleep(2 * (attempt + 1))
                       try:
-                          ftp.mkd(directory)
-                      except ftplib.error_perm:
+                          ftp.close()
+                      except Exception:
                           pass
-                      ftp.cwd(directory)
-                  with path.open("rb") as stream:
-                      ftp.storbinary(f"STOR {parts[-1]}", stream)
-                  for _ in parts[:-1]:
-                      ftp.cwd("..")
-                  print(f"Uploaded {relative.as_posix()}")
+                      ftp = connect()
+              if last_error is not None:
+                  raise SystemExit(f"Failed to upload {relative.as_posix()}: {last_error}")
+              if position % 250 == 0 or position == len(files):
+                  print(f"Uploaded {position}/{len(files)}: {relative.as_posix()}")
+
+          # Confirm the archive is complete before declaring success. A partial
+          # upload must fail the job instead of silently publishing a broken library.
+          present = set()
+
+          def walk(remote_dir):
+              remote_dir = remote_dir.rstrip("/")
+              ftp.cwd(remote_dir)
+              try:
+                  entries = list(ftp.mlsd())
+              except Exception:
+                  entries = None
+              if entries is not None:
+                  for name, facts in entries:
+                      if name in (".", ".."):
+                          continue
+                      path = remote_dir + "/" + name
+                      if facts.get("type") == "dir":
+                          walk(path)
+                      else:
+                          present.add(path)
+                  return
+              names = []
+              try:
+                  ftp.retrlines("NLST", names.append)
+              except Exception:
+                  return
+              for raw_name in names:
+                  name = raw_name.strip()
+                  if not name or name.endswith("/.") or name in (".", ".."):
+                      continue
+                  if name.startswith(remote_dir + "/"):
+                      name = name[len(remote_dir) + 1:]
+                  elif "/" in name and not name.endswith("/"):
+                      name = name.rsplit("/", 1)[-1]
+                  if name.endswith("/"):
+                      walk(remote_dir + "/" + name.rstrip("/"))
+                  else:
+                      present.add(remote_dir + "/" + name)
+
+          walk("/" + remote_root)
+          expected = {
+              f"{remote_root}/{path.relative_to(local_root).as_posix()}" for path in files
+          }
+          present = {name.lstrip("/") for name in present}
+          missing = sorted(name for name in required_remote if f"{remote_root}/{name}" not in present)
+          missing_remote = expected - present
+          if missing:
+              raise SystemExit("Archive upload incomplete; missing at root: " + ", ".join(missing))
+          if missing_remote:
+              sample = ", ".join(sorted(missing_remote)[:10])
+              raise SystemExit(
+                  f"Archive upload incomplete: {len(missing_remote)} of {len(expected)} files are missing "
+                  f"(for example: {sample})."
+              )
+          print(f"Verified {len(present)} archive files (expected {len(expected)}).")
+          print("Reference archive upload finished.")
           PY

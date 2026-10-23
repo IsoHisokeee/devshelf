@@ -23,6 +23,11 @@ Workflow `reference-archive` при сборке архива MDN и PHP Manual 
 
 Основной хостинг — Beget: workflow `beget-deploy.yml` загружает файлы сайта по FTPS при каждом изменении этих файлов. PHP-код на GitHub Pages не исполняется; справочник PHP и ссылки на документацию работают как обычно.
 
+Архив `reference-library/` собирается и загружается workflow `reference-archive.yml`. Загрузка идёт по одному файлу с повторами при обрывах соединения и в конце сверяет, что на сервере оказались все файлы сборки, `search-index.json`, `manifest.json` и `index.html`; при расхождении job падает, а частично залитый архив не публикуется молча.
+
+## Кодировка
+Все исходники — в UTF-8 (`.gitattributes` это фиксирует). Файлы с русским текстом (`.html`, `.css`, `.js`, `.md`) должны оставаться в UTF-8: сохранение в CP866/CP1251 ломает страницы на хостинге.
+
 ## Основные источники
 - [MDN Web Docs](https://developer.mozilla.org/ru/)
 - [HTML Living Standard](https://html.spec.whatwg.org/)

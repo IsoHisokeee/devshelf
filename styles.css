@@ -1,4 +1,4 @@
-/* DevShelf — тёмный строгий стиль. Общие переменные и .brand/.eyebrow/.theme-button используют и другие страницы. */
+﻿/* DevShelf тАФ ╤В╤С╨╝╨╜╤Л╨╣ ╤Б╤В╤А╨╛╨│╨╕╨╣ ╤Б╤В╨╕╨╗╤М. ╨Ю╨▒╤Й╨╕╨╡ ╨┐╨╡╤А╨╡╨╝╨╡╨╜╨╜╤Л╨╡ ╨╕ .brand/.eyebrow/.theme-button ╨╕╤Б╨┐╨╛╨╗╤М╨╖╤Г╤О╤В ╨╕ ╨┤╤А╤Г╨│╨╕╨╡ ╤Б╤В╤А╨░╨╜╨╕╤Ж╤Л. */
 :root{color-scheme:dark;--bg:#0d1117;--surface:#12171e;--panel:#161b22;--line:#262d38;--line-soft:#1d232c;--hover:#171d26;--text:#e6e9ef;--muted:#8b95a5;--faint:#667082;--accent:#79b8ff;--accent-ink:#0b1b2e;--star:#e5c34d;--mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace}
 body.light{color-scheme:light;--bg:#f6f7f9;--surface:#fff;--panel:#fff;--line:#d9dde4;--line-soft:#e8ebf0;--hover:#eef1f5;--text:#1b2230;--muted:#5b6678;--faint:#7a8496;--accent:#1f6feb;--accent-ink:#fff;--star:#b8860b}
 *{box-sizing:border-box}

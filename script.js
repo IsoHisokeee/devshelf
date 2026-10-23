@@ -76,6 +76,10 @@ const normalize = s => String(s).replace(/[<>]/g, "").toLocaleLowerCase("ru");
 const ARCHIVE_URL = "reference-library/search-index.json";
 const canUseArchive = location.protocol !== "file:" && !/\.github\.io$/.test(location.hostname);
 const archive = { status: canUseArchive ? "idle" : "off", rows: [] };
+function setLibraryLink(available) {
+  const link = $("#library-link");
+  if (link) link.hidden = !available;
+}
 function loadArchive() {
   if (archive.status !== "idle") return;
   archive.status = "loading"; render();
@@ -86,9 +90,9 @@ function loadArchive() {
         title, section, path,
         key: normalize(title + " " + path.replace(/^mdn\/Web\//i, "").replace(/^php\/(php-chunked-xhtml\/)?/, "").replace(/\.x?html$/i, ""))
       }));
-      archive.status = "ready"; render();
+      archive.status = "ready"; setLibraryLink(true); render();
     })
-    .catch(() => { archive.status = "missing"; render(); });
+    .catch(() => { archive.status = "missing"; setLibraryLink(false); render(); });
 }
 function searchArchive(q) {
   const terms = q.split(/\s+/).filter(Boolean);
@@ -207,6 +211,11 @@ document.addEventListener("keydown", e => {
 });
 
 if (/\.github\.io$/.test(location.hostname)) { const lib = $("#library-link"); if (lib) lib.remove(); }
+else {
+  fetch("reference-library/index.html", { method: "HEAD" })
+    .then(r => setLibraryLink(r.ok))
+    .catch(() => setLibraryLink(false));
+}
 const initial = new URLSearchParams(location.search).get("q");
 if (initial) { $("#search").value = initial; state.query = initial; loadArchive(); }
 render();
