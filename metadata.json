@@ -1,0 +1,6 @@
+{
+  "name": "DevShelf — полка разработчика",
+  "description": "Личная адаптивная библиотека документации и интерактивный справочник по HTML, CSS, JavaScript и PHP.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
