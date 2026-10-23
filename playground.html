@@ -22,7 +22,12 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./playground.css" />
+    <link rel="stylesheet" href="./playground.css?v=4.3.0" />
+    <style>
+      /* Fallback-стили для гарантированной защиты от белого экрана и залипания кэша на Beget */
+      :root{--bg:#0b0c0e;--panel:#16191e;--text:#f4f4f6;--primary:#facc15;--line:#272b33;}
+      html,body{background-color:#0b0c0e!important;color:#f4f4f6!important;font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;}
+    </style>
   </head>
   <body>
     <header class="topbar">
@@ -38,7 +43,7 @@
           <span class="brand-copy">
             <span class="brand-title-row">
               <strong>DEVSHELF</strong>
-              <span class="brand-sys-tag">SYS // v4.2</span>
+              <span class="brand-sys-tag">SYS // v4.3</span>
             </span>
             <small>Инженерный справочник &amp; конструктор</small>
           </span>
@@ -189,12 +194,15 @@
         </div>
       </section>
 
-      <!-- 3. READY UI TEMPLATES WITH LIVE PREVIEW -->
+      <!-- 3. READY UI TEMPLATES WITH LIVE PREVIEW & STUDY TOPICS -->
       <section id="templates" class="panel">
         <div class="panel-head">
-          <p class="eyebrow">PRODUCTION RECIPES // UI TEMPLATES</p>
-          <h2>Готовые UI-шаблоны с живым предпросмотром</h2>
-          <p>Каждый шаблон рендерится вживую. Нажмите «Загрузить в песочницу», чтобы изменить его под свой проект.</p>
+          <p class="eyebrow">PRODUCTION RECIPES // UI TEMPLATES &amp; PREREQUISITES</p>
+          <h2>Готовые UI-шаблоны &amp; Разбор: что изучить из головы</h2>
+          <p>
+            Каждый шаблон рендерится вживую и показывает ключевые Web APIs и функции, освоив которые, вы сможете
+            написать аналогичный компонент самостоятельно без готовых библиотек.
+          </p>
         </div>
 
         <div id="templates-grid" class="templates-grid"></div>

@@ -666,6 +666,217 @@ select:focus {
   color: var(--primary);
 }
 
+/* ==================== SEARCH SCOPE BAR & CLEAR BUTTON ==================== */
+.search-scope-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.scope-btn {
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  transition: all 0.15s ease;
+}
+
+.scope-btn:hover {
+  border-color: var(--primary);
+  color: var(--text);
+  background: var(--bg-elevated);
+}
+
+.scope-btn.active {
+  background: var(--primary);
+  color: #09090b;
+  border-color: var(--primary);
+  box-shadow: 2px 2px 0 rgba(250, 204, 21, 0.35);
+  font-weight: 800;
+}
+
+.scope-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.25);
+  color: inherit;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 78px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  width: 26px;
+  height: 26px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s ease;
+  padding: 0;
+  z-index: 2;
+}
+
+.search-clear-btn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: #000;
+}
+
+/* ==================== RECIPE CARD MODE (WHAT TO STUDY) ==================== */
+.card-recipe-mode {
+  grid-column: 1 / -1;
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-top: 3px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.card-recipe-mode:hover {
+  border-color: var(--primary);
+  background: var(--card-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--primary);
+}
+
+.card-recipe-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.card-recipe-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.card-recipe-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.card-recipe-summary {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.card-prereq-panel {
+  background: #111419;
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-prereq-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--primary);
+}
+
+.prereq-bulb {
+  font-size: 15px;
+}
+
+.card-prereq-funcs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.prereq-func-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  color: #fef08a;
+  background: rgba(250, 204, 21, 0.1);
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
+.card-prereq-topics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.prereq-topics-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.card-prereq-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.prereq-chip-btn {
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--text);
+  padding: 7px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  min-height: 38px;
+}
+
+.prereq-chip-btn:hover {
+  color: #09090b;
+  background: var(--primary);
+  border-color: var(--primary);
+  transform: translateX(1px);
+}
+
 /* ==================== UNIFIED REFERENCE MODAL ==================== */
 .topic-modal-backdrop {
   position: fixed;
@@ -753,6 +964,47 @@ select:focus {
   color: var(--danger);
 }
 
+/* Мобильная панель переключения: Спецификация vs Код vs Предпросмотр */
+.modal-mobile-tabs {
+  display: none;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  padding: 6px 8px;
+  gap: 6px;
+}
+
+.modal-mobile-tab {
+  flex: 1;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-elevated);
+  color: var(--muted);
+  padding: 10px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: center;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.modal-mobile-tab:hover {
+  color: var(--text);
+  border-color: var(--primary);
+}
+
+.modal-mobile-tab.active {
+  background: var(--primary);
+  color: #09090b;
+  border-color: var(--primary);
+  font-weight: 800;
+  box-shadow: 2px 2px 0 rgba(250, 204, 21, 0.35);
+}
+
 .topic-modal-body {
   padding: 18px;
   overflow-y: auto;
@@ -765,6 +1017,125 @@ select:focus {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* ==================== ROADMAP: ЧТО ИЗУЧИТЬ, ЧТОБЫ НАПИСАТЬ ИЗ ГОЛОВЫ ==================== */
+.modal-prereq-block {
+  background: #111419;
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: inset 0 0 24px rgba(250, 204, 21, 0.04);
+}
+
+.modal-prereq-header {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.prereq-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--primary);
+}
+
+.modal-prereq-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.prereq-guide-text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.prereq-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prereq-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+}
+
+.prereq-funcs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.prereq-func-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  color: #fef08a;
+  background: rgba(250, 204, 21, 0.1);
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+
+.prereq-topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prereq-modal-jump-btn {
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 42px;
+  transition: all 0.15s ease;
+}
+
+.prereq-modal-jump-btn:hover {
+  border-color: var(--primary);
+  background: rgba(250, 204, 21, 0.12);
+  color: #fef08a;
+  transform: translateX(3px);
+}
+
+.jump-arrow {
+  color: var(--primary);
+  font-weight: 900;
+}
+
+.jump-title {
+  flex: 1;
+  text-align: left;
+}
+
+.jump-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 700;
 }
 
 .modal-info-block {
@@ -1093,14 +1464,97 @@ select:focus {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* ==================== RESPONSIVE BREAKPOINTS ==================== */
+/* ==================== RESPONSIVE BREAKPOINTS (MOBILE & TABLET ERGONOMICS) ==================== */
 @media (max-width: 1024px) {
   .hero-grid {
     grid-template-columns: 1fr;
   }
+}
+
+@media (max-width: 900px) {
+  /* Адаптивное модальное окно со вкладками [Спецификация] | [Код] | [Предпросмотр] */
+  .topic-modal-backdrop {
+    padding: 8px;
+  }
+
+  .topic-modal {
+    width: 96vw;
+    max-height: 94vh;
+    border-radius: var(--radius-sm);
+  }
+
+  .topic-modal-header {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .topic-modal-header h2 {
+    font-size: 1.15rem;
+  }
+
+  .modal-close-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .modal-mobile-tabs {
+    display: flex;
+  }
 
   .topic-modal-body {
     grid-template-columns: 1fr;
+    padding: 14px;
+    gap: 14px;
+  }
+
+  /* Переключение режимов отображения в модалке */
+  .topic-modal[data-mobile-view='info'] .topic-modal-info {
+    display: flex;
+  }
+  .topic-modal[data-mobile-view='info'] .topic-modal-workspace {
+    display: none;
+  }
+
+  .topic-modal[data-mobile-view='code'] .topic-modal-info {
+    display: none;
+  }
+  .topic-modal[data-mobile-view='code'] .topic-modal-workspace {
+    display: flex;
+  }
+  .topic-modal[data-mobile-view='code'] .modal-workspace-box:nth-child(1) {
+    display: flex;
+  }
+  .topic-modal[data-mobile-view='code'] .modal-workspace-box:nth-child(2) {
+    display: none;
+  }
+
+  .topic-modal[data-mobile-view='preview'] .topic-modal-info {
+    display: none;
+  }
+  .topic-modal[data-mobile-view='preview'] .topic-modal-workspace {
+    display: flex;
+  }
+  .topic-modal[data-mobile-view='preview'] .modal-workspace-box:nth-child(1) {
+    display: none;
+  }
+  .topic-modal[data-mobile-view='preview'] .modal-workspace-box:nth-child(2) {
+    display: flex;
+  }
+  .topic-modal[data-mobile-view='preview'] .modal-preview-frame {
+    height: calc(88vh - 180px);
+    min-height: 380px;
+  }
+
+  .sandbox-jump-btn {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .copy-btn {
+    min-height: 44px;
+    padding: 8px 14px;
   }
 }
 
@@ -1108,39 +1562,140 @@ select:focus {
   .topbar-inner {
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
+    gap: 8px;
+    padding-block: 8px;
   }
 
   .topnav {
     justify-content: flex-start;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     padding-bottom: 4px;
     flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .topnav::-webkit-scrollbar {
+    display: none;
   }
 
   .topnav a {
     white-space: nowrap;
+    min-height: 44px;
+    padding: 10px 14px;
+    display: inline-flex;
+    align-items: center;
   }
 
   .topbar-actions {
     width: 100%;
-    justify-content: space-between;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .topbar-actions a,
+  .topbar-actions button {
+    flex: 1 1 calc(50% - 8px);
+    min-height: 44px;
+    padding: 10px 12px;
+    text-align: center;
+    justify-content: center;
+    white-space: nowrap;
   }
 
   .controls {
     grid-template-columns: 1fr;
   }
 
+  .search-wrap span,
+  .select-wrap span {
+    font-size: 12px;
+  }
+
+  input[type='search'],
+  select {
+    font-size: 16px; /* Защита от автозума в Safari на iPhone */
+    height: 48px;
+    padding: 12px 14px;
+  }
+
+  .search-input-box input[type='search'] {
+    padding-right: 110px;
+  }
+
+  .search-clear-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    right: 76px;
+  }
+
+  .topic-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    padding-bottom: 6px;
+    gap: 6px;
+  }
+
+  .topic-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .topic-tab {
+    min-height: 44px;
+    padding: 10px 14px;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .quick-filters {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    padding-bottom: 6px;
+    gap: 6px;
+  }
+
+  .quick-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip {
+    min-height: 40px;
+    padding: 8px 14px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-compact {
+    min-height: 52px;
+    padding: 12px 14px;
+  }
+
+  .fav-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
   .hero-panel {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .topic-modal-backdrop {
-    padding: 8px;
-  }
-
-  .topic-modal {
-    max-height: 95vh;
+  .stat-card {
+    min-height: 64px;
+    padding: 10px 12px;
   }
 
   .topic-modal-header {
@@ -1150,31 +1705,80 @@ select:focus {
 
   .topic-modal-actions {
     justify-content: space-between;
+    width: 100%;
+  }
+
+  .modal-mobile-tab {
+    font-size: 11.5px;
+    padding: 10px 6px;
+  }
+
+  .code-split-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+  }
+
+  .code-split-tab {
+    min-height: 40px;
+    padding: 8px 12px;
+    white-space: nowrap;
   }
 }
 
 @media (max-width: 480px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
+  .topbar-actions {
+    flex-direction: column;
+  }
+
+  .topbar-actions a,
+  .topbar-actions button {
+    flex: 1 1 100%;
+    width: 100%;
   }
 
   .hero-panel {
     grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
   }
 
   .kbd-hint {
     display: none;
   }
 
-  .topbar-actions {
+  .search-input-box input[type='search'] {
+    padding-right: 48px;
+  }
+
+  .search-clear-btn {
+    right: 12px;
+  }
+
+  .scope-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .card-recipe-head {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .standalone-btn,
-  .exe-btn,
-  .cta-link {
-    justify-content: center;
-    text-align: center;
+  .prereq-chip-btn {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    justify-content: space-between;
   }
 }

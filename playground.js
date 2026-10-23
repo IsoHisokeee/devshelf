@@ -1,5 +1,6 @@
 import './reference-data.js';
 import './preview-engine.js';
+import { getRecipePrerequisites } from './recipe-knowledge.js';
 
 // DevShelf Studio: Interactive Sandbox (All/HTML/CSS/JS tabs + live search), 8 Visual CSS Generators, and UI Templates
 
@@ -776,7 +777,7 @@ if (genCopyBtn) {
 }
 
 // ============================================================================
-// 3. UI TEMPLATES WITH WORKING LIVE IFRAME PREVIEWS
+// 3. UI TEMPLATES WITH WORKING LIVE IFRAME PREVIEWS & STUDY TOPICS
 // ============================================================================
 const uiTemplates = [
   {
@@ -786,15 +787,15 @@ const uiTemplates = [
     topicId: 'recipe-login-form'
   },
   {
-    id: 'tpl-register',
-    title: 'Регистрация + надёжность пароля',
-    desc: 'Индикатор силы пароля в реальном времени при вводе.',
-    topicId: 'recipe-register-form'
+    id: 'tpl-modal',
+    title: 'Модальное окно на <dialog>',
+    desc: 'Всплывающее окно на нативном теге с затемнением ::backdrop и закрытием по Esc.',
+    topicId: 'recipe-modal-dialog'
   },
   {
     id: 'tpl-cart',
     title: 'Корзина заказа с пересчётом',
-    desc: 'Динамический расчёт количества и суммы по стандарту ru-RU.',
+    desc: 'Динамический расчёт количества и суммы по стандарту ru-RU через reduce() и Intl.',
     topicId: 'recipe-shopping-cart'
   },
   {
@@ -802,6 +803,30 @@ const uiTemplates = [
     title: 'Ввод 2FA / SMS пин-кода (OTP)',
     desc: 'Автоматический переход фокуса по цифрам и обработка Backspace.',
     topicId: 'recipe-otp-verification'
+  },
+  {
+    id: 'tpl-register',
+    title: 'Регистрация + надёжность пароля',
+    desc: 'Индикатор силы пароля в реальном времени с проверкой через RegExp.',
+    topicId: 'recipe-register-form'
+  },
+  {
+    id: 'tpl-dropzone',
+    title: 'Drag-and-Drop загрузка файлов',
+    desc: 'Перетаскивание файлов мышью, проверка размера и генерация превью.',
+    topicId: 'recipe-file-dropzone'
+  },
+  {
+    id: 'tpl-toast',
+    title: 'Всплывающие уведомления (Toast)',
+    desc: 'Система лёгких уведомлений со стеком, таймером автоудаления и анимацией.',
+    topicId: 'recipe-toast-notifications'
+  },
+  {
+    id: 'tpl-burger',
+    title: 'Адаптивное бургер-меню',
+    desc: 'Мобильная навигация со шторкой, анимацией линий и WAI-ARIA доступностью.',
+    topicId: 'recipe-burger-menu'
   }
 ];
 
@@ -811,16 +836,35 @@ function renderTemplatesShowcase() {
 
   grid.innerHTML = uiTemplates
     .map((tpl) => {
+      const prereq = getRecipePrerequisites(tpl.topicId);
+      const funcsHtml = prereq && Array.isArray(prereq.functions)
+        ? `
+          <div class="tpl-prereq-box">
+            <span class="tpl-prereq-label">💡 Что изучить, чтобы написать из головы:</span>
+            <div class="tpl-prereq-pills">
+              ${prereq.functions.slice(0, 3).map((f) => `<code class="tpl-prereq-pill">${f}</code>`).join('')}
+            </div>
+          </div>
+        `
+        : '';
+
       return `
         <article class="tpl-card">
           <iframe class="tpl-preview" data-tpl-topic="${tpl.topicId}" title="${tpl.title}" sandbox="allow-scripts"></iframe>
           <div class="tpl-info">
-            <h3>${tpl.title}</h3>
+            <div class="tpl-header-row">
+              <span class="tpl-tag">РЕЦЕПТ С РАЗБОРОМ</span>
+              <h3>${tpl.title}</h3>
+            </div>
             <p>${tpl.desc}</p>
+            ${funcsHtml}
             <div class="tpl-actions">
-              <button type="button" class="btn btn-primary" data-load-tpl="${tpl.topicId}" style="width:100%;">
+              <button type="button" class="btn btn-primary" data-load-tpl="${tpl.topicId}">
                 Загрузить в песочницу ↑
               </button>
+              <a href="./index.html?topic=${encodeURIComponent(tpl.topicId)}" class="btn" style="text-decoration:none; text-align:center;">
+                Изучить разбор →
+              </a>
             </div>
           </div>
         </article>

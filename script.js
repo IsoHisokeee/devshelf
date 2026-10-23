@@ -1,5 +1,6 @@
 import './reference-data.js';
 import './preview-engine.js';
+import { getRecipePrerequisites } from './recipe-knowledge.js';
 
 const rawTopics = Array.isArray(window.DEVSHELF_REFERENCE_TOPICS)
   ? window.DEVSHELF_REFERENCE_TOPICS
@@ -106,6 +107,7 @@ const favorites = loadFavorites();
 function normalizeTopic(item) {
   const category = item.lang || item.category || 'html';
   const fallback = defaultMetaByCategory[category] || defaultMetaByCategory.html;
+  const prereqs = getRecipePrerequisites(item.id);
 
   return {
     id: item.id,
@@ -118,7 +120,8 @@ function normalizeTopic(item) {
     tags: Array.isArray(item.tags) ? item.tags : [],
     points: Array.isArray(item.points) && item.points.length ? item.points : fallback.points,
     code: item.code || '',
-    example: item.example || ''
+    example: item.example || '',
+    prerequisites: prereqs
   };
 }
 
@@ -129,6 +132,8 @@ const state = {
   search: '',
   category: 'all',
   tag: 'all',
+  searchScope: 'all', // 'all' | 'recipes'
+  modalMobileView: 'info', // 'info' | 'code' | 'preview'
   activeModalTopicId: null,
   activeCodePart: 'combined',
   activeRawCode: ''
@@ -136,14 +141,21 @@ const state = {
 
 const cardsGrid = document.querySelector('#cards-grid');
 const searchInput = document.querySelector('#search-input');
+const searchClearBtn = document.querySelector('#search-clear-btn');
+const searchLabelText = document.querySelector('#search-label-text');
 const categorySelect = document.querySelector('#category-select');
 const topicTabs = document.querySelector('#topic-tabs');
 const quickFilters = document.querySelector('#quick-filters');
 const resultsMeta = document.querySelector('#results-meta');
 const totalCount = document.querySelector('#total-count');
+const scopeAllBtn = document.querySelector('#scope-all-btn');
+const scopeRecipesBtn = document.querySelector('#scope-recipes-btn');
 
 // Modal DOM Elements
 const modalBackdrop = document.querySelector('#topic-modal-backdrop');
+const modalDialog = document.querySelector('.topic-modal');
+const modalMobileTabs = document.querySelector('#modal-mobile-tabs');
+const modalPrereqContainer = document.querySelector('#modal-prereq-container');
 const modalTitle = document.querySelector('#modal-title');
 const modalBadges = document.querySelector('#modal-badges');
 const modalSummary = document.querySelector('#modal-summary');
@@ -195,6 +207,11 @@ function updateCategoryCounts() {
     if (!key || typeof counts[key] !== 'number') return;
     node.textContent = String(counts[key]);
   });
+
+  const scopeAllCount = document.querySelector('#scope-count-all');
+  if (scopeAllCount) scopeAllCount.textContent = String(referenceItems.length);
+  const scopeRecipesCount = document.querySelector('#scope-count-recipes');
+  if (scopeRecipesCount) scopeRecipesCount.textContent = String(counts.recipes);
 }
 
 function syncCategoryControls() {
@@ -202,15 +219,31 @@ function syncCategoryControls() {
     categorySelect.value = state.category;
   }
 
-  if (!topicTabs) return;
-  topicTabs.querySelectorAll('.topic-tab').forEach((tab) => {
-    tab.classList.toggle('active', tab.dataset.category === state.category);
-  });
+  if (topicTabs) {
+    topicTabs.querySelectorAll('.topic-tab').forEach((tab) => {
+      tab.classList.toggle('active', tab.dataset.category === state.category);
+    });
+  }
+
+  if (scopeAllBtn && scopeRecipesBtn) {
+    const isRecipesMode = state.searchScope === 'recipes' || state.category === 'recipes';
+    scopeRecipesBtn.classList.toggle('active', isRecipesMode);
+    scopeAllBtn.classList.toggle('active', !isRecipesMode);
+  }
 }
 
 function matchesSearch(item, query) {
   if (!query) return true;
   const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+
+  let prereqText = '';
+  if (item.prerequisites) {
+    const funcs = (item.prerequisites.functions || []).join(' ');
+    const guide = item.prerequisites.guide || '';
+    const topics = (item.prerequisites.topics || []).map((t) => `${t.name} ${t.id}`).join(' ');
+    prereqText = `${funcs} ${guide} ${topics}`;
+  }
+
   const haystack = [
     item.id,
     item.title,
@@ -219,7 +252,8 @@ function matchesSearch(item, query) {
     item.alternatives,
     item.tags.join(' '),
     item.points.join(' '),
-    item.code
+    item.code,
+    prereqText
   ]
     .join(' ')
     .toLowerCase();
@@ -239,6 +273,15 @@ function matchesTag(item, tag) {
 
 function filterItems() {
   return referenceItems.filter((item) => {
+    // Если активен специальный режим поиска по готовым решениям
+    if (state.searchScope === 'recipes') {
+      const isRecipe = item.category === 'recipes' || !!item.prerequisites;
+      if (!isRecipe) return false;
+      const byTag = matchesTag(item, state.tag);
+      const bySearch = matchesSearch(item, state.search);
+      return byTag && bySearch;
+    }
+
     const byCategory =
       state.category === 'all'
         ? true
@@ -255,7 +298,62 @@ function createCompactCardMarkup(item, index) {
   const categoryName = categoryLabels[item.category] || item.category.toUpperCase();
   const isFav = favorites.has(item.id);
   const numStr = String(index + 1).padStart(3, '0');
+  const isRecipe = item.category === 'recipes' || !!item.prerequisites;
 
+  // Если это готовый рецепт или в режиме поиска решений — рендерим обогащённую карточку с разбором функций
+  if (isRecipe && item.prerequisites) {
+    const prereq = item.prerequisites;
+    return `
+      <article class="card-compact card-recipe-mode" data-topic-id="${escapeHtml(item.id)}" tabindex="0" role="button" aria-label="Открыть рецепт: ${escapeHtml(item.title)}">
+        <div class="card-recipe-head">
+          <div class="card-compact-left">
+            <span class="card-index">#${numStr}</span>
+            <span class="card-recipe-badge">⚡ РЕЦЕПТ С РАЗБОРОМ</span>
+            <h3 class="card-recipe-title">${escapeHtml(item.title)}</h3>
+          </div>
+          <div class="card-compact-right">
+            <span class="badge lang-recipes">Готовое решение</span>
+            <button
+              type="button"
+              class="fav-btn ${isFav ? 'active' : ''}"
+              data-fav-id="${escapeHtml(item.id)}"
+              title="${isFav ? 'Убрать из избранного' : 'В избранное'}"
+              aria-label="Избранное"
+            >${isFav ? '★' : '☆'}</button>
+          </div>
+        </div>
+
+        <p class="card-recipe-summary">${escapeHtml(item.summary)}</p>
+
+        <div class="card-prereq-panel">
+          <div class="card-prereq-title">
+            <span class="prereq-bulb">💡</span>
+            <strong>Что изучить, чтобы написать самостоятельно из головы:</strong>
+          </div>
+          <div class="card-prereq-funcs">
+            ${prereq.functions.slice(0, 5).map((f) => `<code class="prereq-func-pill">${escapeHtml(f)}</code>`).join('')}
+          </div>
+          <div class="card-prereq-topics">
+            <span class="prereq-topics-label">Темы справочника:</span>
+            <div class="card-prereq-links">
+              ${prereq.topics.map((t) => `
+                <button
+                  type="button"
+                  class="prereq-chip-btn"
+                  data-open-prereq="${escapeHtml(t.id)}"
+                  title="Открыть справочную статью: ${escapeHtml(t.name)}"
+                >
+                  📖 ${escapeHtml(t.name.replace(/^(HTML|CSS|JS|PHP):\s*/, ''))} →
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  // Стандартная компактная карточка для обычных тем справочника
   return `
     <article class="card-compact" data-topic-id="${escapeHtml(item.id)}" tabindex="0" role="button" aria-label="Открыть справку: ${escapeHtml(item.title)}">
       <div class="card-compact-left">
@@ -306,12 +404,26 @@ function renderActiveModalCode() {
   }
 }
 
+function setModalMobileView(view) {
+  state.modalMobileView = view;
+  const modalEl = document.querySelector('.topic-modal');
+  if (modalEl) {
+    modalEl.dataset.mobileView = view;
+  }
+  if (modalMobileTabs) {
+    modalMobileTabs.querySelectorAll('.modal-mobile-tab').forEach((b) => {
+      b.classList.toggle('active', b.dataset.view === view);
+    });
+  }
+}
+
 function openTopicModal(topicId) {
   const item = topicsById.get(topicId);
   if (!item || !modalBackdrop) return;
 
   state.activeModalTopicId = item.id;
   state.activeCodePart = 'combined';
+  setModalMobileView('info');
 
   const categoryName = categoryLabels[item.category] || item.category.toUpperCase();
   if (modalBadges) {
@@ -327,6 +439,44 @@ function openTopicModal(topicId) {
   if (modalAlternatives) modalAlternatives.textContent = item.alternatives;
   if (modalPoints) {
     modalPoints.innerHTML = item.points.map((p) => `<li>${escapeHtml(p)}</li>`).join('');
+  }
+
+  // Рендеринг дорожной карты изучения: Что изучить, чтобы написать шаблон из головы
+  if (modalPrereqContainer) {
+    if (item.prerequisites) {
+      const prereq = item.prerequisites;
+      modalPrereqContainer.innerHTML = `
+        <div class="modal-info-block modal-prereq-block">
+          <div class="modal-prereq-header">
+            <span class="prereq-badge">ROADMAP // ИЗУЧЕНИЕ С НУЛЯ</span>
+            <h4>Как написать этот шаблон самостоятельно из головы</h4>
+          </div>
+          <p class="prereq-guide-text">${escapeHtml(prereq.guide)}</p>
+
+          <div class="prereq-section">
+            <span class="prereq-section-title">Ключевые функции, методы и свойства:</span>
+            <div class="prereq-funcs-list">
+              ${prereq.functions.map((f) => `<code class="prereq-func-badge">${escapeHtml(f)}</code>`).join('')}
+            </div>
+          </div>
+
+          <div class="prereq-section">
+            <span class="prereq-section-title">Изучите базовые темы справочника (нажмите для перехода):</span>
+            <div class="prereq-topics-list">
+              ${prereq.topics.map((t) => `
+                <button type="button" class="prereq-modal-jump-btn" data-modal-jump="${escapeHtml(t.id)}">
+                  <span class="jump-arrow">↳</span>
+                  <span class="jump-title">${escapeHtml(t.name)}</span>
+                  <span class="jump-tag">Изучить тему →</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      modalPrereqContainer.innerHTML = '';
+    }
   }
 
   renderActiveModalCode();
@@ -366,20 +516,22 @@ function renderCards() {
   syncCategoryControls();
   const filtered = filterItems();
 
-  const categoryText =
-    state.category === 'all'
-      ? 'все категории'
-      : state.category === 'favorites'
-      ? 'избранное'
-      : categoryLabels[state.category] || state.category;
+  const isRecipesScope = state.searchScope === 'recipes' || state.category === 'recipes';
+  const categoryText = isRecipesScope
+    ? 'ГОТОВЫЕ РЕШЕНИЯ С РАЗБОРОМ'
+    : state.category === 'all'
+    ? 'ВСЕ КАТЕГОРИИ'
+    : state.category === 'favorites'
+    ? 'ИЗБРАННОЕ'
+    : (categoryLabels[state.category] || state.category).toUpperCase();
 
-  resultsMeta.textContent = `НАЙДЕНО: ${filtered.length} ИЗ ${referenceItems.length} // РАЗДЕЛ: ${categoryText.toUpperCase()} — НАЖМИТЕ НА НАЗВАНИЕ ДЛЯ ОТКРЫТИЯ СПРАВКИ`;
+  resultsMeta.textContent = `НАЙДЕНО: ${filtered.length} ИЗ ${referenceItems.length} // РАЗДЕЛ: ${categoryText} — НАЖМИТЕ НА КАРТОЧКУ ДЛЯ СПРАВКИ ИЛИ НА ТЕМУ ДЛЯ ИЗУЧЕНИЯ`;
 
   if (!filtered.length) {
     cardsGrid.innerHTML = `
       <article class="workflow-card" style="grid-column: 1 / -1;">
         <h3>По вашему запросу ничего не найдено</h3>
-        <p>Попробуйте сбросить фильтр категории или ввести другое ключевое слово (например: border-radius, вход, tailwind, flex).</p>
+        <p>Попробуйте сбросить фильтр или ввести название нужной функции (например: showModal, reduce, Intl, dataTransfer, preventDefault, localStorage).</p>
       </article>
     `;
     return;
@@ -393,6 +545,17 @@ if (cardsGrid) {
   cardsGrid.addEventListener('click', (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
+
+    // Клик по чипу темы для изучения ("Что изучить из головы")
+    const prereqBtn = target.closest('[data-open-prereq]');
+    if (prereqBtn instanceof HTMLElement) {
+      event.stopPropagation();
+      const pId = prereqBtn.dataset.openPrereq;
+      if (pId && topicsById.has(pId)) {
+        openTopicModal(pId);
+      }
+      return;
+    }
 
     const favButton = target.closest('.fav-btn');
     if (favButton instanceof HTMLElement) {
@@ -424,6 +587,31 @@ if (cardsGrid) {
         event.preventDefault();
         openTopicModal(target.dataset.topicId);
       }
+    }
+  });
+}
+
+// Переход по темам из дорожной карты внутри модального окна
+if (modalPrereqContainer) {
+  modalPrereqContainer.addEventListener('click', (event) => {
+    const jumpBtn = event.target.closest('[data-modal-jump]');
+    if (jumpBtn instanceof HTMLElement && jumpBtn.dataset.modalJump) {
+      const jumpId = jumpBtn.dataset.modalJump;
+      if (topicsById.has(jumpId)) {
+        openTopicModal(jumpId);
+      }
+    }
+  });
+}
+
+// Мобильное переключение вкладок в модальном окне: Спецификация vs Код vs Превью
+if (modalMobileTabs) {
+  modalMobileTabs.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const tabBtn = target.closest('.modal-mobile-tab');
+    if (tabBtn instanceof HTMLElement && tabBtn.dataset.view) {
+      setModalMobileView(tabBtn.dataset.view);
     }
   });
 }
@@ -488,16 +676,72 @@ if (modalRefreshPreview) {
   });
 }
 
+// Поиск и кнопка быстрой очистки
 if (searchInput) {
   searchInput.addEventListener('input', (event) => {
     state.search = event.target.value.trim();
+    if (searchClearBtn) {
+      searchClearBtn.hidden = !event.target.value;
+    }
     renderCards();
   });
+}
+
+if (searchClearBtn) {
+  searchClearBtn.addEventListener('click', () => {
+    if (searchInput) {
+      searchInput.value = '';
+      searchInput.focus();
+    }
+    state.search = '';
+    searchClearBtn.hidden = true;
+    renderCards();
+  });
+}
+
+// Переключатель области поиска: Все разделы vs Готовые решения с разбором
+function setScope(scope) {
+  state.searchScope = scope;
+  if (scope === 'recipes') {
+    state.category = 'recipes';
+    if (scopeRecipesBtn) scopeRecipesBtn.classList.add('active');
+    if (scopeAllBtn) scopeAllBtn.classList.remove('active');
+    if (categorySelect) categorySelect.value = 'recipes';
+    if (searchInput) {
+      searchInput.placeholder = 'Поиск по готовым решениям и функциям: вход, модалка, корзина, reduce, showModal, Intl...';
+    }
+    if (searchLabelText) {
+      searchLabelText.textContent = 'Поиск по готовым решениям и функциям для изучения';
+    }
+  } else {
+    state.category = 'all';
+    if (scopeAllBtn) scopeAllBtn.classList.add('active');
+    if (scopeRecipesBtn) scopeRecipesBtn.classList.remove('active');
+    if (categorySelect) categorySelect.value = 'all';
+    if (searchInput) {
+      searchInput.placeholder = 'Например: border-radius, вход, tailwind, react, flex, fetch, pdo...';
+    }
+    if (searchLabelText) {
+      searchLabelText.textContent = 'Поиск по названию, свойству, тегу или задаче';
+    }
+  }
+  syncCategoryControls();
+  renderCards();
+}
+
+if (scopeAllBtn) {
+  scopeAllBtn.addEventListener('click', () => setScope('all'));
+}
+
+if (scopeRecipesBtn) {
+  scopeRecipesBtn.addEventListener('click', () => setScope('recipes'));
 }
 
 if (categorySelect) {
   categorySelect.addEventListener('change', (event) => {
     state.category = event.target.value;
+    state.searchScope = event.target.value === 'recipes' ? 'recipes' : 'all';
+    syncCategoryControls();
     renderCards();
   });
 }
@@ -508,7 +752,10 @@ if (topicTabs) {
     if (!(target instanceof HTMLElement)) return;
     const button = target.closest('.topic-tab');
     if (!(button instanceof HTMLButtonElement)) return;
-    state.category = button.dataset.category || 'all';
+    const cat = button.dataset.category || 'all';
+    state.category = cat;
+    state.searchScope = cat === 'recipes' ? 'recipes' : 'all';
+    syncCategoryControls();
     renderCards();
   });
 }

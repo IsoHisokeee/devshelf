@@ -22,7 +22,12 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=4.3.0" />
+    <style>
+      /* Fallback-стили для гарантированной защиты от белого экрана и залипания кэша на Beget */
+      :root{--bg:#0b0c0e;--panel:#16191e;--card:#181b21;--text:#f4f4f6;--primary:#facc15;--line:#272b33;}
+      html,body{background-color:#0b0c0e!important;color:#f4f4f6!important;font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;}
+    </style>
   </head>
   <body>
     <header class="topbar">
@@ -38,7 +43,7 @@
           <span class="brand-copy">
             <span class="brand-title-row">
               <strong>DEVSHELF</strong>
-              <span class="brand-sys-tag">SYS // v4.2</span>
+              <span class="brand-sys-tag">SYS // v4.3</span>
             </span>
             <small>Инженерный справочник &amp; конструктор</small>
           </span>
@@ -109,8 +114,8 @@
               <strong>HTML / CSS / JS / PHP / FW</strong>
             </div>
             <div class="stat-card">
-              <span>Код и синтаксис</span>
-              <strong>Все + HTML / CSS / JS</strong>
+              <span>Готовые рецепты</span>
+              <strong>18 решений с разбором</strong>
             </div>
             <div class="stat-card">
               <span>Автономный режим</span>
@@ -129,9 +134,19 @@
             </p>
           </div>
 
+          <!-- Переключатель области поиска: Все темы vs Готовые решения с разбором -->
+          <div class="search-scope-bar" role="group" aria-label="Режим поиска по справочнику">
+            <button type="button" class="scope-btn active" id="scope-all-btn" data-scope="all">
+              Все разделы базы <span class="scope-count" id="scope-count-all">276</span>
+            </button>
+            <button type="button" class="scope-btn" id="scope-recipes-btn" data-scope="recipes">
+              ⚡ Готовые решения &amp; Что изучить <span class="scope-count" id="scope-count-recipes">18</span>
+            </button>
+          </div>
+
           <div class="controls" role="region" aria-label="Фильтры справочника">
             <label class="search-wrap" for="search-input">
-              <span>Поиск по названию, свойству, тегу или задаче</span>
+              <span id="search-label-text">Поиск по названию, свойству, тегу или задаче</span>
               <div class="search-input-box">
                 <input
                   id="search-input"
@@ -139,6 +154,7 @@
                   placeholder="Например: border-radius, вход, tailwind, react, flex, fetch, pdo..."
                   autocomplete="off"
                 />
+                <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Очистить поисковую строку" hidden title="Очистить">✕</button>
                 <kbd class="kbd-hint">Ctrl + K</kbd>
               </div>
             </label>
@@ -146,12 +162,12 @@
             <label class="select-wrap" for="category-select">
               <span>Категория</span>
               <select id="category-select">
-                <option value="all">Все категории</option>
+                <option value="all">Все категории (276)</option>
                 <option value="html">HTML5</option>
                 <option value="css">CSS3</option>
                 <option value="javascript">JavaScript</option>
                 <option value="frameworks">Фреймворки (React, Tailwind, Vue, Vite...)</option>
-                <option value="recipes">Готовые рецепты (Вход, Регистрация, Корзина...)</option>
+                <option value="recipes">Готовые рецепты (18 решений с разбором)</option>
                 <option value="php">PHP 8.3 &amp; MySQL</option>
                 <option value="xml">XML / Конфиги / SEO</option>
                 <option value="favorites">★ Избранное</option>
@@ -335,8 +351,16 @@
           </div>
         </header>
 
+        <!-- Мобильные вкладки для смартфонов и планшетов: Спецификация vs Код vs Превью -->
+        <div class="modal-mobile-tabs" id="modal-mobile-tabs" role="tablist" aria-label="Разделы модального окна">
+          <button type="button" class="modal-mobile-tab active" data-view="info">📋 Спецификация &amp; Что изучить</button>
+          <button type="button" class="modal-mobile-tab" data-view="code">💻 Код и синтаксис</button>
+          <button type="button" class="modal-mobile-tab" data-view="preview">▶ Живой результат</button>
+        </div>
+
         <div class="topic-modal-body">
           <div class="topic-modal-info">
+            <div id="modal-prereq-container"></div>
             <div class="modal-info-block">
               <h4>Краткое описание</h4>
               <p id="modal-summary"></p>

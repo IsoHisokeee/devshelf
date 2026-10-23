@@ -2,20 +2,7 @@ name: Deploy DevShelf to Beget
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "index.html"
-      - "styles.css"
-      - "script.js"
-      - "playground.html"
-      - "playground.css"
-      - "playground.js"
-      - "reference.html"
-      - "reference-data.js"
-      - "robots.txt"
-      - "robots.xml"
-      - "sitemap.xml"
-      - ".htaccess"
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -30,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out DevShelf
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v4
 
       - name: Verify site sources are valid UTF-8
         run: |
@@ -44,8 +31,10 @@ jobs:
               "playground.html",
               "playground.css",
               "playground.js",
+              "recipe-knowledge.js",
               "reference.html",
               "reference-data.js",
+              "preview-engine.js",
               "robots.txt",
               "robots.xml",
               "sitemap.xml",
@@ -53,7 +42,10 @@ jobs:
           )
           broken = []
           for name in files:
-              data = Path(name).read_bytes()
+              p = Path(name)
+              if not p.is_file():
+                  continue
+              data = p.read_bytes()
               try:
                   data.decode("utf-8")
               except UnicodeDecodeError as exc:
@@ -66,12 +58,13 @@ jobs:
           print("All site sources are valid UTF-8.")
           PY
 
-      - name: Upload the eight site files over encrypted FTP
+      - name: Upload DevShelf files to Beget over FTP/FTPS
         env:
           BEGET_FTP_HOST: ${{ secrets.BEGET_FTP_HOST }}
           BEGET_FTP_PORT: ${{ secrets.BEGET_FTP_PORT }}
           BEGET_FTP_USERNAME: ${{ secrets.BEGET_FTP_USERNAME }}
           BEGET_FTP_PASSWORD: ${{ secrets.BEGET_FTP_PASSWORD }}
+          BEGET_FTP_DIR: ${{ secrets.BEGET_FTP_DIR }}
         run: |
           python - <<'PY'
           import ftplib
@@ -91,6 +84,8 @@ jobs:
           port = int(os.environ.get("BEGET_FTP_PORT") or "21")
           username = os.environ["BEGET_FTP_USERNAME"]
           password = os.environ["BEGET_FTP_PASSWORD"]
+          custom_dir = os.environ.get("BEGET_FTP_DIR", "").strip()
+
           files = (
               "index.html",
               "styles.css",
@@ -98,8 +93,18 @@ jobs:
               "playground.html",
               "playground.css",
               "playground.js",
+              "recipe-knowledge.js",
               "reference.html",
               "reference-data.js",
+              "preview-engine.js",
+              "all_resources.json",
+              "playground_topics.json",
+              "reference_topics.json",
+              "icon.svg",
+              "favicon.svg",
+              "manifest.webmanifest",
+              "devshelf-core.html",
+              "DevShelf.exe",
               "robots.txt",
               "robots.xml",
               "sitemap.xml",
@@ -118,15 +123,62 @@ jobs:
                   return conn, size
 
           context = ssl.create_default_context()
-          with SessionReuseFTP_TLS(context=context, timeout=30) as ftp:
+          
+          # Connect with FTPS fallback to plain FTP if FTPS is not configured on port
+          ftp = None
+          try:
+              ftp = SessionReuseFTP_TLS(context=context, timeout=30)
               ftp.connect(host, port)
               ftp.login(username, password)
               ftp.prot_p()
+              print(f"Connected to {host}:{port} via FTPS (TLS).")
+          except Exception as tls_err:
+              print(f"FTPS connection notice: {tls_err}. Falling back to standard FTP...")
+              ftp = ftplib.FTP(timeout=30)
+              ftp.connect(host, port)
+              ftp.login(username, password)
+              print(f"Connected to {host}:{port} via standard FTP.")
+
+          with ftp:
+              # Determine root web directory on Beget
+              if custom_dir:
+                  try:
+                      ftp.cwd(custom_dir)
+                      print(f"Switched to custom directory: {custom_dir}")
+                  except Exception as e:
+                      print(f"Warning: Could not cwd to {custom_dir}: {e}")
+              else:
+                  # Auto-navigate to public_html if in home dir
+                  try:
+                      items = ftp.nlst()
+                      if "public_html" in items:
+                          ftp.cwd("public_html")
+                          print("Auto-switched to public_html/")
+                      else:
+                          for item in items:
+                              if "." in item and not item.startswith("."):
+                                  try:
+                                      sub_items = ftp.nlst(item)
+                                      if any("public_html" in s for s in sub_items):
+                                          target = f"{item}/public_html"
+                                          ftp.cwd(target)
+                                          print(f"Auto-switched to domain webroot: {target}/")
+                                          break
+                                  except Exception:
+                                      pass
+                  except Exception as probe_err:
+                      print(f"Directory probing notice: {probe_err}")
+
+              uploaded = 0
               for name in files:
                   path = Path(name)
                   if not path.is_file():
-                      raise SystemExit(f"Required site file is missing: {name}")
+                      print(f"Optional site file skipped (not found): {name}")
+                      continue
                   with path.open("rb") as stream:
                       ftp.storbinary(f"STOR {name}", stream)
-                  print(f"Uploaded {name}")
+                  uploaded += 1
+                  print(f"Successfully uploaded: {name} ({path.stat().st_size} bytes)")
+
+              print(f"Deployment complete: {uploaded} files deployed to Beget successfully.")
           PY

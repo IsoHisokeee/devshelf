@@ -1,0 +1,11 @@
+# Node modules and build output
+node_modules/
+dist/
+dev-dist/
+.vite/
+
+# AI Studio / IDE metadata
+.aistudio/
+.DS_Store
+Thumbs.db
+*.log
