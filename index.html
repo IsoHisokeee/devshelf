@@ -3,112 +3,283 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DevShelf — полка разработчика</title>
-<meta name="description" content="Личная адаптивная библиотека документации и интерактивный справочник по HTML, CSS, JavaScript и PHP.">
+<title>DevShelf — полка веб-разработчика</title>
+<meta name="description" content="Профессиональная русскоязычная библиотека документации по HTML5, CSS3, JavaScript, PHP 8, XML/SEO, UI-рецептам и современным фреймворкам с интерактивными генераторами и живой песочницей.">
 <meta name="robots" content="index, follow">
-<meta name="theme-color" content="#0d1117">
+<meta name="theme-color" content="#090d14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DevShelf">
 <link rel="canonical" href="index.html">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
 
-<!-- Open Graph / Facebook / Telegram / VK -->
+<!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DevShelf">
-<meta property="og:title" content="DevShelf — полка разработчика">
-<meta property="og:description" content="Личная адаптивная библиотека документации и интерактивный справочник по HTML, CSS, JavaScript и PHP.">
+<meta property="og:title" content="DevShelf — полка веб-разработчика">
+<meta property="og:description" content="Профессиональный справочник по HTML5, современному CSS, JavaScript, PHP 8, XML и фреймворкам с живой песочницей.">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:url" content="index.html">
-<meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1200 630%27 width=%271200%27 height=%27630%27%3E%3Crect width=%271200%27 height=%27630%27 fill=%27%230d1117%27/%3E%3Ctext x=%27600%27 y=%27300%27 font-size=%2780%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3EDevShelf%3C/text%3E%3Ctext x=%27600%27 y=%27380%27 font-size=%2736%27 text-anchor=%27middle%27 fill=%27%2394a3b8%27 font-family=%27sans-serif%27%3E%D0%A1%D0%BF%D1%80%D0%B0%D0%B2%D0%BE%D1%87%D0%BD%D0%B8%D0%BA %D0%B2%D0%B5%D0%B1-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%D0%B0%3C/text%3E%3C/svg%3E">
+<meta property="og:image" content="/pwa-512x512.png">
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="DevShelf — полка разработчика">
-<meta name="twitter:description" content="Личная адаптивная библиотека документации и интерактивный справочник по HTML, CSS, JavaScript и PHP.">
-<meta name="twitter:image" content="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1200 630%27 width=%271200%27 height=%27630%27%3E%3Crect width=%271200%27 height=%27630%27 fill=%27%230d1117%27/%3E%3Ctext x=%27600%27 y=%27300%27 font-size=%2780%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3EDevShelf%3C/text%3E%3Ctext x=%27600%27 y=%27380%27 font-size=%2736%27 text-anchor=%27middle%27 fill=%27%2394a3b8%27 font-family=%27sans-serif%27%3E%D0%A1%D0%BF%D1%80%D0%B0%D0%B2%D0%BE%D1%87%D0%BD%D0%B8%D0%BA %D0%B2%D0%B5%D0%B1-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%D0%B0%3C/text%3E%3C/svg%3E">
+<meta name="twitter:title" content="DevShelf — полка веб-разработчика">
+<meta name="twitter:description" content="Профессиональный справочник по HTML5, современному CSS, JavaScript, PHP 8, XML и фреймворкам с живой песочницей.">
+<meta name="twitter:image" content="/pwa-512x512.png">
 
-<!-- Schema.org Structured Data (JSON-LD) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "DevShelf — полка разработчика",
-  "description": "Личная адаптивная библиотека документации и интерактивный справочник по HTML, CSS, JavaScript и PHP с живой песочницей.",
-  "applicationCategory": "DeveloperApplication",
-  "operatingSystem": "All",
-  "inLanguage": "ru",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "RUB"
-  }
-}
-</script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%2310151f%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-size=%2728%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3E%26lt;/%26gt;%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="top"><div class="top-inner">
-<a class="brand" href="index.html"><span class="brand-icon">&lt;/&gt;</span><span>dev<span>shelf</span></span></a>
-<nav class="tabs" aria-label="Разделы библиотеки">
-<button class="tab" data-filter="all" aria-pressed="true">Всё <small id="total-count"></small></button>
-<button class="tab" data-filter="html" aria-pressed="false"><svg class="tab-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><title>HTML</title><path fill="#E44D26" d="M3 2l1.8 17.5L12 22l7.2-2.5L21 2H3z"/><path fill="#F16529" d="M12 3.8v16.3l5.6-1.9 1.4-14.4H12z"/><path fill="#EBEBEB" d="M12 7.8H7.3l.3 3.2H12v-1.7H9.1l-.1-1.5H12V7.8zm0 5.4H9.9l.2 2 1.9.5v1.6l-3.3-.9-.3-4.2H12v1z"/><path fill="#FFFFFF" d="M12 7.8v1.5h3.6l-.3 3.8H12v1h2.2l-.2 2.3-2 .5v1.6l3.3-.9.7-7.3.1-1H12z"/></svg>HTML</button>
-<button class="tab" data-filter="css" aria-pressed="false"><svg class="tab-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><title>CSS</title><path fill="#1572B6" d="M3 2l1.8 17.5L12 22l7.2-2.5L21 2H3z"/><path fill="#33A9DC" d="M12 3.8v16.3l5.6-1.9 1.4-14.4H12z"/><path fill="#EBEBEB" d="M12 7.8H7.3l.3 3.2H12v-1.7H9.1l-.1-1.5H12V7.8zm0 5.4H9.9l.2 2 1.9.5v1.6l-3.3-.9-.3-4.2H12v1z"/><path fill="#FFFFFF" d="M12 7.8v1.5h3.6l-.3 3.2-3.3.9v1.6l3.3-.9.4-4.8H12v-1.5h5.3l.1-1.5.1-1.5H12z"/></svg>CSS</button>
-<button class="tab" data-filter="javascript" aria-pressed="false"><svg class="tab-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><title>JavaScript</title><rect width="24" height="24" rx="4" fill="#F7DF1E"/><path d="M6.2 17.5c.5.8 1.2 1.4 2.2 1.4 1.2 0 2-.6 2-2.1v-7.2h2.4v7.3c0 2.6-1.6 3.7-3.9 3.7-1.8 0-3-.9-3.7-2.3l1-.8zm8.6-.2c.5.8 1.3 1.3 2.3 1.3 1 0 1.6-.5 1.6-1.2 0-.8-.6-1.1-1.7-1.6l-.6-.3c-1.7-.7-2.8-1.6-2.8-3.5 0-1.9 1.5-3.3 3.7-3.3 1.6 0 2.8.6 3.5 1.9l-1.8 1.1c-.4-.7-.9-1-1.7-1-.8 0-1.3.5-1.3 1.1 0 .7.5 1 1.5 1.4l.6.3c2 .9 3 1.8 3 3.7 0 2.1-1.6 3.5-4.1 3.5-2.3 0-3.7-1.1-4.4-2.5l2.2-1.2z" fill="#000000"/></svg>JavaScript</button>
-<button class="tab" data-filter="php" aria-pressed="false"><svg class="tab-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><title>PHP</title><rect width="24" height="24" rx="4" fill="#777BB4"/><path d="M4.2 8.4h3.4c1.4 0 2.2.8 2.2 2 0 1.3-.8 2.1-2.2 2.1H5.8v3.1H4.2V8.4zm1.6 2.8h1.6c.5 0 .9-.3.9-.8s-.4-.8-.9-.8H5.8v1.6zm5.5-2.8h1.6v2.8h2.5v-2.8h1.6v7.2h-1.6v-3h-2.5v3h-1.6V8.4zm7.2 0h3.4c1.4 0 2.2.8 2.2 2 0 1.3-.8 2.1-2.2 2.1h-1.8v3.1h-1.6V8.4zm1.6 2.8h1.6c.5 0 .9-.3.9-.8s-.4-.8-.9-.8h-1.6v1.6z" fill="#FFFFFF"/></svg>PHP</button>
-<button class="tab" data-filter="favorites" aria-pressed="false">★ Избранное <small id="favorite-count">0</small></button>
-</nav>
-<div class="top-actions"><button class="kbd-btn" id="shortcuts-btn" title="Горячие клавиши (?)" aria-label="Горячие клавиши"><kbd>?</kbd></button><kbd title="Фокус на поиск">/</kbd><button class="theme-button" id="theme-toggle" title="Переключить тему (T)" aria-label="Переключить тему">☾</button></div>
-</div></header>
-<main class="wrap">
-<section class="intro" role="search" aria-label="Поиск по справочнику">
-<h1>Справочник веб-разработчика</h1>
-<p>Русские справки, песочницы и полный справочник MDN и PHP Manual. Начни вводить название тега, свойства или функции.</p>
-<label class="searchbox"><span aria-hidden="true">⌕</span><input id="search" type="search" aria-label="Поиск по библиотеке" placeholder="Ищи тег, свойство или задачу (например: бургер меню, flex, модалка, pdo)..." autocomplete="off" spellcheck="false"><kbd>/</kbd><button class="clear" id="clear-search" aria-label="Очистить поиск" hidden>×</button></label>
-<div class="hints"><span>Попробуй:</span><button type="button" data-query="бургер меню">бургер меню</button><button type="button" data-query="метаданные">метаданные</button><button type="button" data-query="xml">xml</button><button type="button" data-query="модальное окно">модальное окно</button><button type="button" data-query="подключение css">подключение css</button><button type="button" data-query="шрифты">шрифты</button><button type="button" data-query="адаптивность">адаптивность</button><button type="button" data-query="pdo">pdo</button></div>
-<p class="status" id="archive-status" aria-live="polite"></p>
-</section>
-<section aria-labelledby="resources-title">
-<div id="recipe-banner" class="recipe-banner" hidden>
-  <div class="recipe-icon">💡</div>
-  <div class="recipe-body">
-    <div class="recipe-kicker">РЕШЕНИЕ ДЛЯ ЗАДАЧИ</div>
-    <div id="recipe-title" class="recipe-title"></div>
-    <p id="recipe-desc" class="recipe-desc"></p>
-  </div>
-</div>
-<div class="results-head"><div><h2 id="resources-title">Подборка</h2><p id="summary"></p></div>
-<label class="sort-label">Сортировка <select id="sort"><option value="recommended">Сначала основные</option><option value="az">По названию А—Я</option></select></label></div>
-<ul id="resource-grid" class="rows" aria-live="polite"></ul>
-<div id="empty-state" class="empty" hidden><h3>Ничего не нашлось</h3><p>Попробуй другое слово или выбери другой раздел.</p><button type="button" id="reset">Сбросить фильтры</button></div>
-</section>
-<section id="archive-block" class="archive-block" aria-labelledby="archive-title" hidden>
-<div class="results-head"><div><h2 id="archive-title">Полный справочник MDN и PHP</h2><p id="archive-summary"></p></div></div>
-<ul id="archive-list" class="rows"></ul>
-<button type="button" class="more" id="archive-more" hidden>Показать ещё</button>
-</section>
-<div class="note"><p><b>Сначала — первоисточник.</b> Ссылки ведут на официальные документации; для важных деталей сверяйся с актуальной версией источника.</p><a id="library-link" href="reference-library/index.html">Оглавление справочника</a><a href="https://developer.mozilla.org/ru/" target="_blank" rel="noopener noreferrer">MDN Web Docs ↗</a></div>
-</main>
-<footer><span>© 2026 DevShelf</span><span>Избранное хранится в этом браузере</span></footer>
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
-<dialog id="shortcuts-dialog" class="shortcuts-modal">
-  <div class="shortcuts-box">
-    <div class="shortcuts-head">
-      <h3>Горячие клавиши</h3>
-      <button type="button" id="close-shortcuts" aria-label="Закрыть">×</button>
+
+<header class="top">
+  <div class="top-inner">
+    <!-- Zone 1: Brand Wordmark -->
+    <a class="brand" href="index.html">
+      <span class="brand-icon">&lt;/&gt;</span>
+      <span>dev<span>shelf</span></span>
+    </a>
+
+    <!-- Zone 2: Navigation & Categories -->
+    <nav class="tabs" aria-label="Разделы библиотеки">
+      <button class="tab" data-filter="all" aria-pressed="true">Всё <small id="total-count"></small></button>
+      <button class="tab" data-filter="html" aria-pressed="false">HTML5</button>
+      <button class="tab" data-filter="css" aria-pressed="false">CSS3</button>
+      <button class="tab" data-filter="javascript" aria-pressed="false">JavaScript</button>
+      <button class="tab" data-filter="php" aria-pressed="false">PHP 8</button>
+      <button class="tab" data-filter="xml" aria-pressed="false">XML &amp; SEO</button>
+      <button class="tab" data-filter="recipes" aria-pressed="false">Рецепты</button>
+      <button class="tab" data-filter="frameworks" aria-pressed="false">Фреймворки</button>
+      <button class="tab" data-filter="favorites" aria-pressed="false">★ Избранное <small id="favorite-count">0</small></button>
+      <a class="tab" href="playground.html" style="color:var(--accent);">Песочница &amp; Генераторы ↗</a>
+    </nav>
+
+    <!-- Zone 3: Actions -->
+    <div class="top-actions">
+      <button class="cmd-btn" id="open-palette-btn" title="Быстрый поиск (Ctrl+K)">
+        <span>Поиск</span>
+        <kbd>Ctrl+K</kbd>
+      </button>
+      <button class="pwa-btn" id="standalone-app-btn" title="Установить приложение или скачать автономный HTML-файл">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Standalone</span>
+      </button>
+      <button class="theme-button" id="theme-toggle" title="Переключить тему (T)" aria-label="Переключить тему">☾</button>
     </div>
-    <div class="shortcuts-grid">
-      <div class="shortcut-item"><kbd>/</kbd> <span>Фокус на строку поиска</span></div>
-      <div class="shortcut-item"><kbd>Esc</kbd> <span>Очистить поиск / сброс фокуса</span></div>
-      <div class="shortcut-item"><kbd>J</kbd> / <kbd>↓</kbd> <span>Следующий материал в списке</span></div>
-      <div class="shortcut-item"><kbd>K</kbd> / <kbd>↑</kbd> <span>Предыдущий материал в списке</span></div>
-      <div class="shortcut-item"><kbd>Enter</kbd> / <kbd>O</kbd> <span>Открыть выбранный материал</span></div>
-      <div class="shortcut-item"><kbd>F</kbd> / <kbd>S</kbd> <span>Добавить / убрать из избранного</span></div>
-      <div class="shortcut-item"><kbd>1</kbd>–<kbd>6</kbd> <span>Быстрое переключение разделов (Всё, HTML, CSS...)</span></div>
-      <div class="shortcut-item"><kbd>T</kbd> <span>Переключить тему (светлая / тёмная)</span></div>
-      <div class="shortcut-item"><kbd>?</kbd> <span>Показать / скрыть это окно</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro" role="search" aria-label="Поиск по справочнику">
+    <div class="intro-badge">STANDARDS, FRAMEWORKS &amp; CODE WORKBENCH</div>
+    <h1>Справочник веб-разработчика</h1>
+    <p>Русскоязычная база по HTML5, CSS3, JavaScript, PHP 8, SEO/XML, готовым UI-рецептам и современным фреймворкам. Нажмите на любую тему, чтобы открыть разбор, разделённый код (HTML / CSS / JS) и живой предпросмотр.</p>
+
+    <label class="searchbox">
+      <span aria-hidden="true">⌕</span>
+      <input id="search" type="search" aria-label="Поиск по библиотеке" placeholder="Ищи свойство, тег, рецепт или фреймворк (например: border-radius, форма входа, tailwind, react, бургер)..." autocomplete="off" spellcheck="false">
+      <kbd>/</kbd>
+      <button class="clear" id="clear-search" aria-label="Очистить поиск" hidden>×</button>
+    </label>
+
+    <div class="hints">
+      <span>Популярные запросы:</span>
+      <button type="button" data-query="border-radius">border-radius</button>
+      <button type="button" data-query="border">border</button>
+      <button type="button" data-query="форма входа">форма входа</button>
+      <button type="button" data-query="регистрация">регистрация</button>
+      <button type="button" data-query="бургер меню">бургер меню</button>
+      <button type="button" data-query="tailwind">tailwind css</button>
+      <button type="button" data-query="react">react 19</button>
+      <button type="button" data-query="alpine">alpine.js</button>
+      <button type="button" data-query="flexbox">flexbox</button>
+      <button type="button" data-query="grid">grid</button>
+    </div>
+  </section>
+
+  <!-- Recipe / Intent Banner -->
+  <div id="recipe-banner" class="recipe-banner" hidden>
+    <div class="recipe-icon">💡</div>
+    <div class="recipe-body">
+      <div class="recipe-kicker">БЫСТРЫЙ ПЕРЕХОД К РЕШЕНИЮ</div>
+      <div id="recipe-title" class="recipe-title"></div>
+      <p id="recipe-desc" class="recipe-desc"></p>
+      <div class="recipe-actions">
+        <button type="button" id="recipe-open-btn" class="open-btn" style="border-color:var(--accent);color:var(--accent);">Открыть справку и код</button>
+        <a id="recipe-sandbox-link" href="playground.html" class="open-btn">В песочницу ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <section aria-labelledby="resources-title">
+    <div class="results-head">
+      <div>
+        <h2 id="resources-title">Каталог тем (нажмите на название для открытия справки)</h2>
+        <p id="summary"></p>
+      </div>
+      <label class="sort-label">Сортировка
+        <select id="sort">
+          <option value="recommended">По релевантности</option>
+          <option value="az">По алфавиту А—Я</option>
+        </select>
+      </label>
+    </div>
+
+    <ul id="resource-grid" class="rows" aria-live="polite"></ul>
+
+    <div id="empty-state" class="empty" hidden>
+      <h3>Ничего не найдено</h3>
+      <p>Попробуйте изменить запрос или выберите раздел «Всё» в верхнем меню.</p>
+      <button type="button" id="reset">Сбросить фильтры</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 DevShelf · Автономный справочник и песочница (276 руководств)</span>
+  <span>Адаптивная верстка · Работает офлайн (PWA &amp; Standalone HTML)</span>
+</footer>
+
+<!-- ЕДИНОЕ ОКНО СПРАВКИ, РАЗДЕЛЁННОГО КОДА (HTML/CSS/JS) И ЖИВОГО ПРЕДПРОСМОТРА -->
+<dialog id="topic-modal" class="topic-modal">
+  <div class="topic-modal-box">
+    <header class="topic-modal-head">
+      <div class="tm-head-info">
+        <div id="tm-kicker" class="intro-badge" style="margin-bottom:4px;">СПРАВОЧНИК DEVSHELF</div>
+        <h2 id="tm-title"></h2>
+      </div>
+      <div class="tm-head-actions">
+        <button type="button" id="tm-fav-btn" class="open-btn" title="Добавить в избранное">☆ В избранное</button>
+        <a id="tm-pg-link" href="#" class="open-btn" style="color:var(--accent);border-color:var(--accent);">Открыть в песочнице ↗</a>
+        <button type="button" id="tm-close" class="theme-button" aria-label="Закрыть окно">✕</button>
+      </div>
+    </header>
+
+    <div class="topic-modal-body">
+      <p id="tm-summary" class="topic-modal-lead"></p>
+
+      <div class="topic-modal-grid">
+        <div class="topic-modal-col">
+          <div class="tm-section">
+            <h3>Как это работает</h3>
+            <ul id="tm-points" class="tm-points"></ul>
+          </div>
+
+          <div class="tm-practical-grid">
+            <div class="tm-info-box">
+              <h4>Когда применять</h4>
+              <p id="tm-when"></p>
+            </div>
+            <div class="tm-info-box">
+              <h4>Альтернативы и выбор</h4>
+              <p id="tm-alt"></p>
+            </div>
+          </div>
+
+          <div class="tm-section">
+            <div class="tm-code-header">
+              <div>
+                <h3 style="margin:0 0 6px;">Код и синтаксис (редактируемый)</h3>
+                <div class="tm-code-tabs" role="tablist" aria-label="Вкладки кода">
+                  <button type="button" class="tm-code-tab active" data-code-tab="all">Слитый (Всё)</button>
+                  <button type="button" class="tm-code-tab" data-code-tab="html">HTML</button>
+                  <button type="button" class="tm-code-tab" data-code-tab="css">CSS</button>
+                  <button type="button" class="tm-code-tab" data-code-tab="js">JS</button>
+                </div>
+              </div>
+              <div class="tm-code-btns">
+                <button type="button" id="tm-copy-code" class="copy-btn">Скопировать вкладку</button>
+                <button type="button" id="tm-run-code" class="open-btn" style="background:var(--accent);color:#090d14;font-weight:700;border-color:var(--accent);">▶ Обновить превью</button>
+              </div>
+            </div>
+            <textarea id="tm-code-editor" class="tm-code-editor" spellcheck="false" aria-label="Редактор кода темы"></textarea>
+          </div>
+        </div>
+
+        <div class="topic-modal-col">
+          <div class="tm-preview-card">
+            <div class="tm-preview-bar">
+              <span>ЖИВОЙ ПРЕДПРОСМОТР (LIVE PREVIEW)</span>
+              <span style="color:var(--success);">● Активно</span>
+            </div>
+            <iframe id="tm-preview-iframe" class="tm-preview-iframe" title="Живой предпросмотр функции"></iframe>
+          </div>
+
+          <div id="tm-example-wrap" class="tm-section" style="margin-top:14px;">
+            <h3>Дополнительный пример / Подключение</h3>
+            <pre class="row-code-preview" style="margin:0;"><code id="tm-example"></code></pre>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </dialog>
-<script src="/reference-data.js"></script><script src="/script.js"></script>
-</body></html>
+
+<!-- STANDALONE APP & OFFLINE DOWNLOAD MODAL -->
+<dialog id="standalone-modal" class="cmd-modal">
+  <div class="cmd-box standalone-box">
+    <div class="standalone-head">
+      <div>
+        <div class="intro-badge" style="margin-bottom:2px;">STANDALONE &amp; OFFLINE РЕЖИМ</div>
+        <h3 style="margin:0;font-size:18px;color:var(--text);">Автономное приложение DevShelf</h3>
+      </div>
+      <button type="button" id="close-standalone-modal" class="theme-button" aria-label="Закрыть">✕</button>
+    </div>
+
+    <div class="standalone-body">
+      <div class="standalone-card">
+        <div class="standalone-card-title">1. Портативная версия в 1 файле (Single-File HTML)</div>
+        <p>Скачайте всю базу из <strong>276 справочников</strong> (HTML5, CSS3, JS, PHP 8, SEO, Рецепты и Фреймворки) с поиском, разделением кода на HTML/CSS/JS и живым предпросмотром в одном автономном файле <code>devshelf-standalone.html</code>. Открывается двойным кликом с рабочего стола или флешки без интернета и без сервера.</p>
+        <button type="button" id="download-standalone-html" class="pwa-btn" style="height:38px;padding:0 16px;font-size:13px;">
+          ⬇ Скачать devshelf-standalone.html (Вся база в 1 файле)
+        </button>
+      </div>
+
+      <div class="standalone-card">
+        <div class="standalone-card-title">2. Установка как системного приложения (PWA Desktop / Mobile)</div>
+        <p id="pwa-status-text">Запускайте DevShelf в отдельном окне Windows, macOS, Android или iOS без адресной строки браузера с автоматическим офлайн-кэшированием через Service Worker.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+          <button type="button" id="trigger-pwa-install" class="open-btn" style="border-color:var(--accent);color:var(--accent);padding:7px 14px;">
+            Установить приложение на устройство
+          </button>
+        </div>
+        <div id="pwa-manual-hint" class="standalone-hint" hidden></div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- Command Palette Modal (Ctrl+K) -->
+<dialog id="cmd-palette" class="cmd-modal">
+  <div class="cmd-box">
+    <div class="cmd-input-wrap">
+      <span style="color:var(--faint);">⌕</span>
+      <input type="text" id="cmd-search-input" placeholder="Быстрый поиск по 276 темам (стрелки ↑↓, Enter — открыть)..." autocomplete="off" spellcheck="false">
+      <kbd>Esc</kbd>
+    </div>
+    <ul id="cmd-results" class="cmd-results"></ul>
+    <div class="cmd-footer">
+      <span>↑↓ Навигация</span>
+      <span>Enter Открыть справку</span>
+      <span>Esc Закрыть</span>
+    </div>
+  </div>
+</dialog>
+
+<div id="offline-banner" class="offline-banner" hidden>
+  <span>● Офлайн-режим — работа из локального кэша</span>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="/reference-data.js"></script>
+<script src="/preview-engine.js"></script>
+<script type="module" src="/script.js"></script>
+</body>
+</html>

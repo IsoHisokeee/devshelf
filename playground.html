@@ -1,61 +1,476 @@
-<!doctype html>
-<html lang="ru">
+<!DOCTYPE html>
+<html lang="ru" class="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Интерактивная песочница и справочник — DevShelf</title>
-<meta name="description" content="Изучай HTML, CSS и JavaScript с практическими примерами и живым предпросмотром кода на DevShelf.">
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#10151f">
-<link rel="canonical" href="playground.html">
-
-<!-- Open Graph -->
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="DevShelf">
-<meta property="og:title" content="Интерактивная песочница и справочник — DevShelf">
-<meta property="og:description" content="Изучай HTML, CSS и JavaScript с практическими примерами и живым предпросмотром кода на DevShelf.">
-<meta property="og:locale" content="ru_RU">
-<meta property="og:url" content="playground.html">
-
-<!-- Twitter Cards -->
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Интерактивная песочница и справочник — DevShelf">
-<meta name="twitter:description" content="Изучай HTML, CSS и JavaScript с практическими примерами и живым предпросмотром кода на DevShelf.">
-
-<!-- Schema.org JSON-LD -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Интерактивная песочница DevShelf",
-  "description": "Песочница с тремя редакторами (HTML, CSS, JS) и живым предпросмотром кода в браузере.",
-  "applicationCategory": "DeveloperApplication",
-  "operatingSystem": "All",
-  "inLanguage": "ru"
-}
-</script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%2310151f%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-size=%2728%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3E%26lt;/%26gt;%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="playground.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Интерактивная песочница и Визуальные генераторы — DevShelf</title>
+  <meta name="description" content="Интерактивная песочница с разделением на HTML/CSS/JS и слитый код, 8 визуальных CSS-генераторов и 10 готовых UI-шаблонов (включая вход и регистрацию)." />
+  <meta name="theme-color" content="#0d1117" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="playground.css" />
 </head>
-<body class="playground-page">
-<header class="play-top"><a class="brand" href="index.html"><span class="brand-icon">&lt;/&gt;</span><span>dev<span>shelf</span></span></a><a class="back-link" href="index.html">← Вернуться в библиотеку</a><button class="theme-button" id="theme-toggle" aria-label="Переключить тему">☾</button></header>
-<main class="play-main">
-<div class="eyebrow"><span></span>ИНТЕРАКТИВНЫЙ СПРАВОЧНИК</div>
-<div class="play-title-row"><div><h1 id="topic-title">HTML: nav</h1><p id="topic-subtitle">Изучи элемент, измени код и посмотри на результат.</p></div><span class="topic-badge" id="topic-kind">HTML ЭЛЕМЕНТ</span></div>
-<div class="topic-layout">
-<section class="topic-info panel"><div class="panel-kicker">ЧТО ЭТО</div><h2 id="topic-heading">Элемент навигации</h2><p id="topic-description"></p><div class="syntax-block"><div class="syntax-heading">СИНТАКСИС <button id="copy-example">Копировать</button></div><pre><code id="syntax-code"></code></pre></div><h3>Как использовать</h3><ul id="topic-points"></ul><div class="tip-box"><b>💡 Запомни</b><p id="topic-tip"></p></div><a id="mdn-link" class="learn-more" href="https://developer.mozilla.org/ru/docs/Web/HTML/Reference/Elements/nav" target="_blank" rel="noopener noreferrer">Подробнее в MDN ↗</a></section>
-<section class="workbench panel"><div class="workbench-heading"><div><div class="panel-kicker">ПЕСОЧНИЦА</div><h2>Попробуй сам</h2></div><button id="reset-code" class="subtle-button">Сбросить код ↺</button></div><p class="workbench-hint">Меняй пример в редакторе. Нажми «Запустить», чтобы увидеть результат ниже.</p>
-<div class="editor-tabs"><button class="editor-tab active" data-editor="html">HTML</button><button class="editor-tab" data-editor="css">CSS</button><button class="editor-tab" data-editor="js">JavaScript</button></div>
-<div class="editor-wrap"><div class="editor-label"><span id="editor-filename">index.html</span><span>● РЕДАКТОР</span></div><textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Редактор кода"></textarea></div>
-<div class="run-row"><button id="run-code" class="run-button">▶ Запустить</button><span id="run-status">Готов к запуску</span></div>
-<div class="preview-heading"><b>Результат</b><span>LIVE PREVIEW</span></div><iframe id="preview" title="Предпросмотр твоего кода" sandbox="allow-scripts"></iframe>
-<div class="console-wrap"><div class="console-heading">КОНСОЛЬ <button id="clear-console">Очистить</button></div><pre id="console-output">Здесь появятся сообщения и ошибки твоего JavaScript.</pre></div>
-</section></div>
-<section class="next-topics"><div class="panel-kicker">ПРОДОЛЖАЙ ИЗУЧАТЬ</div><h2>Другие темы</h2><div id="topic-links" class="topic-links"></div></section>
-</main><footer class="play-footer"><span>DevShelf · Учись на практике</span><a href="index.html">← Все материалы</a></footer>
-<script src="/reference-data.js"></script>
-<script src="/playground.js"></script>
-</body></html>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-group">
+        <a href="index.html" class="brand" aria-label="На главную DevShelf">
+          <div class="brand-logo">DS</div>
+          <div class="brand-text">
+            <strong>DevShelf</strong>
+            <span>Studio &amp; Sandbox</span>
+          </div>
+        </a>
+        <nav class="mode-tabs" role="tablist" aria-label="Режим работы">
+          <button type="button" class="mode-tab active" data-mode="editor" id="tab-mode-editor">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            Песочница кода
+          </button>
+          <button type="button" class="mode-tab" data-mode="generators" id="tab-mode-generators">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Визуализаторы (8)
+          </button>
+          <button type="button" class="mode-tab" data-mode="templates" id="tab-mode-templates">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            UI-шаблоны (10)
+          </button>
+        </nav>
+      </div>
+
+      <div class="topbar-actions">
+        <a href="index.html" class="btn-ghost" id="back-to-topic">← Справочник (276)</a>
+        <button id="theme-toggle" class="btn-icon" type="button" aria-label="Переключить тему" title="Тема оформления">
+          <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- РЕЖИМ 1: КЛАССИЧЕСКАЯ ПЕСОЧНИЦА КОДА -->
+  <main id="view-editor" class="workspace-view active">
+    <div class="ide-layout">
+      <!-- Боковая панель тем справочника с рабочим поиском -->
+      <aside class="ide-sidebar">
+        <div class="sidebar-header">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h2>Поиск и загрузка темы</h2>
+            <small id="sidebar-count" style="color:var(--text-muted);font-family:var(--font-mono);font-size:11px;"></small>
+          </div>
+          <div class="sidebar-search">
+            <input id="topic-search" type="search" placeholder="Поиск по всем 276 темам (border-radius, вход, flex)..." autocomplete="off" />
+          </div>
+          <div class="lang-Segment" role="tablist">
+            <button type="button" class="seg-btn active" data-lang="all">Все</button>
+            <button type="button" class="seg-btn" data-lang="html">HTML</button>
+            <button type="button" class="seg-btn" data-lang="css">CSS</button>
+            <button type="button" class="seg-btn" data-lang="javascript">JS</button>
+            <button type="button" class="seg-btn" data-lang="php">PHP</button>
+            <button type="button" class="seg-btn" data-lang="xml">SEO</button>
+            <button type="button" class="seg-btn" data-lang="recipes">UI</button>
+            <button type="button" class="seg-btn" data-lang="frameworks">FW</button>
+          </div>
+        </div>
+        <div id="topic-list" class="topic-list"></div>
+      </aside>
+
+      <!-- Центральная панель: редактор кода (HTML / CSS / JS / Слитый) -->
+      <section class="ide-editor-pane">
+        <div class="pane-header">
+          <div class="editor-tabs" role="tablist">
+            <button type="button" class="ed-tab active" data-editor="html">
+              <span class="dot html-dot"></span> HTML
+            </button>
+            <button type="button" class="ed-tab" data-editor="css">
+              <span class="dot css-dot"></span> CSS
+            </button>
+            <button type="button" class="ed-tab" data-editor="js">
+              <span class="dot js-dot"></span> JS
+            </button>
+            <button type="button" class="ed-tab" data-editor="all">
+              <span class="dot all-dot"></span> Слитый (Всё)
+            </button>
+          </div>
+          <div class="editor-actions">
+            <button id="copy-single" type="button" class="btn-sm" title="Скопировать текущую вкладку">Копировать</button>
+            <button id="copy-bundle" type="button" class="btn-sm" title="Скопировать весь проект в один HTML-файл">Экспорт 1 HTML</button>
+            <button id="download-bundle" type="button" class="btn-sm" title="Скачать готовый .html файл">⬇ .html</button>
+            <button id="reset-code" type="button" class="btn-sm">Сброс</button>
+            <button id="run-code" type="button" class="btn-primary-sm">▶ Запустить</button>
+          </div>
+        </div>
+
+        <div class="topic-context-bar" id="topic-context-bar">
+          <div class="context-info">
+            <span id="topic-lang" class="ctx-badge">HTML</span>
+            <strong id="topic-title">Песочница кода</strong>
+            <span id="topic-summary" class="ctx-summary">Переключайтесь между раздельными вкладками HTML / CSS / JS или общим слитым кодом.</span>
+          </div>
+        </div>
+
+        <div class="editor-container">
+          <textarea id="code-editor" spellcheck="false" aria-label="Редактор кода"></textarea>
+        </div>
+
+        <div class="topic-quick-tips" id="topic-quick-tips">
+          <div class="tips-header">Ключевые особенности темы:</div>
+          <ul id="topic-points" class="tips-list"></ul>
+        </div>
+      </section>
+
+      <!-- Правая панель: живой предпросмотр и консоль -->
+      <section class="ide-preview-pane">
+        <div class="pane-header">
+          <div class="preview-title">
+            <span class="live-indicator"></span>
+            Живой результат (Live Preview)
+          </div>
+          <div class="viewport-toggles">
+            <button type="button" class="vp-btn active" data-vp="100%" title="На всю ширину">Desktop</button>
+            <button type="button" class="vp-btn" data-vp="768px" title="Планшет (768px)">iPad</button>
+            <button type="button" class="vp-btn" data-vp="375px" title="Мобильный (375px)">Phone</button>
+          </div>
+        </div>
+
+        <div class="preview-stage" id="preview-stage">
+          <iframe id="preview" title="Живой предпросмотр кода"></iframe>
+        </div>
+
+        <div class="console-drawer" id="console-drawer">
+          <div class="console-header">
+            <span>Консоль JavaScript (console.log / ошибки)</span>
+            <button type="button" id="clear-console" class="btn-xs">Очистить</button>
+          </div>
+          <div id="console-output" class="console-output">
+            <div class="console-empty">Вызовы console.log() из вкладки JS появятся здесь...</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- РЕЖИМ 2: ВИЗУАЛЬНЫЕ ГЕНЕРАТОРЫ CSS (8 ИНСТРУМЕНТОВ) -->
+  <main id="view-generators" class="workspace-view">
+    <div class="generators-container">
+      <div class="gen-sidebar">
+        <h2>Визуальные CSS-генераторы (8)</h2>
+        <p class="gen-desc">Настраивайте параметры ползунками и переключателями, наблюдайте живой результат и копируйте готовый CSS или открывайте его в песочнице.</p>
+
+        <div class="gen-switcher">
+          <button type="button" class="gen-switch-btn active" data-gen="flexbox">
+            <strong>1. Flexbox Конструктор</strong>
+            <span>Направление, выравнивание, перенос и умный gap</span>
+          </button>
+          <button type="button" class="gen-switch-btn" data-gen="grid">
+            <strong>2. CSS Grid Сетка</strong>
+            <span>Колонки, адаптивный repeat(auto-fit), отступы</span>
+          </button>
+          <button type="button" class="gen-switch-btn" data-gen="shadow">
+            <strong>3. Тени &amp; Glassmorphism</strong>
+            <span>Box-shadow, свечение и матовое стекло backdrop-filter</span>
+          </button>
+          <button type="button" class="gen-switch-btn" data-gen="gradient">
+            <strong>4. Генератор Градиентов</strong>
+            <span>Linear, Radial и Conic градиенты с углом и цветами</span>
+          </button>
+          <button type="button" class="gen-switch-btn" data-gen="transform">
+            <strong>5. 2D/3D Transform &amp; Transition</strong>
+            <span>Масштаб, поворот, наклон, сдвиг и плавность</span>
+          </button>
+          <button type="button" class="gen-switch-btn" data-gen="radius">
+            <strong>6. Border-Radius &amp; Формы</strong>
+            <span>Индивидуальное скругление 4 углов и органические формы</span>
+          </button>
+          <button type="button" class="gen-switch-btn" data-gen="clamp">
+            <strong>7. Резиновая типографика clamp()</strong>
+            <span>Плавный размер шрифта между мобильным и десктопом</span>
+          </button>
+          <button type="button" class="gen-switch-btn" data-gen="filter">
+            <strong>8. Графические CSS-фильтры</strong>
+            <span>Blur, яркость, контраст, сепия и поворот оттенка</span>
+          </button>
+        </div>
+
+        <!-- Контролы Flexbox -->
+        <div class="gen-controls active" id="ctrl-flexbox">
+          <div class="ctrl-group">
+            <label>flex-direction (Направление оси)</label>
+            <select id="flex-dir">
+              <option value="row">row (слева направо)</option>
+              <option value="row-reverse">row-reverse (справа налево)</option>
+              <option value="column">column (сверху вниз)</option>
+              <option value="column-reverse">column-reverse (снизу вверх)</option>
+            </select>
+          </div>
+          <div class="ctrl-group">
+            <label>justify-content (Главная ось)</label>
+            <select id="flex-justify">
+              <option value="flex-start">flex-start (в начале)</option>
+              <option value="center">center (по центру)</option>
+              <option value="flex-end">flex-end (в конце)</option>
+              <option value="space-between">space-between (по краям, авто-отступ)</option>
+              <option value="space-around">space-around (равные поля вокруг)</option>
+              <option value="space-evenly">space-evenly (равные отступы везде)</option>
+            </select>
+          </div>
+          <div class="ctrl-group">
+            <label>align-items (Поперечная ось)</label>
+            <select id="flex-align">
+              <option value="stretch">stretch (растянуть)</option>
+              <option value="center" selected>center (по центру)</option>
+              <option value="flex-start">flex-start (к началу)</option>
+              <option value="flex-end">flex-end (к концу)</option>
+              <option value="baseline">baseline (по базовой линии текста)</option>
+            </select>
+          </div>
+          <div class="ctrl-group">
+            <label>flex-wrap (Перенос строк)</label>
+            <select id="flex-wrap">
+              <option value="nowrap">nowrap (без переноса)</option>
+              <option value="wrap" selected>wrap (переносить на новую строку)</option>
+            </select>
+          </div>
+          <div class="ctrl-group" id="flex-gap-group">
+            <label>gap (Фиксированный отступ): <strong id="flex-gap-val">16px</strong></label>
+            <input type="range" id="flex-gap" min="0" max="48" value="16" />
+          </div>
+          <div class="ctrl-notice" id="flex-gap-notice" hidden>
+            💡 При режиме <code id="flex-justify-mode-name">space-between</code> свободное пространство распределяется между элементами автоматически, поэтому фиксированный ползунок <code>gap</code> отключён.
+          </div>
+          <div class="ctrl-group">
+            <label>Количество элементов: <strong id="flex-count-val">4</strong></label>
+            <input type="range" id="flex-count" min="2" max="8" value="4" />
+          </div>
+        </div>
+
+        <!-- Контролы Grid -->
+        <div class="gen-controls" id="ctrl-grid">
+          <div class="ctrl-group">
+            <label>Режим колонок (grid-template-columns)</label>
+            <select id="grid-mode">
+              <option value="equal">Фиксированное число равных колонок (1fr)</option>
+              <option value="autofit">Адаптивная сетка repeat(auto-fit, minmax())</option>
+              <option value="sidebar">Сайдбар + Контент (240px 1fr)</option>
+              <option value="holy">3 колонки: 200px 1fr 200px</option>
+            </select>
+          </div>
+          <div class="ctrl-group" id="grid-cols-group">
+            <label>Число колонок: <strong id="grid-cols-val">3</strong></label>
+            <input type="range" id="grid-cols" min="1" max="6" value="3" />
+          </div>
+          <div class="ctrl-group">
+            <label>Минимальная ширина карточки (для auto-fit): <strong id="grid-min-val">160px</strong></label>
+            <input type="range" id="grid-min" min="100" max="280" step="10" value="160" />
+          </div>
+          <div class="ctrl-group">
+            <label>Отступ сетки (gap): <strong id="grid-gap-val">16px</strong></label>
+            <input type="range" id="grid-gap" min="4" max="40" value="16" />
+          </div>
+          <div class="ctrl-group">
+            <label>Количество карточек: <strong id="grid-items-val">6</strong></label>
+            <input type="range" id="grid-items" min="2" max="12" value="6" />
+          </div>
+        </div>
+
+        <!-- Контролы Shadow & Glass -->
+        <div class="gen-controls" id="ctrl-shadow">
+          <div class="ctrl-group">
+            <label>Смещение X: <strong id="sh-x-val">0px</strong></label>
+            <input type="range" id="sh-x" min="-40" max="40" value="0" />
+          </div>
+          <div class="ctrl-group">
+            <label>Смещение Y: <strong id="sh-y-val">20px</strong></label>
+            <input type="range" id="sh-y" min="-40" max="60" value="20" />
+          </div>
+          <div class="ctrl-group">
+            <label>Размытие тени (blur): <strong id="sh-blur-val">40px</strong></label>
+            <input type="range" id="sh-blur" min="0" max="100" value="40" />
+          </div>
+          <div class="ctrl-group">
+            <label>Растяжение (spread): <strong id="sh-spread-val">-10px</strong></label>
+            <input type="range" id="sh-spread" min="-30" max="30" value="-10" />
+          </div>
+          <div class="ctrl-group">
+            <label>Прозрачность тени: <strong id="sh-alpha-val">0.45</strong></label>
+            <input type="range" id="sh-alpha" min="0.05" max="0.95" step="0.05" value="0.45" />
+          </div>
+          <div class="ctrl-group">
+            <label>Размытие фона (backdrop-filter blur): <strong id="sh-glass-val">14px</strong></label>
+            <input type="range" id="sh-glass" min="0" max="32" value="14" />
+          </div>
+          <div class="ctrl-group">
+            <label>Скругление углов (border-radius): <strong id="sh-radius-val">20px</strong></label>
+            <input type="range" id="sh-radius" min="0" max="48" value="20" />
+          </div>
+        </div>
+
+        <!-- Контролы 4: Градиенты -->
+        <div class="gen-controls" id="ctrl-gradient">
+          <div class="ctrl-group">
+            <label>Тип градиента</label>
+            <select id="grad-type">
+              <option value="linear">linear-gradient (Линейный)</option>
+              <option value="radial">radial-gradient (Радиальный от центра)</option>
+              <option value="conic">conic-gradient (Конический)</option>
+            </select>
+          </div>
+          <div class="ctrl-group" id="grad-angle-group">
+            <label>Угол наклона (angle): <strong id="grad-angle-val">135deg</strong></label>
+            <input type="range" id="grad-angle" min="0" max="360" value="135" />
+          </div>
+          <div class="ctrl-group">
+            <label>Первый цвет (Start Color)</label>
+            <input type="color" id="grad-c1" value="#6366f1" />
+          </div>
+          <div class="ctrl-group">
+            <label>Второй цвет (Mid Color)</label>
+            <input type="color" id="grad-c2" value="#0ea5e9" />
+          </div>
+          <div class="ctrl-group">
+            <label>Третий цвет (End Color)</label>
+            <input type="color" id="grad-c3" value="#10b981" />
+          </div>
+        </div>
+
+        <!-- Контролы 5: Transform & Transition -->
+        <div class="gen-controls" id="ctrl-transform">
+          <div class="ctrl-group">
+            <label>Масштаб (scale): <strong id="tr-scale-val">1.05</strong></label>
+            <input type="range" id="tr-scale" min="0.5" max="1.5" step="0.05" value="1.05" />
+          </div>
+          <div class="ctrl-group">
+            <label>Поворот (rotate): <strong id="tr-rotate-val">-4deg</strong></label>
+            <input type="range" id="tr-rotate" min="-180" max="180" value="-4" />
+          </div>
+          <div class="ctrl-group">
+            <label>Сдвиг по X (translateX): <strong id="tr-tx-val">0px</strong></label>
+            <input type="range" id="tr-tx" min="-80" max="80" value="0" />
+          </div>
+          <div class="ctrl-group">
+            <label>Сдвиг по Y (translateY): <strong id="tr-ty-val">-8px</strong></label>
+            <input type="range" id="tr-ty" min="-80" max="80" value="-8" />
+          </div>
+          <div class="ctrl-group">
+            <label>Наклон (skewX): <strong id="tr-skew-val">0deg</strong></label>
+            <input type="range" id="tr-skew" min="-35" max="35" value="0" />
+          </div>
+          <div class="ctrl-group">
+            <label>Длительность transition: <strong id="tr-dur-val">300ms</strong></label>
+            <input type="range" id="tr-dur" min="100" max="1000" step="50" value="300" />
+          </div>
+        </div>
+
+        <!-- Контролы 6: Border-Radius & Shapes -->
+        <div class="gen-controls" id="ctrl-radius">
+          <div class="ctrl-group">
+            <label>Верхний левый угол (top-left): <strong id="rad-tl-val">32px</strong></label>
+            <input type="range" id="rad-tl" min="0" max="120" value="32" />
+          </div>
+          <div class="ctrl-group">
+            <label>Верхний правый угол (top-right): <strong id="rad-tr-val">8px</strong></label>
+            <input type="range" id="rad-tr" min="0" max="120" value="8" />
+          </div>
+          <div class="ctrl-group">
+            <label>Нижний правый угол (bottom-right): <strong id="rad-br-val">32px</strong></label>
+            <input type="range" id="rad-br" min="0" max="120" value="32" />
+          </div>
+          <div class="ctrl-group">
+            <label>Нижний левый угол (bottom-left): <strong id="rad-bl-val">8px</strong></label>
+            <input type="range" id="rad-bl" min="0" max="120" value="8" />
+          </div>
+          <div class="ctrl-group">
+            <label>Толщина обводки (border-width): <strong id="rad-bw-val">2px</strong></label>
+            <input type="range" id="rad-bw" min="0" max="12" value="2" />
+          </div>
+        </div>
+
+        <!-- Контролы 7: Fluid Typography clamp() -->
+        <div class="gen-controls" id="ctrl-clamp">
+          <div class="ctrl-group">
+            <label>Мин. размер на мобильном (min): <strong id="cl-min-val">1.25rem</strong></label>
+            <input type="range" id="cl-min" min="0.875" max="2.5" step="0.125" value="1.25" />
+          </div>
+          <div class="ctrl-group">
+            <label>Гибкий коэффициент (vw): <strong id="cl-vw-val">3.5vw</strong></label>
+            <input type="range" id="cl-vw" min="1" max="8" step="0.5" value="3.5" />
+          </div>
+          <div class="ctrl-group">
+            <label>Макс. размер на десктопе (max): <strong id="cl-max-val">3.25rem</strong></label>
+            <input type="range" id="cl-max" min="1.5" max="5" step="0.25" value="3.25" />
+          </div>
+          <div class="ctrl-group">
+            <label>Межстрочный интервал (line-height): <strong id="cl-lh-val">1.15</strong></label>
+            <input type="range" id="cl-lh" min="1.0" max="1.8" step="0.05" value="1.15" />
+          </div>
+        </div>
+
+        <!-- Контролы 8: CSS Filters -->
+        <div class="gen-controls" id="ctrl-filter">
+          <div class="ctrl-group">
+            <label>Яркость (brightness): <strong id="flt-bright-val">110%</strong></label>
+            <input type="range" id="flt-bright" min="40" max="200" value="110" />
+          </div>
+          <div class="ctrl-group">
+            <label>Контраст (contrast): <strong id="flt-contrast-val">115%</strong></label>
+            <input type="range" id="flt-contrast" min="40" max="200" value="115" />
+          </div>
+          <div class="ctrl-group">
+            <label>Насыщенность (saturate): <strong id="flt-sat-val">130%</strong></label>
+            <input type="range" id="flt-sat" min="0" max="300" value="130" />
+          </div>
+          <div class="ctrl-group">
+            <label>Сдвиг оттенка (hue-rotate): <strong id="flt-hue-val">0deg</strong></label>
+            <input type="range" id="flt-hue" min="0" max="360" value="0" />
+          </div>
+          <div class="ctrl-group">
+            <label>Размытие (blur): <strong id="flt-blur-val">0px</strong></label>
+            <input type="range" id="flt-blur" min="0" max="20" value="0" />
+          </div>
+        </div>
+      </div>
+
+      <div class="gen-workspace">
+        <div class="gen-canvas-card">
+          <div class="gen-canvas-header">
+            <span>Интерактивный холст предпросмотра</span>
+            <span class="gen-hint" id="gen-active-label">Flexbox Конструктор</span>
+          </div>
+          <div class="gen-stage" id="gen-stage"></div>
+        </div>
+
+        <div class="gen-code-card">
+          <div class="gen-code-header">
+            <span>Сгенерированный CSS-код</span>
+            <div class="gen-code-actions">
+              <button type="button" id="copy-gen-css" class="btn-sm">Скопировать CSS</button>
+              <button type="button" id="open-gen-in-sandbox" class="btn-primary-sm">Открыть в песочнице →</button>
+            </div>
+          </div>
+          <pre id="gen-css-output" class="gen-css-output"></pre>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- РЕЖИМ 3: ГОТОВЫЕ UI-ШАБЛОНЫ С ЖИВЫМ ПРЕДПРОСМОТРОМ -->
+  <main id="view-templates" class="workspace-view">
+    <div class="templates-container">
+      <div class="templates-header">
+        <div>
+          <h2>Библиотека готовых UI-рецептов с живым предпросмотром (10)</h2>
+          <p>Включая формы входа и регистрации, адаптивные сетки, модальные окна и уведомления. Нажмите «Загрузить в песочницу», чтобы редактировать HTML, CSS и JS.</p>
+        </div>
+      </div>
+
+      <div class="templates-grid" id="templates-grid"></div>
+    </div>
+  </main>
+
+  <script src="reference-data.js"></script>
+  <script src="/preview-engine.js"></script>
+  <script src="playground.js"></script>
+</body>
+</html>
