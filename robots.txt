@@ -1,0 +1,13 @@
+# DevShelf — robots.txt
+# Управление индексацией веб-краулеров
+
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /reference.html
+Allow: /playground.html
+Allow: /reference-library/
+
+# Sitemap и XML-индекс
+Sitemap: /sitemap.xml
+Sitemap: /robots.xml

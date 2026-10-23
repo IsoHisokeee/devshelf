@@ -123,7 +123,7 @@ function curatedRow(r) {
   return '<li class="row"><span class="mark" aria-hidden="true">' + getIcon(r.category) + '</span>'
     + '<div class="row-main"><a class="row-title" href="' + safe(r.url) + '"' + ext + '>' + safe(r.title) + (r.internal ? "" : '<span class="ext" aria-hidden="true"> ↗</span>') + '</a>'
     + '<span class="row-desc">' + safe(r.description) + '</span></div>'
-    + '<div class="row-meta"><span class="badge' + (r.official ? " official" : "") + '">' + kind + '</span><span>' + safe(r.brand) + '</span></div>'
+    + '<div class="row-meta"><span class="badge' + (r.official ? " official" : "") + '">' + kind + '</span><span aria-hidden="true">·</span><span>' + safe(r.brand) + '</span></div>'
     + '<button class="fav" data-favorite="' + safe(r.id) + '" aria-pressed="' + fav + '" aria-label="Избранное: ' + safe(r.title) + '" title="Избранное">' + (fav ? "★" : "☆") + '</button></li>';
 }
 function archiveRow(r) {
@@ -131,7 +131,309 @@ function archiveRow(r) {
   const cat = SECTION_CLASS[r.section] || "api";
   return '<li class="row archive"><span class="mark" aria-hidden="true">' + getIcon(cat) + '</span>'
     + '<div class="row-main"><a class="row-title" href="' + safe(archiveHref(r.path)) + '">' + safe(r.title) + '</a><span class="row-desc">' + safe(where) + '</span></div>'
-    + '<div class="row-meta"><span class="badge">' + (r.section === "PHP" ? "PHP Manual" : "MDN") + '</span></div></li>';
+    + '<div class="row-meta"><span class="badge">' + (r.section === "PHP" ? "PHP Manual" : "MDN") + '</span><span aria-hidden="true">·</span><span>Архив</span></div></li>';
+}
+
+/* ---- Компактный справочник готовых рецептов (Task/Recipe Intent Index) ---- */
+function stemRussian(w) {
+  if (w.length <= 3) return w.toLowerCase();
+  return String(w)
+    .toLowerCase()
+    .replace(/[.,/#!$%^&*;:{}=\-_`~()?"'<>]/g, "")
+    .trim()
+    .replace(/(ами|ями|ов|ев|ей|ия|ие|ое|ые|ую|юю|ая|яя|ом|ем|ам|ям|ах|ях|ость|ости|ть|ти|ся|сь|ла|ли|ло|а|я|у|ю|е|и|ы|о)$/, "");
+}
+
+const RECIPES = [
+  {
+    id: "burger-menu",
+    keys: ["бургер", "гамбургер", "шторк", "выездн мен", "боков мен", "drawer", "burger"],
+    title: "Как сделать адаптивное бургер-меню",
+    desc: "Для создания бургер-меню нужны семантическая разметка (<nav>, <button>), стили выезда и адаптивности (position: fixed, transitions, @media) и JS-переключение классов.",
+    topics: [
+      "lesson-nav",
+      "lesson-button",
+      "ref-html-semantic",
+      "ref-html-buttons",
+      "ref-css-position",
+      "ref-css-transitions",
+      "ref-css-responsive",
+      "ref-css-display",
+      "js-events",
+      "js-dom",
+      "ref-css-has",
+      "ref-html-accessibility"
+    ]
+  },
+  {
+    id: "modal-dialog",
+    keys: ["модал", "попап", "всплывающ окн", "диалог", "popup", "modal", "dialog"],
+    title: "Как сделать модальное окно / попап",
+    desc: "Современное модальное окно собирается через нативный тег <dialog>, стили размытия фона (backdrop-filter) и JS-методы showModal() и close().",
+    topics: [
+      "ref-html-dialog",
+      "lesson-button",
+      "ref-css-backdrop-filter",
+      "ref-css-position",
+      "ref-css-transitions",
+      "js-events",
+      "js-dom",
+      "ref-html-accessibility"
+    ]
+  },
+  {
+    id: "theme-toggle",
+    keys: ["темн тем", "светл тем", "переключен тем", "смен тем", "dark mode", "theme"],
+    title: "Как реализовать переключение тёмной/светлой темы",
+    desc: "Используй CSS-переменные (:root и body.light), медиа-запрос prefers-color-scheme и сохранение выбора пользователя в localStorage.",
+    topics: [
+      "ref-css-custom-properties",
+      "ref-css-responsive",
+      "ref-js-localstorage-api",
+      "js-events",
+      "lesson-button",
+      "ref-css-colors"
+    ]
+  },
+  {
+    id: "slider-carousel",
+    keys: ["слайдер", "карусел", "галере", "swiper", "slider", "carousel"],
+    title: "Как сделать слайдер / карусель контента",
+    desc: "Слайдер без тяжелых библиотек создается с помощью CSS scroll-snap, overflow-x и flexbox с управлением кнопками вперед/назад.",
+    topics: [
+      "ref-css-scroll-snap",
+      "ref-css-overflow",
+      "ref-css-flexbox",
+      "ref-css-transitions",
+      "lesson-button",
+      "js-events",
+      "ref-html-images"
+    ]
+  },
+  {
+    id: "form-validation",
+    keys: ["валидац", "проверк форм", "ошибк ввод", "validation", "валидн"],
+    title: "Как сделать валидацию и проверку форм",
+    desc: "Клиентская валидация через атрибуты HTML5 (required, pattern) и псевдоклассы CSS (:valid, :invalid), плюс обязательная проверка на бэкенде через filter_var.",
+    topics: [
+      "ref-html-forms",
+      "ref-html-input-types",
+      "ref-css-pseudo",
+      "ref-js-forms",
+      "ref-php-filter-var",
+      "ref-php-validation",
+      "ref-form"
+    ]
+  },
+  {
+    id: "auth-sessions",
+    keys: ["авторизац", "регистрац", "логин", "парол", "сесси", "auth", "login", "password"],
+    title: "Как сделать авторизацию и безопасные сессии",
+    desc: "Полная связка: безопасное хэширование паролей (password_hash), старт сессий (session_start), CSRF-токены и выборка пользователя через PDO.",
+    topics: [
+      "ref-php-sessions-auth",
+      "ref-php-password-hash",
+      "ref-php-csrf-protection",
+      "ref-php-pdo-crud",
+      "ref-pdo",
+      "lesson-form",
+      "lesson-input"
+    ]
+  },
+  {
+    id: "ajax-fetch",
+    keys: ["аякс", "ajax", "без перезагрузк", "отправк форм", "fetch", "запрос"],
+    title: "Как отправлять данные формы без перезагрузки (AJAX)",
+    desc: "Перехватывай событие submit (e.preventDefault()), собирай данные в FormData и отправляй на сервер через fetch() с обработкой JSON-ответа.",
+    topics: [
+      "ref-js-fetch-method",
+      "ref-js-promise-methods",
+      "ref-js-forms",
+      "js-events",
+      "ref-php-json-encode-decode",
+      "lesson-form"
+    ]
+  },
+  {
+    id: "sticky-header",
+    keys: ["липк шапк", "прилипающ", "закреплен шапк", "sticky", "fixed header"],
+    title: "Как сделать липкую шапку (Sticky Header)",
+    desc: "Используй CSS position: sticky с top: 0, z-index и эффектом матового стекла backdrop-filter: blur() при прокрутке страницы.",
+    topics: [
+      "ref-css-position",
+      "ref-css-backdrop-filter",
+      "lesson-header",
+      "lesson-nav",
+      "ref-css-box-model"
+    ]
+  },
+  {
+    id: "connect-css-fonts",
+    keys: ["подключен css", "подключит стил", "подключен шрифт", "шрифт", "google fonts", "font face"],
+    title: "Как правильно подключить стили и шрифты",
+    desc: "Подключение CSS через тег <link rel='stylesheet'>, Google Fonts с предзагрузкой preconnect и локальные файлы шрифтов через @font-face.",
+    topics: [
+      "ref-html-link-css",
+      "ref-html-google-fonts",
+      "ref-css-font-face",
+      "ref-css-cascade",
+      "ref-css-typography",
+      "ref-html-metadata"
+    ]
+  },
+  {
+    id: "crud-database",
+    keys: ["баз данн", "бд", "crud", "запрос бд", "таблиц баз", "pdo crud"],
+    title: "Как реализовать работу с базой данных (CRUD)",
+    desc: "Подключение PDO к MySQL, подготовленные выражения (prepare/execute), выборка (fetch/fetchAll) и безопасное сохранение данных без SQL-инъекций.",
+    topics: [
+      "ref-php-pdo-crud",
+      "ref-pdo",
+      "ref-php-transactions",
+      "ref-php-sessions-auth"
+    ]
+  },
+  {
+    id: "responsive-design",
+    keys: ["адаптивн", "мобильн верстк", "резинов верстк", "адаптив", "responsive", "медиа запрос"],
+    title: "Как сделать адаптивную вёрстку под все экраны",
+    desc: "Метатег viewport, гибкие сетки Flexbox и Grid, адаптивная типографика clamp() и медиа-запросы @media для мобильных и планшетов.",
+    topics: [
+      "ref-css-responsive",
+      "ref-css-clamp",
+      "ref-css-flexbox",
+      "ref-css-grid",
+      "ref-html-metadata",
+      "ref-css-units"
+    ]
+  },
+  {
+    id: "infinite-scroll",
+    keys: ["бесконечн скролл", "подгрузк", "ленил загрузк", "lazy load", "lazy"],
+    title: "Как сделать бесконечный скролл и ленивую загрузку (Lazy Loading)",
+    desc: "Отслеживание видимости триггера через IntersectionObserver, подгрузка порции данных через fetch() и нативный атрибут loading='lazy' для картинок.",
+    topics: [
+      "ref-js-intersection-observer",
+      "ref-js-fetch-method",
+      "ref-html-images",
+      "ref-js-debounce-throttle"
+    ]
+  },
+  {
+    id: "accordion-spoiler",
+    keys: ["аккордеон", "спойлер", "раскрывающ", "accordion", "spoiler", "details"],
+    title: "Как сделать аккордеон / раскрывающийся список",
+    desc: "Используй нативные HTML-теги <details> и <summary> без JavaScript или кастомную сборку с кнопкой, aria-expanded и плавным переходом.",
+    topics: [
+      "ref-html-details",
+      "ref-css-transitions",
+      "lesson-button",
+      "js-events"
+    ]
+  },
+  {
+    id: "localstorage-cart",
+    keys: ["корзин", "сохранен данн", "localstorage", "сохранит в браузер"],
+    title: "Как сохранять данные в браузере (Корзина / Настройки)",
+    desc: "Запись и чтение объектов через localStorage с сериализацией в JSON.stringify и распарсиванием в JSON.parse.",
+    topics: [
+      "ref-js-localstorage-api",
+      "ref-js-json-methods",
+      "ref-js-array-methods",
+      "js-events"
+    ]
+  },
+  {
+    id: "toast-notification",
+    keys: ["уведомлен", "тост", "toast", "всплывающ сообщени", "alert"],
+    title: "Как сделать всплывающие уведомления (Toast)",
+    desc: "Контейнер с position: fixed, плавное появление через transform и opacity с авто-скрытием через setTimeout.",
+    topics: [
+      "ref-css-position",
+      "ref-css-transitions",
+      "ref-css-animation",
+      "ref-js-timers",
+      "ref-js-dom-create",
+      "js-events"
+    ]
+  },
+  {
+    id: "center-element",
+    keys: ["центрирован", "по центр", "выравниван", "отцентрирова", "center"],
+    title: "Как отцентрировать элемент по горизонтали и вертикали",
+    desc: "Современные способы центрирования: Flexbox (justify-content + align-items), Grid (place-items: center) или margin: auto.",
+    topics: [
+      "ref-css-centering",
+      "ref-css-flexbox",
+      "ref-css-grid",
+      "ref-css-position"
+    ]
+  },
+  {
+    id: "clipboard-copy",
+    keys: ["буфер обмен", "скопирова", "копирован", "clipboard", "copy"],
+    title: "Как скопировать текст в буфер обмена",
+    desc: "Современный API navigator.clipboard.writeText(text) с обработкой успешного промиса и таймером сброса подсказки.",
+    topics: [
+      "ref-js-clipboard",
+      "lesson-button",
+      "ref-js-timers"
+    ]
+  },
+  {
+    id: "file-upload",
+    keys: ["загрузк файл", "аплоад", "загрузит файл", "file upload", "картинк сервер"],
+    title: "Как сделать загрузку файлов на сервер",
+    desc: "Форма с enctype='multipart/form-data', поле <input type='file'>, серверная валидация типа и размера в PHP ($_FILES) и защита CSRF.",
+    topics: [
+      "ref-php-file-uploads",
+      "ref-html-input-types",
+      "ref-php-csrf-protection",
+      "ref-html-forms"
+    ]
+  },
+  {
+    id: "seo-metadata",
+    keys: ["метаданн", "meta", "сео", "seo", "opengraph", "og", "твиттер карт", "twitter card", "микроразметк", "json ld", "schema org", "robots", "sitemap"],
+    title: "Как настроить метаданные, SEO и OpenGraph для соцсетей",
+    desc: "Полная подготовка страницы к поиску и репостам: базовые <meta>, протокол OpenGraph для Telegram/VK, Twitter Cards, Schema.org JSON-LD, robots.txt и sitemap.xml.",
+    topics: [
+      "ref-html-metadata",
+      "ref-html-meta-seo",
+      "ref-html-opengraph",
+      "ref-seo-sitemap-robots",
+      "ref-html-json-ld",
+      "ref-xml-basics"
+    ]
+  },
+  {
+    id: "xml-guides",
+    keys: ["xml", "написан xml", "синтаксис xml", "xml файл", "xml тег", "cdata", "rss", "пролог xml"],
+    title: "Как писать валидный XML (структура, синтаксис и CDATA)",
+    desc: "Спецификация XML: обязательный пролог <?xml version='1.0'?>, единственный корень, экранирование спецсимволов (&lt;, &gt;, &amp;), блоки CDATA и парсинг через DOMParser.",
+    topics: [
+      "ref-xml-basics",
+      "ref-xml-advanced",
+      "ref-seo-sitemap-robots",
+      "ref-html-json-ld"
+    ]
+  }
+];
+
+function findRecipe(query) {
+  if (!query || query.length < 2) return null;
+  const qClean = normalize(query).trim();
+  const qStems = qClean.split(/\s+/).map(stemRussian).filter(s => s.length >= 2);
+  if (!qStems.length) return null;
+
+  for (const r of RECIPES) {
+    for (const key of r.keys) {
+      const keyWords = key.split(/\s+/).map(stemRussian);
+      const allMatch = keyWords.every(kw => qStems.some(qs => qs.includes(kw) || kw.includes(qs)));
+      if (allMatch) return r;
+    }
+  }
+  return null;
 }
 
 function render() {
@@ -141,14 +443,51 @@ function render() {
   $("#resources-title").textContent = state.query.trim() ? "Подборка DevShelf" : NAMES[state.filter] || "Подборка";
   const q = normalize(state.query).trim();
   const terms = q.split(/\s+/).filter(Boolean);
+  const activeRecipe = findRecipe(q);
 
-  const list = resources.filter(r => {
-    if (state.filter === "favorites" ? !state.favorites.includes(r.id) : state.filter !== "all" && r.category !== state.filter) return false;
-    if (!terms.length) return true;
-    const hay = normalize([r.title, r.brand, r.description, r.category, ...r.tags, r.searchText].join(" "));
-    return terms.every(t => hay.includes(t));
-  });
-  list.sort(state.sort === "az" ? (a, b) => a.title.localeCompare(b.title, "ru") : (a, b) => a.rank - b.rank);
+  // Обновление баннера задачи/рецепта
+  const recipeBanner = $("#recipe-banner");
+  if (recipeBanner) {
+    if (activeRecipe) {
+      $("#recipe-title").textContent = activeRecipe.title;
+      $("#recipe-desc").textContent = activeRecipe.desc;
+      recipeBanner.removeAttribute("hidden");
+    } else {
+      recipeBanner.setAttribute("hidden", "");
+    }
+  }
+
+  let list = [];
+  if (activeRecipe) {
+    const recipeTopicSet = new Set(activeRecipe.topics);
+    list = resources.filter(r => {
+      if (state.filter === "favorites" ? !state.favorites.includes(r.id) : state.filter !== "all" && r.category !== state.filter) return false;
+      if (recipeTopicSet.has(r.id)) return true;
+      const hay = normalize([r.title, r.brand, r.description, r.category, ...r.tags, r.searchText].join(" "));
+      return terms.length > 0 && terms.every(t => hay.includes(t));
+    });
+
+    list.sort((a, b) => {
+      const isRecA = recipeTopicSet.has(a.id);
+      const isRecB = recipeTopicSet.has(b.id);
+      if (isRecA && !isRecB) return -1;
+      if (!isRecA && isRecB) return 1;
+      if (isRecA && isRecB) {
+        return activeRecipe.topics.indexOf(a.id) - activeRecipe.topics.indexOf(b.id);
+      }
+      return state.sort === "az" ? a.title.localeCompare(b.title, "ru") : a.rank - b.rank;
+    });
+  } else {
+    const qStems = terms.map(stemRussian);
+    list = resources.filter(r => {
+      if (state.filter === "favorites" ? !state.favorites.includes(r.id) : state.filter !== "all" && r.category !== state.filter) return false;
+      if (!terms.length) return true;
+      const hay = normalize([r.title, r.brand, r.description, r.category, ...r.tags, r.searchText].join(" "));
+      return terms.every(t => hay.includes(t)) || (qStems.length > 0 && qStems.every(st => hay.includes(st)));
+    });
+    list.sort(state.sort === "az" ? (a, b) => a.title.localeCompare(b.title, "ru") : (a, b) => a.rank - b.rank);
+  }
+
   $("#resource-grid").innerHTML = list.map(curatedRow).join("");
 
   const wantArchive = q && state.filter !== "favorites" && archive.status === "ready";
@@ -159,9 +498,13 @@ function render() {
   $("#archive-summary").textContent = found.length ? "Найдено страниц: " + fmt(found.length) + (shown.length < found.length ? ", показано " + fmt(shown.length) : "") : "";
   $("#archive-more").hidden = shown.length >= found.length;
 
-  $("#summary").textContent = q
-    ? "Совпадений в подборке: " + list.length
-    : "Материалов: " + list.length;
+  if (activeRecipe) {
+    $("#summary").textContent = "Справочники для задачи: " + list.length;
+  } else {
+    $("#summary").textContent = q
+      ? "Совпадений в подборке: " + list.length
+      : "Материалов: " + list.length;
+  }
   const status = {
     off: "Поиск по подборке DevShelf. Полный справочник доступен на основном сайте.",
     idle: "Поиск идёт по подборке и по полному справочнику MDN и PHP.",
@@ -204,16 +547,173 @@ $("#resource-grid").addEventListener("click", e => {
 $("#theme-toggle").addEventListener("click", () => { document.body.classList.toggle("light"); const light = document.body.classList.contains("light"); $("#theme-toggle").textContent = light ? "☀" : "☾"; write("devshelf-theme", light ? "light" : "dark"); });
 if (read("devshelf-theme", "dark") === "light") { document.body.classList.add("light"); $("#theme-toggle").textContent = "☀"; }
 
+// Shortcuts modal
+const shortcutsDialog = $("#shortcuts-dialog");
+const shortcutsBtn = $("#shortcuts-btn");
+const closeShortcutsBtn = $("#close-shortcuts");
+function toggleShortcuts(show) {
+  if (!shortcutsDialog) return;
+  if (show === undefined) show = !shortcutsDialog.open;
+  if (show) shortcutsDialog.showModal();
+  else shortcutsDialog.close();
+}
+if (shortcutsBtn) shortcutsBtn.addEventListener("click", () => toggleShortcuts(true));
+if (closeShortcutsBtn) closeShortcutsBtn.addEventListener("click", () => toggleShortcuts(false));
+
+// Keyboard navigation helper
+function getVisibleRows() {
+  return $$(".row");
+}
+
+function getSelectedRowIndex() {
+  const rows = getVisibleRows();
+  const active = document.activeElement;
+  return rows.findIndex(row => row === active || row.contains(active) || row.classList.contains("selected"));
+}
+
+function selectRow(index) {
+  const rows = getVisibleRows();
+  if (!rows.length) return;
+  index = Math.max(0, Math.min(index, rows.length - 1));
+  rows.forEach((r, i) => r.classList.toggle("selected", i === index));
+  const link = rows[index].querySelector(".row-title");
+  if (link) {
+    link.focus({ preventScroll: true });
+  }
+  rows[index].scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+
+function clearRowSelection() {
+  $$(".row.selected").forEach(r => r.classList.remove("selected"));
+}
+
 document.addEventListener("keydown", e => {
   const active = document.activeElement;
-  const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(active.tagName);
-  if (e.key === "/" && !typing) { e.preventDefault(); $("#search").focus(); return; }
-  if (e.key === "Escape" && active === $("#search")) { if ($("#search").value) { $("#search").value = ""; setQuery(""); } else $("#search").blur(); return; }
-  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-    const links = $$(".row-title");
-    const i = links.indexOf(active);
-    if (active === $("#search") && e.key === "ArrowDown" && links.length) { e.preventDefault(); links[0].focus(); }
-    else if (i >= 0) { e.preventDefault(); if (e.key === "ArrowDown") (links[i + 1] || links[i]).focus(); else (links[i - 1] || $("#search")).focus(); }
+  const isInput = ["INPUT", "TEXTAREA", "SELECT"].includes(active?.tagName);
+  const searchInput = $("#search");
+
+  // Esc handling
+  if (e.key === "Escape") {
+    if (shortcutsDialog && shortcutsDialog.open) {
+      e.preventDefault();
+      toggleShortcuts(false);
+      return;
+    }
+    if (active === searchInput) {
+      if (searchInput.value) {
+        searchInput.value = "";
+        setQuery("");
+      } else {
+        searchInput.blur();
+      }
+      return;
+    }
+    if (state.query) {
+      searchInput.value = "";
+      setQuery("");
+      clearRowSelection();
+      return;
+    }
+    clearRowSelection();
+    if (document.activeElement) document.activeElement.blur();
+    return;
+  }
+
+  // Focus search with '/'
+  if (e.key === "/" && !isInput) {
+    e.preventDefault();
+    if (searchInput) {
+      searchInput.focus();
+      searchInput.select();
+    }
+    return;
+  }
+
+  // Toggle shortcuts with '?'
+  if (e.key === "?" && !isInput) {
+    e.preventDefault();
+    toggleShortcuts();
+    return;
+  }
+
+  // If typing in search box:
+  if (active === searchInput) {
+    if (e.key === "ArrowDown" || e.key === "Enter") {
+      const rows = getVisibleRows();
+      if (rows.length) {
+        e.preventDefault();
+        selectRow(0);
+      }
+    }
+    return;
+  }
+
+  // If typing in other inputs, don't intercept navigation keys
+  if (isInput) return;
+
+  // Toggle theme with 't' or 'T' (or Russian 'е'/'Е')
+  if (e.key === "t" || e.key === "T" || e.key === "е" || e.key === "Е") {
+    e.preventDefault();
+    $("#theme-toggle").click();
+    return;
+  }
+
+  // Tab quick switches with 1-6
+  const tabFilterMap = { "1": "all", "2": "html", "3": "css", "4": "javascript", "5": "php", "6": "favorites" };
+  if (tabFilterMap[e.key]) {
+    e.preventDefault();
+    const targetTab = $$(".tab").find(b => b.dataset.filter === tabFilterMap[e.key]);
+    if (targetTab) targetTab.click();
+    return;
+  }
+
+  // J / K and ArrowDown / ArrowUp navigation (also supports Russian keyboard layout)
+  if (e.key === "j" || e.key === "J" || e.key === "ArrowDown" || e.key === "о" || e.key === "О") {
+    e.preventDefault();
+    const currentIndex = getSelectedRowIndex();
+    if (currentIndex === -1) {
+      selectRow(0);
+    } else {
+      selectRow(currentIndex + 1);
+    }
+    return;
+  }
+
+  if (e.key === "k" || e.key === "K" || e.key === "ArrowUp" || e.key === "л" || e.key === "Л") {
+    e.preventDefault();
+    const currentIndex = getSelectedRowIndex();
+    if (currentIndex <= 0) {
+      clearRowSelection();
+      if (searchInput) searchInput.focus();
+    } else {
+      selectRow(currentIndex - 1);
+    }
+    return;
+  }
+
+  // Enter or 'o' to open selected item
+  if (e.key === "Enter" || e.key === "o" || e.key === "O" || e.key === "щ" || e.key === "Щ") {
+    const currentIndex = getSelectedRowIndex();
+    if (currentIndex >= 0) {
+      const rows = getVisibleRows();
+      const link = rows[currentIndex]?.querySelector(".row-title");
+      if (link) {
+        link.click();
+      }
+    }
+    return;
+  }
+
+  // 'f' or 's' to toggle favorite for current row
+  if (e.key === "f" || e.key === "F" || e.key === "s" || e.key === "S" || e.key === "а" || e.key === "А" || e.key === "ы" || e.key === "Ы") {
+    const currentIndex = getSelectedRowIndex();
+    if (currentIndex >= 0) {
+      e.preventDefault();
+      const rows = getVisibleRows();
+      const favBtn = rows[currentIndex]?.querySelector("[data-favorite]");
+      if (favBtn) favBtn.click();
+    }
+    return;
   }
 });
 

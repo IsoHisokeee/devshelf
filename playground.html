@@ -1,10 +1,44 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10151f"><meta name="description" content="Изучай HTML, CSS и JavaScript с примерами и живым предпросмотром на DevShelf.">
-<title>Интерактивный справочник — DevShelf</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%2310151f%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-size=%2728%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3E%26lt;/%26gt;%3C/text%3E%3C/svg%3E"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="playground.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Интерактивная песочница и справочник — DevShelf</title>
+<meta name="description" content="Изучай HTML, CSS и JavaScript с практическими примерами и живым предпросмотром кода на DevShelf.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#10151f">
+<link rel="canonical" href="playground.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DevShelf">
+<meta property="og:title" content="Интерактивная песочница и справочник — DevShelf">
+<meta property="og:description" content="Изучай HTML, CSS и JavaScript с практическими примерами и живым предпросмотром кода на DevShelf.">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:url" content="playground.html">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Интерактивная песочница и справочник — DevShelf">
+<meta name="twitter:description" content="Изучай HTML, CSS и JavaScript с практическими примерами и живым предпросмотром кода на DevShelf.">
+
+<!-- Schema.org JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Интерактивная песочница DevShelf",
+  "description": "Песочница с тремя редакторами (HTML, CSS, JS) и живым предпросмотром кода в браузере.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "All",
+  "inLanguage": "ru"
+}
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%2310151f%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-size=%2728%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3E%26lt;/%26gt;%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="playground.css">
 </head>
 <body class="playground-page">
 <header class="play-top"><a class="brand" href="index.html"><span class="brand-icon">&lt;/&gt;</span><span>dev<span>shelf</span></span></a><a class="back-link" href="index.html">← Вернуться в библиотеку</a><button class="theme-button" id="theme-toggle" aria-label="Переключить тему">☾</button></header>
@@ -22,5 +56,6 @@
 </section></div>
 <section class="next-topics"><div class="panel-kicker">ПРОДОЛЖАЙ ИЗУЧАТЬ</div><h2>Другие темы</h2><div id="topic-links" class="topic-links"></div></section>
 </main><footer class="play-footer"><span>DevShelf · Учись на практике</span><a href="index.html">← Все материалы</a></footer>
+<script src="/reference-data.js"></script>
 <script src="/playground.js"></script>
 </body></html>

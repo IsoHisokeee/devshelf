@@ -12,6 +12,10 @@ on:
       - "playground.js"
       - "reference.html"
       - "reference-data.js"
+      - "robots.txt"
+      - "robots.xml"
+      - "sitemap.xml"
+      - ".htaccess"
   workflow_dispatch:
 
 permissions:
@@ -42,6 +46,10 @@ jobs:
               "playground.js",
               "reference.html",
               "reference-data.js",
+              "robots.txt",
+              "robots.xml",
+              "sitemap.xml",
+              ".htaccess",
           )
           broken = []
           for name in files:
@@ -92,6 +100,10 @@ jobs:
               "playground.js",
               "reference.html",
               "reference-data.js",
+              "robots.txt",
+              "robots.xml",
+              "sitemap.xml",
+              ".htaccess",
           )
 
           class SessionReuseFTP_TLS(ftplib.FTP_TLS):

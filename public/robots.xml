@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DevShelf — robots.xml
+  Структурированный XML-манифест для поисковых роботов и веб-краулеров
+  Содержит директивы индексации, сведения о платформе и карту ключевых разделов
+-->
+<robots xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <metadata>
+    <sitename>DevShelf — полка разработчика</sitename>
+    <description>Личная адаптивная библиотека документации и интерактивный справочник по HTML, CSS, JavaScript и PHP.</description>
+    <author>DevShelf Contributors</author>
+    <version>1.0.0</version>
+    <updated>2026-10-23</updated>
+    <policy>
+      <user-agent>*</user-agent>
+      <rule action="allow">/</rule>
+      <crawl-delay>1</crawl-delay>
+    </policy>
+  </metadata>
+
+  <urlset>
+    <url>
+      <loc>/index.html</loc>
+      <lastmod>2026-10-23</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>1.0</priority>
+    </url>
+    <url>
+      <loc>/reference.html</loc>
+      <lastmod>2026-10-23</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.9</priority>
+    </url>
+    <url>
+      <loc>/playground.html</loc>
+      <lastmod>2026-10-23</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
+    </url>
+  </urlset>
+</robots>

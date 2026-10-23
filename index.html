@@ -1,11 +1,50 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0d1117"><meta name="description" content="DevShelf — личная библиотека документации по HTML, CSS, JavaScript и PHP.">
-<meta property="og:type" content="website"><meta property="og:title" content="DevShelf — полка разработчика"><meta property="og:description" content="DevShelf — личная библиотека документации по HTML, CSS, JavaScript и PHP.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DevShelf — полка разработчика</title>
+<meta name="description" content="Личная адаптивная библиотека документации и интерактивный справочник по HTML, CSS, JavaScript и PHP.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0d1117">
+<link rel="canonical" href="index.html">
+
+<!-- Open Graph / Facebook / Telegram / VK -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DevShelf">
+<meta property="og:title" content="DevShelf — полка разработчика">
+<meta property="og:description" content="Личная адаптивная библиотека документации и интерактивный справочник по HTML, CSS, JavaScript и PHP.">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:url" content="index.html">
+<meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1200 630%27 width=%271200%27 height=%27630%27%3E%3Crect width=%271200%27 height=%27630%27 fill=%27%230d1117%27/%3E%3Ctext x=%27600%27 y=%27300%27 font-size=%2780%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3EDevShelf%3C/text%3E%3Ctext x=%27600%27 y=%27380%27 font-size=%2736%27 text-anchor=%27middle%27 fill=%27%2394a3b8%27 font-family=%27sans-serif%27%3E%D0%A1%D0%BF%D1%80%D0%B0%D0%B2%D0%BE%D1%87%D0%BD%D0%B8%D0%BA %D0%B2%D0%B5%D0%B1-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%D0%B0%3C/text%3E%3C/svg%3E">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DevShelf — полка разработчика">
+<meta name="twitter:description" content="Личная адаптивная библиотека документации и интерактивный справочник по HTML, CSS, JavaScript и PHP.">
+<meta name="twitter:image" content="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1200 630%27 width=%271200%27 height=%27630%27%3E%3Crect width=%271200%27 height=%27630%27 fill=%27%230d1117%27/%3E%3Ctext x=%27600%27 y=%27300%27 font-size=%2780%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3EDevShelf%3C/text%3E%3Ctext x=%27600%27 y=%27380%27 font-size=%2736%27 text-anchor=%27middle%27 fill=%27%2394a3b8%27 font-family=%27sans-serif%27%3E%D0%A1%D0%BF%D1%80%D0%B0%D0%B2%D0%BE%D1%87%D0%BD%D0%B8%D0%BA %D0%B2%D0%B5%D0%B1-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%87%D0%B8%D0%BA%D0%B0%3C/text%3E%3C/svg%3E">
+
+<!-- Schema.org Structured Data (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "DevShelf — полка разработчика",
+  "description": "Личная адаптивная библиотека документации и интерактивный справочник по HTML, CSS, JavaScript и PHP с живой песочницей.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "All",
+  "inLanguage": "ru",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "RUB"
+  }
+}
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%2310151f%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-size=%2728%27 text-anchor=%27middle%27 fill=%27%2378b6ff%27 font-family=%27monospace%27 font-weight=%27700%27%3E%26lt;/%26gt;%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -19,17 +58,25 @@
 <button class="tab" data-filter="php" aria-pressed="false"><svg class="tab-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><title>PHP</title><rect width="24" height="24" rx="4" fill="#777BB4"/><path d="M4.2 8.4h3.4c1.4 0 2.2.8 2.2 2 0 1.3-.8 2.1-2.2 2.1H5.8v3.1H4.2V8.4zm1.6 2.8h1.6c.5 0 .9-.3.9-.8s-.4-.8-.9-.8H5.8v1.6zm5.5-2.8h1.6v2.8h2.5v-2.8h1.6v7.2h-1.6v-3h-2.5v3h-1.6V8.4zm7.2 0h3.4c1.4 0 2.2.8 2.2 2 0 1.3-.8 2.1-2.2 2.1h-1.8v3.1h-1.6V8.4zm1.6 2.8h1.6c.5 0 .9-.3.9-.8s-.4-.8-.9-.8h-1.6v1.6z" fill="#FFFFFF"/></svg>PHP</button>
 <button class="tab" data-filter="favorites" aria-pressed="false">★ Избранное <small id="favorite-count">0</small></button>
 </nav>
-<div class="top-actions"><kbd title="Фокус на поиск">/</kbd><button class="theme-button" id="theme-toggle" title="Переключить тему" aria-label="Переключить тему">☾</button></div>
+<div class="top-actions"><button class="kbd-btn" id="shortcuts-btn" title="Горячие клавиши (?)" aria-label="Горячие клавиши"><kbd>?</kbd></button><kbd title="Фокус на поиск">/</kbd><button class="theme-button" id="theme-toggle" title="Переключить тему (T)" aria-label="Переключить тему">☾</button></div>
 </div></header>
 <main class="wrap">
 <section class="intro" role="search" aria-label="Поиск по справочнику">
 <h1>Справочник веб-разработчика</h1>
 <p>Русские справки, песочницы и полный справочник MDN и PHP Manual. Начни вводить название тега, свойства или функции.</p>
-<label class="searchbox"><span aria-hidden="true">⌕</span><input id="search" type="search" aria-label="Поиск по библиотеке" placeholder="Например: flex, Array.map, array_map, :has" autocomplete="off" spellcheck="false"><kbd>/</kbd><button class="clear" id="clear-search" aria-label="Очистить поиск" hidden>×</button></label>
-<div class="hints"><span>Попробуй:</span><button type="button" data-query="массивы">массивы</button><button type="button" data-query="события">события</button><button type="button" data-query="формы">формы</button><button type="button" data-query="grid">grid</button><button type="button" data-query="array_map">array_map</button></div>
+<label class="searchbox"><span aria-hidden="true">⌕</span><input id="search" type="search" aria-label="Поиск по библиотеке" placeholder="Ищи тег, свойство или задачу (например: бургер меню, flex, модалка, pdo)..." autocomplete="off" spellcheck="false"><kbd>/</kbd><button class="clear" id="clear-search" aria-label="Очистить поиск" hidden>×</button></label>
+<div class="hints"><span>Попробуй:</span><button type="button" data-query="бургер меню">бургер меню</button><button type="button" data-query="метаданные">метаданные</button><button type="button" data-query="xml">xml</button><button type="button" data-query="модальное окно">модальное окно</button><button type="button" data-query="подключение css">подключение css</button><button type="button" data-query="шрифты">шрифты</button><button type="button" data-query="адаптивность">адаптивность</button><button type="button" data-query="pdo">pdo</button></div>
 <p class="status" id="archive-status" aria-live="polite"></p>
 </section>
 <section aria-labelledby="resources-title">
+<div id="recipe-banner" class="recipe-banner" hidden>
+  <div class="recipe-icon">💡</div>
+  <div class="recipe-body">
+    <div class="recipe-kicker">РЕШЕНИЕ ДЛЯ ЗАДАЧИ</div>
+    <div id="recipe-title" class="recipe-title"></div>
+    <p id="recipe-desc" class="recipe-desc"></p>
+  </div>
+</div>
 <div class="results-head"><div><h2 id="resources-title">Подборка</h2><p id="summary"></p></div>
 <label class="sort-label">Сортировка <select id="sort"><option value="recommended">Сначала основные</option><option value="az">По названию А—Я</option></select></label></div>
 <ul id="resource-grid" class="rows" aria-live="polite"></ul>
@@ -44,5 +91,24 @@
 </main>
 <footer><span>© 2026 DevShelf</span><span>Избранное хранится в этом браузере</span></footer>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+<dialog id="shortcuts-dialog" class="shortcuts-modal">
+  <div class="shortcuts-box">
+    <div class="shortcuts-head">
+      <h3>Горячие клавиши</h3>
+      <button type="button" id="close-shortcuts" aria-label="Закрыть">×</button>
+    </div>
+    <div class="shortcuts-grid">
+      <div class="shortcut-item"><kbd>/</kbd> <span>Фокус на строку поиска</span></div>
+      <div class="shortcut-item"><kbd>Esc</kbd> <span>Очистить поиск / сброс фокуса</span></div>
+      <div class="shortcut-item"><kbd>J</kbd> / <kbd>↓</kbd> <span>Следующий материал в списке</span></div>
+      <div class="shortcut-item"><kbd>K</kbd> / <kbd>↑</kbd> <span>Предыдущий материал в списке</span></div>
+      <div class="shortcut-item"><kbd>Enter</kbd> / <kbd>O</kbd> <span>Открыть выбранный материал</span></div>
+      <div class="shortcut-item"><kbd>F</kbd> / <kbd>S</kbd> <span>Добавить / убрать из избранного</span></div>
+      <div class="shortcut-item"><kbd>1</kbd>–<kbd>6</kbd> <span>Быстрое переключение разделов (Всё, HTML, CSS...)</span></div>
+      <div class="shortcut-item"><kbd>T</kbd> <span>Переключить тему (светлая / тёмная)</span></div>
+      <div class="shortcut-item"><kbd>?</kbd> <span>Показать / скрыть это окно</span></div>
+    </div>
+  </div>
+</dialog>
 <script src="/reference-data.js"></script><script src="/script.js"></script>
 </body></html>
