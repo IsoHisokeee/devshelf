@@ -61,11 +61,17 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const read = (k, fallback) => { try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch { return fallback; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
-const MARKS = {html:"H", css:"C", javascript:"JS", php:"php"};
+const ICONS = {
+  html: '<svg class="lang-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><title>HTML5</title><path fill="#E44D26" d="M3 2l1.8 17.5L12 22l7.2-2.5L21 2H3z"/><path fill="#F16529" d="M12 3.8v16.3l5.6-1.9 1.4-14.4H12z"/><path fill="#EBEBEB" d="M12 7.8H7.3l.3 3.2H12v-1.7H9.1l-.1-1.5H12V7.8zm0 5.4H9.9l.2 2 1.9.5v1.6l-3.3-.9-.3-4.2H12v1z"/><path fill="#FFFFFF" d="M12 7.8v1.5h3.6l-.3 3.8H12v1h2.2l-.2 2.3-2 .5v1.6l3.3-.9.7-7.3.1-1H12z"/></svg>',
+  css: '<svg class="lang-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><title>CSS3</title><path fill="#1572B6" d="M3 2l1.8 17.5L12 22l7.2-2.5L21 2H3z"/><path fill="#33A9DC" d="M12 3.8v16.3l5.6-1.9 1.4-14.4H12z"/><path fill="#EBEBEB" d="M12 7.8H7.3l.3 3.2H12v-1.7H9.1l-.1-1.5H12V7.8zm0 5.4H9.9l.2 2 1.9.5v1.6l-3.3-.9-.3-4.2H12v1z"/><path fill="#FFFFFF" d="M12 7.8v1.5h3.6l-.3 3.2-3.3.9v1.6l3.3-.9.4-4.8H12v-1.5h5.3l.1-1.5.1-1.5H12z"/></svg>',
+  javascript: '<svg class="lang-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><title>JavaScript</title><rect width="24" height="24" rx="4" fill="#F7DF1E"/><path d="M6.2 17.5c.5.8 1.2 1.4 2.2 1.4 1.2 0 2-.6 2-2.1v-7.2h2.4v7.3c0 2.6-1.6 3.7-3.9 3.7-1.8 0-3-.9-3.7-2.3l1-.8zm8.6-.2c.5.8 1.3 1.3 2.3 1.3 1 0 1.6-.5 1.6-1.2 0-.8-.6-1.1-1.7-1.6l-.6-.3c-1.7-.7-2.8-1.6-2.8-3.5 0-1.9 1.5-3.3 3.7-3.3 1.6 0 2.8.6 3.5 1.9l-1.8 1.1c-.4-.7-.9-1-1.7-1-.8 0-1.3.5-1.3 1.1 0 .7.5 1 1.5 1.4l.6.3c2 .9 3 1.8 3 3.7 0 2.1-1.6 3.5-4.1 3.5-2.3 0-3.7-1.1-4.4-2.5l2.2-1.2z" fill="#000000"/></svg>',
+  php: '<svg class="lang-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><title>PHP</title><rect width="24" height="24" rx="4" fill="#777BB4"/><path d="M4.2 8.4h3.4c1.4 0 2.2.8 2.2 2 0 1.3-.8 2.1-2.2 2.1H5.8v3.1H4.2V8.4zm1.6 2.8h1.6c.5 0 .9-.3.9-.8s-.4-.8-.9-.8H5.8v1.6zm5.5-2.8h1.6v2.8h2.5v-2.8h1.6v7.2h-1.6v-3h-2.5v3h-1.6V8.4zm7.2 0h3.4c1.4 0 2.2.8 2.2 2 0 1.3-.8 2.1-2.2 2.1h-1.8v3.1h-1.6V8.4zm1.6 2.8h1.6c.5 0 .9-.3.9-.8s-.4-.8-.9-.8h-1.6v1.6z" fill="#FFFFFF"/></svg>',
+  api: '<svg class="lang-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><title>Web API</title><rect width="24" height="24" rx="4" fill="#319795"/><path d="M4.6 15.2l2.2-6.4h1.8l2.2 6.4H9.4l-.4-1.4H6.8l-.4 1.4H4.6zm2.7-2.6h1.2l-.6-2.1-.6 2.1zm4.7 2.6V8.8h2.6c1.3 0 2.1.8 2.1 1.8 0 1.1-.8 1.8-2.1 1.8h-1.2v2.8H12zm1.4-4h1.1c.5 0 .8-.3.8-.7s-.3-.7-.8-.7h-1.1v1.4zm5.1 4V8.8h1.6v6.4h-1.6z" fill="#FFFFFF"/></svg>'
+};
+const getIcon = cat => ICONS[cat] || '<span class="mark-fallback">•</span>';
 const NAMES = {all:"Подборка", favorites:"Избранное", html:"HTML", css:"CSS", javascript:"JavaScript", php:"PHP"};
 const ARCHIVE_SECTIONS = {html:["HTML"], css:["CSS"], javascript:["JavaScript","Web API"], php:["PHP"]};
 const SECTION_CLASS = {"HTML":"html","CSS":"css","JavaScript":"javascript","Web API":"api","PHP":"php"};
-const SECTION_MARK = {"HTML":"H","CSS":"C","JavaScript":"JS","Web API":"API","PHP":"php"};
 const ARCHIVE_STEP = 50;
 const state = { filter:"all", query:"", sort:"recommended", favorites:read("devshelf-favorites",[]), archiveLimit:ARCHIVE_STEP };
 const fmt = n => n.toLocaleString("ru");
@@ -114,7 +120,7 @@ function curatedRow(r) {
   const fav = state.favorites.includes(r.id);
   const kind = r.reference ? "Справка" : r.internal ? "Урок" : r.official ? "Первоисточник" : "Материал";
   const ext = r.internal ? "" : ' target="_blank" rel="noopener noreferrer"';
-  return '<li class="row"><span class="mark m-' + safe(r.category) + '" aria-hidden="true">' + safe(MARKS[r.category] || "•") + '</span>'
+  return '<li class="row"><span class="mark" aria-hidden="true">' + getIcon(r.category) + '</span>'
     + '<div class="row-main"><a class="row-title" href="' + safe(r.url) + '"' + ext + '>' + safe(r.title) + (r.internal ? "" : '<span class="ext" aria-hidden="true"> ↗</span>') + '</a>'
     + '<span class="row-desc">' + safe(r.description) + '</span></div>'
     + '<div class="row-meta"><span class="badge' + (r.official ? " official" : "") + '">' + kind + '</span><span>' + safe(r.brand) + '</span></div>'
@@ -122,7 +128,8 @@ function curatedRow(r) {
 }
 function archiveRow(r) {
   const where = r.path.replace(/^mdn\/Web\//i, "").replace(/^php\/(php-chunked-xhtml\/)?/, "").replace(/\.x?html$/i, "");
-  return '<li class="row archive"><span class="mark m-' + SECTION_CLASS[r.section] + '" aria-hidden="true">' + SECTION_MARK[r.section] + '</span>'
+  const cat = SECTION_CLASS[r.section] || "api";
+  return '<li class="row archive"><span class="mark" aria-hidden="true">' + getIcon(cat) + '</span>'
     + '<div class="row-main"><a class="row-title" href="' + safe(archiveHref(r.path)) + '">' + safe(r.title) + '</a><span class="row-desc">' + safe(where) + '</span></div>'
     + '<div class="row-meta"><span class="badge">' + (r.section === "PHP" ? "PHP Manual" : "MDN") + '</span></div></li>';
 }
