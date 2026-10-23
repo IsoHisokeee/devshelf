@@ -1,867 +1,951 @@
-// DevShelf Client Core & Developer Workbench
-(function () {
-  'use strict';
+import './reference-data.js';
+import './preview-engine.js';
 
-  const $ = selector => document.querySelector(selector);
-  const $$ = selector => [...document.querySelectorAll(selector)];
+const rawTopics = Array.isArray(window.DEVSHELF_REFERENCE_TOPICS)
+  ? window.DEVSHELF_REFERENCE_TOPICS
+  : [];
 
-  const readStorage = (key, fallback) => {
-    try {
-      const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : fallback;
-    } catch {
-      return fallback;
-    }
+const categoryLabels = {
+  html: 'HTML5',
+  css: 'CSS3',
+  javascript: 'JavaScript',
+  frameworks: 'Фреймворк',
+  recipes: 'Рецепт',
+  php: 'PHP 8.3',
+  xml: 'XML / SEO'
+};
+
+const defaultMetaByCategory = {
+  html: {
+    when: 'При проектировании семантической структуры документа, форм, медиа и доступного интерфейса.',
+    alternatives: 'Специализированные ARIA-атрибуты или веб-компоненты при нестандартном поведении.',
+    points: [
+      'Используйте тег строго по смыслу контента, а не ради визуального размера по умолчанию.',
+      'Соблюдайте иерархию заголовков и связывайте подписи <label> с полями ввода.',
+      'Проверяйте навигацию с клавиатуры (Tab / Shift+Tab / Enter).'
+    ]
+  },
+  css: {
+    when: 'При построении адаптивных сеток, отступов, рамок, типографики и микро-анимаций.',
+    alternatives: 'Утилитарные классы Tailwind CSS или компонентные токены дизайн-системы.',
+    points: [
+      'Выносите повторяющиеся цвета, радиусы и тени в CSS-переменные (:root).',
+      'Для анимаций отдавайте приоритет свойствам transform и opacity.',
+      'Проверяйте поведение блока на узких экранах (320px–768px).'
+    ]
+  },
+  javascript: {
+    when: 'Для обработки пользовательских событий, работы с DOM, сетевых запросов и состояния.',
+    alternatives: 'Декларативные фреймворки (React, Vue, Alpine.js) или нативные HTML/CSS-механизмы.',
+    points: [
+      'Отделяйте чистую обработку данных от прямых манипуляций с DOM.',
+      'Всегда оборачивайте сетевые вызовы fetch и JSON.parse в блок try / catch.',
+      'Следите за очисткой таймеров и слушателей событий.'
+    ]
+  },
+  frameworks: {
+    when: 'Для ускорения разработки, устранения рутинного шаблонного кода и масштабирования архитектуры.',
+    alternatives: 'Нативный стек HTML5 + CSS3 + Vanilla JS для небольших проектов без сборщика.',
+    points: [
+      'Для быстрых прототипов подключайте CDN-версию, а для продакшена используйте сборщик Vite.',
+      'Изучите базовый нативный аналог перед внедрением фреймворка.',
+      'Следите за итоговым весом JS/CSS бандла при сборке.'
+    ]
+  },
+  recipes: {
+    when: 'Когда нужен готовый проверенный модуль интерфейса (вход, регистрация, корзина, фильтр, модалка).',
+    alternatives: 'Готовые UI-библиотеки или кастомная разработка с нуля.',
+    points: [
+      'Все рецепты объединяют семантический HTML, изолированный CSS и чистый JS.',
+      'В окне «Код и синтаксис» вы можете переключаться между слитным кодом и отдельными вкладками HTML / CSS / JS.',
+      'Адаптируйте CSS-переменные под фирменную палитру вашего проекта.'
+    ]
+  },
+  php: {
+    when: 'На серверной стороне для валидации форм, авторизации, работы с MySQL/PostgreSQL и API.',
+    alternatives: 'Фреймворк Laravel 11 или серверные среды Node.js / Go / Python.',
+    points: [
+      'Никогда не подставляйте пользовательский ввод напрямую в SQL — используйте только PDO prepare/execute.',
+      'Храните пароли только в виде хеша password_hash() и проверяйте через password_verify().',
+      'Экранируйте вывод в HTML через htmlspecialchars($val, ENT_QUOTES, "UTF-8").'
+    ]
+  },
+  xml: {
+    when: 'Для настройки веб-сервера (.htaccess / Nginx), SEO-индексации (sitemap.xml, robots.txt, Schema.org) и векторной графики SVG.',
+    alternatives: 'JSON-конфигурации для клиентских приложений.',
+    points: [
+      'Следите за строгим закрытием тегов и кодировкой UTF-8 без BOM.',
+      'Проверяйте валидность микроразметки и карты сайта перед выкладкой на продакшен.',
+      'Делайте резервную копию конфигурационных файлов сервера перед правками.'
+    ]
+  }
+};
+
+const FAVORITES_KEY = 'devshelf_favorites_v2';
+
+function loadFavorites() {
+  try {
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return new Set(Array.isArray(parsed) ? parsed : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveFavorites(favSet) {
+  try {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favSet]));
+  } catch {
+    // ignore storage errors
+  }
+}
+
+const favorites = loadFavorites();
+
+function normalizeTopic(item) {
+  const category = item.lang || item.category || 'html';
+  const fallback = defaultMetaByCategory[category] || defaultMetaByCategory.html;
+
+  return {
+    id: item.id,
+    lang: category,
+    category,
+    title: item.title || 'Без названия',
+    summary: item.summary || '',
+    when: item.when || fallback.when,
+    alternatives: item.alternatives || fallback.alternatives,
+    tags: Array.isArray(item.tags) ? item.tags : [],
+    points: Array.isArray(item.points) && item.points.length ? item.points : fallback.points,
+    code: item.code || '',
+    example: item.example || ''
+  };
+}
+
+const referenceItems = rawTopics.map(normalizeTopic);
+const topicsById = new Map(referenceItems.map((item) => [item.id, item]));
+
+const state = {
+  search: '',
+  category: 'all',
+  tag: 'all',
+  activeModalTopicId: null,
+  activeCodePart: 'combined',
+  activeRawCode: ''
+};
+
+const cardsGrid = document.querySelector('#cards-grid');
+const searchInput = document.querySelector('#search-input');
+const categorySelect = document.querySelector('#category-select');
+const topicTabs = document.querySelector('#topic-tabs');
+const quickFilters = document.querySelector('#quick-filters');
+const resultsMeta = document.querySelector('#results-meta');
+const totalCount = document.querySelector('#total-count');
+
+// Modal DOM Elements
+const modalBackdrop = document.querySelector('#topic-modal-backdrop');
+const modalTitle = document.querySelector('#modal-title');
+const modalBadges = document.querySelector('#modal-badges');
+const modalSummary = document.querySelector('#modal-summary');
+const modalWhen = document.querySelector('#modal-when');
+const modalAlternatives = document.querySelector('#modal-alternatives');
+const modalPoints = document.querySelector('#modal-points');
+const modalCode = document.querySelector('#modal-code');
+const modalCodeTabs = document.querySelector('#modal-code-tabs');
+const modalCopyBtn = document.querySelector('#modal-copy-btn');
+const modalCloseBtn = document.querySelector('#modal-close-btn');
+const modalSandboxLink = document.querySelector('#modal-sandbox-link');
+const modalPreviewFrame = document.querySelector('#modal-preview-frame');
+const modalRefreshPreview = document.querySelector('#modal-refresh-preview');
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function updateCategoryCounts() {
+  if (totalCount) {
+    totalCount.textContent = `${referenceItems.length} тем`;
+  }
+
+  const counts = {
+    all: referenceItems.length,
+    html: 0,
+    css: 0,
+    javascript: 0,
+    frameworks: 0,
+    recipes: 0,
+    php: 0,
+    xml: 0,
+    favorites: favorites.size
   };
 
-  const writeStorage = (key, value) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-      console.warn('Storage write error:', e);
-    }
-  };
-
-  function safe(str) {
-    if (str === null || str === undefined) return '';
-    return String(str).replace(/[&<>"']/g, c => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    }[c]));
-  }
-
-  function normalize(str) {
-    return String(str || '').replace(/[<>]/g, '').toLowerCase().trim();
-  }
-
-  const LANG_LABELS = {
-    html: 'HTML5',
-    css: 'CSS3',
-    javascript: 'JavaScript',
-    php: 'PHP 8',
-    xml: 'XML & SEO',
-    recipes: 'Рецепт',
-    frameworks: 'Фреймворк'
-  };
-
-  const rawTopics = window.DEVSHELF_REFERENCE_TOPICS || [];
-  const resources = rawTopics.map(t => ({
-    id: t.id,
-    lang: t.lang || 'html',
-    title: t.title,
-    category: t.lang || 'html',
-    summary: t.summary || '',
-    code: t.code || '',
-    example: t.example || '',
-    points: t.points || [],
-    tags: t.tags || [],
-    when: t.when || '',
-    alternatives: t.alternatives || '',
-    playgroundUrl: `playground.html?topic=${encodeURIComponent(t.id)}`,
-    titleLower: (t.title || '').toLowerCase(),
-    tagsLower: (t.tags || []).map(x => x.toLowerCase()),
-    searchText: [t.id, t.title, t.summary, ...(t.tags || []), t.when, t.alternatives, ...(t.points || [])].join(' ').toLowerCase()
-  }));
-
-  const resourcesById = Object.fromEntries(resources.map(r => [r.id, r]));
-
-  const state = {
-    filter: 'all',
-    query: '',
-    sort: 'recommended',
-    favorites: readStorage('devshelf-favorites', []),
-    activeTopicId: null,
-    activeCodeTab: 'all',
-    modalCodeParts: { all: '', html: '', css: '', js: '' }
-  };
-
-  // ========================================================
-  // UNIFIED REFERENCE MODAL WITH 4-TAB CODE VIEWER (ALL / HTML / CSS / JS)
-  // ========================================================
-  const topicModal = $('#topic-modal');
-  const tmCodeEditor = $('#tm-code-editor');
-  const tmPreviewIframe = $('#tm-preview-iframe');
-
-  function syncActiveTabToParts() {
-    if (!tmCodeEditor) return;
-    const val = tmCodeEditor.value;
-    state.modalCodeParts[state.activeCodeTab] = val;
-    if (state.activeCodeTab !== 'all' && window.DevShelfPreview?.mergeCodeParts) {
-      state.modalCodeParts.all = window.DevShelfPreview.mergeCodeParts(state.modalCodeParts);
+  for (const item of referenceItems) {
+    if (typeof counts[item.category] === 'number') {
+      counts[item.category] += 1;
     }
   }
 
-  function updateModalPreview(item) {
-    if (!tmPreviewIframe || !item) return;
-    syncActiveTabToParts();
-    const codeToRun = state.activeCodeTab === 'all'
-      ? state.modalCodeParts.all
-      : (window.DevShelfPreview?.mergeCodeParts ? window.DevShelfPreview.mergeCodeParts(state.modalCodeParts) : state.modalCodeParts.all);
-
-    if (window.DevShelfPreview && typeof window.DevShelfPreview.buildTopicPreviewDoc === 'function') {
-      tmPreviewIframe.srcdoc = window.DevShelfPreview.buildTopicPreviewDoc(item, codeToRun);
-    }
-  }
-
-  function setCodeTab(tabName) {
-    syncActiveTabToParts();
-    state.activeCodeTab = tabName;
-    $$('.tm-code-tab').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.codeTab === tabName);
-    });
-    if (tmCodeEditor) {
-      tmCodeEditor.value = state.modalCodeParts[tabName] || '';
-    }
-  }
-
-  function updateModalFavButton(topicId) {
-    const favBtn = $('#tm-fav-btn');
-    if (!favBtn) return;
-    const isFav = state.favorites.includes(topicId);
-    favBtn.textContent = isFav ? '★ В избранном' : '☆ В избранное';
-    favBtn.style.borderColor = isFav ? 'var(--star)' : 'var(--line)';
-    favBtn.style.color = isFav ? 'var(--star)' : 'var(--text-dim)';
-  }
-
-  function openTopicModal(topicId) {
-    const item = resourcesById[topicId];
-    if (!item || !topicModal) return;
-
-    state.activeTopicId = item.id;
-    const catLabel = LANG_LABELS[item.category] || item.category.toUpperCase();
-
-    $('#tm-kicker').textContent = `СПРАВОЧНИК DEVSHELF · ${catLabel}`;
-    $('#tm-title').textContent = item.title;
-    $('#tm-summary').textContent = item.summary;
-    $('#tm-pg-link').href = item.playgroundUrl;
-
-    updateModalFavButton(item.id);
-
-    $('#tm-points').innerHTML = (item.points || []).map(p => `<li>${safe(p)}</li>`).join('');
-    $('#tm-when').textContent = item.when || 'Применяется по стандарту языка.';
-    $('#tm-alt').textContent = item.alternatives || 'Выбирайте по контексту задачи.';
-
-    // Разбиваем код на 4 вкладки: Слитый (all), HTML, CSS, JS
-    if (window.DevShelfPreview && typeof window.DevShelfPreview.splitTopicIntoCodeParts === 'function') {
-      state.modalCodeParts = window.DevShelfPreview.splitTopicIntoCodeParts(item);
-    } else {
-      state.modalCodeParts = { all: item.code, html: item.code, css: '', js: '' };
-    }
-
-    state.activeCodeTab = 'all';
-    $$('.tm-code-tab').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.codeTab === 'all');
-    });
-    if (tmCodeEditor) {
-      tmCodeEditor.value = state.modalCodeParts.all;
-    }
-
-    const exWrap = $('#tm-example-wrap');
-    const exCode = $('#tm-example');
-    if (exWrap && exCode) {
-      if (item.example) {
-        exWrap.hidden = false;
-        exCode.textContent = item.example;
-      } else {
-        exWrap.hidden = true;
-      }
-    }
-
-    updateModalPreview(item);
-
-    if (!topicModal.open) {
-      topicModal.showModal();
-    }
-
-    // Обновляем URL без перезагрузки для удобного шаринга
-    try {
-      const nextUrl = new URL(window.location.href);
-      nextUrl.searchParams.set('topic', item.id);
-      window.history.replaceState({}, '', nextUrl.toString());
-    } catch {}
-  }
-
-  function closeTopicModal() {
-    if (topicModal && topicModal.open) {
-      topicModal.close();
-    }
-    try {
-      const nextUrl = new URL(window.location.href);
-      nextUrl.searchParams.delete('topic');
-      window.history.replaceState({}, '', nextUrl.toString());
-    } catch {}
-  }
-
-  if ($('#tm-close')) {
-    $('#tm-close').addEventListener('click', closeTopicModal);
-  }
-  if (topicModal) {
-    topicModal.addEventListener('click', (e) => {
-      if (e.target === topicModal) closeTopicModal();
-    });
-    topicModal.addEventListener('close', () => {
-      try {
-        const nextUrl = new URL(window.location.href);
-        nextUrl.searchParams.delete('topic');
-        window.history.replaceState({}, '', nextUrl.toString());
-      } catch {}
-    });
-  }
-
-  $$('.tm-code-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      setCodeTab(btn.dataset.codeTab);
-    });
+  document.querySelectorAll('[data-count-for]').forEach((node) => {
+    const key = node.getAttribute('data-count-for');
+    if (!key || typeof counts[key] !== 'number') return;
+    node.textContent = String(counts[key]);
   });
+}
 
-  if ($('#tm-run-code')) {
-    $('#tm-run-code').addEventListener('click', () => {
-      const item = resourcesById[state.activeTopicId];
-      if (item) {
-        updateModalPreview(item);
-        showToast('Предпросмотр обновлён ▶');
-      }
-    });
+function syncCategoryControls() {
+  if (categorySelect && categorySelect.value !== state.category) {
+    categorySelect.value = state.category;
   }
 
-  let modalEditTimer = null;
-  if (tmCodeEditor) {
-    tmCodeEditor.addEventListener('input', () => {
-      clearTimeout(modalEditTimer);
-      modalEditTimer = setTimeout(() => {
-        const item = resourcesById[state.activeTopicId];
-        if (item) updateModalPreview(item);
-      }, 280);
-    });
+  if (!topicTabs) return;
+  topicTabs.querySelectorAll('.topic-tab').forEach((tab) => {
+    tab.classList.toggle('active', tab.dataset.category === state.category);
+  });
+}
+
+function matchesSearch(item, query) {
+  if (!query) return true;
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const haystack = [
+    item.id,
+    item.title,
+    item.summary,
+    item.when,
+    item.alternatives,
+    item.tags.join(' '),
+    item.points.join(' '),
+    item.code
+  ]
+    .join(' ')
+    .toLowerCase();
+
+  return terms.every((term) => haystack.includes(term));
+}
+
+function matchesTag(item, tag) {
+  if (tag === 'all') return true;
+  const lowTag = tag.toLowerCase();
+  return (
+    item.tags.some((t) => String(t).toLowerCase().includes(lowTag)) ||
+    item.title.toLowerCase().includes(lowTag) ||
+    item.id.toLowerCase().includes(lowTag)
+  );
+}
+
+function filterItems() {
+  return referenceItems.filter((item) => {
+    const byCategory =
+      state.category === 'all'
+        ? true
+        : state.category === 'favorites'
+        ? favorites.has(item.id)
+        : item.category === state.category;
+    const byTag = matchesTag(item, state.tag);
+    const bySearch = matchesSearch(item, state.search);
+    return byCategory && byTag && bySearch;
+  });
+}
+
+function createCompactCardMarkup(item, index) {
+  const categoryName = categoryLabels[item.category] || item.category.toUpperCase();
+  const isFav = favorites.has(item.id);
+  const numStr = String(index + 1).padStart(3, '0');
+
+  return `
+    <article class="card-compact" data-topic-id="${escapeHtml(item.id)}" tabindex="0" role="button" aria-label="Открыть справку: ${escapeHtml(item.title)}">
+      <div class="card-compact-left">
+        <span class="card-index">#${numStr}</span>
+        <h3>${escapeHtml(item.title)}</h3>
+      </div>
+      <div class="card-compact-right">
+        <span class="badge lang-${escapeHtml(item.category)}">${escapeHtml(categoryName)}</span>
+        <button
+          type="button"
+          class="fav-btn ${isFav ? 'active' : ''}"
+          data-fav-id="${escapeHtml(item.id)}"
+          title="${isFav ? 'Убрать из избранного' : 'В избранное'}"
+          aria-label="Избранное"
+        >${isFav ? '★' : '☆'}</button>
+      </div>
+    </article>
+  `;
+}
+
+function renderActiveModalCode() {
+  if (!state.activeModalTopicId || !modalCode) return;
+  const item = topicsById.get(state.activeModalTopicId);
+  if (!item) return;
+
+  const parts = window.DevShelfPreview
+    ? window.DevShelfPreview.splitTopicIntoCodeParts(item)
+    : { combined: item.code, html: item.code, css: '', js: '' };
+
+  const selectedCode = parts[state.activeCodePart] || parts.combined || item.code;
+  state.activeRawCode = selectedCode;
+
+  let highlightMode = item.category || 'html';
+  if (state.activeCodePart === 'html') highlightMode = 'html';
+  else if (state.activeCodePart === 'css') highlightMode = 'css';
+  else if (state.activeCodePart === 'js') highlightMode = 'javascript';
+
+  if (window.DevShelfPreview && typeof window.DevShelfPreview.highlightCode === 'function') {
+    modalCode.innerHTML = window.DevShelfPreview.highlightCode(selectedCode, highlightMode);
+  } else {
+    modalCode.textContent = selectedCode;
   }
 
-  if ($('#tm-copy-code')) {
-    $('#tm-copy-code').addEventListener('click', async () => {
-      if (!tmCodeEditor) return;
-      try {
-        await navigator.clipboard.writeText(tmCodeEditor.value);
-        showToast('Код вкладки скопирован в буфер!');
-      } catch {
-        showToast('Не удалось скопировать');
-      }
+  if (modalCodeTabs) {
+    modalCodeTabs.querySelectorAll('.code-split-tab').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.part === state.activeCodePart);
     });
   }
+}
 
-  if ($('#tm-fav-btn')) {
-    $('#tm-fav-btn').addEventListener('click', () => {
-      const id = state.activeTopicId;
-      if (!id) return;
-      toggleFavorite(id);
-      updateModalFavButton(id);
-    });
-  }
+function openTopicModal(topicId) {
+  const item = topicsById.get(topicId);
+  if (!item || !modalBackdrop) return;
 
-  // ========================================================
-  // RENDER CARD (Пункт 1 ТЗ: только название и мета-строка без предпросмотра функций)
-  // ========================================================
-  function renderCard(item) {
-    const isFav = state.favorites.includes(item.id);
-    const catLabel = LANG_LABELS[item.category] || item.category.toUpperCase();
+  state.activeModalTopicId = item.id;
+  state.activeCodePart = 'combined';
 
-    return `
-      <li class="row" data-open-topic="${safe(item.id)}">
-        <div class="row-main">
-          <span class="row-title">${safe(item.title)}</span>
-          <div class="row-meta-line">
-            <span class="category-label">${safe(catLabel)}</span>
-            <span aria-hidden="true">·</span>
-            <span>${safe(item.tags.slice(0, 4).join(', '))}</span>
-          </div>
-        </div>
-        <button type="button" class="fav" data-fav-id="${safe(item.id)}" aria-pressed="${isFav}" title="${isFav ? 'В избранном' : 'Добавить в избранное'}" aria-label="Избранное">
-          ${isFav ? '★' : '☆'}
-        </button>
-      </li>
+  const categoryName = categoryLabels[item.category] || item.category.toUpperCase();
+  if (modalBadges) {
+    modalBadges.innerHTML = `
+      <span class="badge lang-${escapeHtml(item.category)}">${escapeHtml(categoryName)}</span>
+      ${item.tags.map((t) => `<span class="chip" style="pointer-events:none;">#${escapeHtml(t)}</span>`).join('')}
     `;
   }
 
-  // ========================================================
-  // INTENT / RECIPE DETECTION (Включая вход, регистрацию, border-radius, фреймворки)
-  // ========================================================
-  const RECIPES = [
-    {
-      id: 'login',
-      keywords: ['вход', 'логин', 'login', 'авторизац', 'sign in', 'пароль', 'auth'],
-      title: 'Рецепт: Форма входа и авторизации (Login + показ пароля)',
-      desc: 'Готовая карточка входа в аккаунт с переключением видимости пароля, валидацией и чекбоксом «Запомнить меня».',
-      targetId: 'recipe-login-form'
-    },
-    {
-      id: 'register',
-      keywords: ['регистрац', 'signup', 'register', 'создать аккаунт'],
-      title: 'Рецепт: Регистрация с индикатором надёжности пароля',
-      desc: 'Форма создания аккаунта с живой оценкой сложности пароля по 4 критериям.',
-      targetId: 'recipe-register-form'
-    },
-    {
-      id: 'border-radius',
-      keywords: ['border-radius', 'скруглен', 'круг', 'углы'],
-      title: 'CSS: скругление углов (border-radius)',
-      desc: 'Скругление от мягких карточек (14px) до идеальных кругов (50%), капсул (9999px) и органических форм.',
-      targetId: 'css-border-radius'
-    },
-    {
-      id: 'border',
-      keywords: ['border', 'рамка', 'границ'],
-      title: 'CSS: границы элементов (border, border-style, border-color)',
-      desc: 'Задание толщины, стиля (solid, dashed) и цвета рамки вокруг карточек и полей ввода.',
-      targetId: 'css-border'
-    },
-    {
-      id: 'burger',
-      keywords: ['бургер', 'гамбургер', 'drawer', 'выездное меню', 'шторка'],
-      title: 'Рецепт: Адаптивное бургер-меню (CSS + JS)',
-      desc: 'Семантическая кнопка <button>, фиксация скролла, плавная шторка и закрытие по Esc.',
-      targetId: 'recipe-burger-menu'
-    },
-    {
-      id: 'modal',
-      keywords: ['модал', 'попап', 'dialog', 'popup', 'всплывающее окно'],
-      title: 'Нативное модальное окно на теге <dialog>',
-      desc: 'Метод dialog.showModal(), стилизация фона через ::backdrop и автоматическое закрытие по Esc.',
-      targetId: 'html-dialog'
-    },
-    {
-      id: 'tailwind',
-      keywords: ['tailwind', 'тейлвинд', 'утилит'],
-      title: 'Фреймворк: Tailwind CSS v4 (Утилитарная вёрстка)',
-      desc: 'Подключение через CDN или Vite и замена ручного написания CSS-классов готовыми утилитами.',
-      targetId: 'fw-tailwind-css'
-    },
-    {
-      id: 'react',
-      keywords: ['react', 'реакт', 'usestate', 'jsx'],
-      title: 'Фреймворк: React 19 (Компоненты и хуки состояния)',
-      desc: 'Декларативные компоненты и useState вместо ручного поиска элементов через querySelector.',
-      targetId: 'fw-react'
-    },
-    {
-      id: 'alpine',
-      keywords: ['alpine', 'x-data', 'jquery'],
-      title: 'Фреймворк: Alpine.js (Легковесная замена jQuery прямо в HTML)',
-      desc: 'Подключение одной строкой CDN и реактивность через атрибуты x-data, x-show и @click.',
-      targetId: 'fw-alpinejs'
-    }
-  ];
-
-  let currentRecipeTargetId = null;
-
-  function checkRecipes(query) {
-    const banner = $('#recipe-banner');
-    if (!banner) return;
-
-    if (!query || query.length < 2) {
-      banner.hidden = true;
-      currentRecipeTargetId = null;
-      return;
-    }
-
-    const q = query.toLowerCase();
-    const match = RECIPES.find(r => r.keywords.some(k => q.includes(k)));
-
-    if (match && resourcesById[match.targetId]) {
-      currentRecipeTargetId = match.targetId;
-      $('#recipe-title').textContent = match.title;
-      $('#recipe-desc').textContent = match.desc;
-      const sbLink = $('#recipe-sandbox-link');
-      if (sbLink) sbLink.href = `playground.html?topic=${encodeURIComponent(match.targetId)}`;
-      banner.hidden = false;
-    } else {
-      banner.hidden = true;
-      currentRecipeTargetId = null;
-    }
+  if (modalTitle) modalTitle.textContent = item.title;
+  if (modalSummary) modalSummary.textContent = item.summary;
+  if (modalWhen) modalWhen.textContent = item.when;
+  if (modalAlternatives) modalAlternatives.textContent = item.alternatives;
+  if (modalPoints) {
+    modalPoints.innerHTML = item.points.map((p) => `<li>${escapeHtml(p)}</li>`).join('');
   }
 
-  const recipeOpenBtn = $('#recipe-open-btn');
-  if (recipeOpenBtn) {
-    recipeOpenBtn.addEventListener('click', () => {
-      if (currentRecipeTargetId) openTopicModal(currentRecipeTargetId);
-    });
+  renderActiveModalCode();
+
+  if (modalSandboxLink) {
+    modalSandboxLink.href = `./playground.html?topic=${encodeURIComponent(item.id)}`;
   }
 
-  // ========================================================
-  // SMART SEARCH RANKING & RENDERING
-  // ========================================================
-  function computeMatchScore(item, q) {
-    let score = 0;
-    if (item.id.toLowerCase() === q || item.tagsLower.includes(q)) score += 100;
-    if (item.titleLower.includes(q)) score += 60;
-    if (item.tagsLower.some(t => t.includes(q))) score += 40;
-    if (item.summary.toLowerCase().includes(q)) score += 20;
-    if (item.searchText.includes(q)) score += 5;
-    return score;
+  if (modalPreviewFrame && window.DevShelfPreview) {
+    modalPreviewFrame.srcdoc = window.DevShelfPreview.buildTopicPreviewDoc(item);
   }
 
-  function filterAndRender() {
-    const q = normalize(state.query);
-    checkRecipes(q);
+  modalBackdrop.hidden = false;
+  document.body.style.overflow = 'hidden';
 
-    let list = resources.filter(item => {
-      if (state.filter === 'favorites') {
-        if (!state.favorites.includes(item.id)) return false;
-      } else if (state.filter !== 'all') {
-        if (item.category !== state.filter) return false;
-      }
+  const url = new URL(window.location.href);
+  url.searchParams.set('topic', item.id);
+  window.history.replaceState({}, '', url);
+}
 
-      if (q) {
-        return item.searchText.includes(q);
-      }
-      return true;
-    });
+function closeTopicModal() {
+  if (!modalBackdrop) return;
+  modalBackdrop.hidden = true;
+  document.body.style.overflow = '';
+  state.activeModalTopicId = null;
 
-    if (state.sort === 'az') {
-      list.sort((a, b) => a.title.localeCompare(b.title, 'ru'));
-    } else if (q) {
-      list.sort((a, b) => computeMatchScore(b, q) - computeMatchScore(a, q));
-    }
+  const url = new URL(window.location.href);
+  if (url.searchParams.has('topic')) {
+    url.searchParams.delete('topic');
+    window.history.replaceState({}, '', url);
+  }
+}
 
-    const grid = $('#resource-grid');
-    const empty = $('#empty-state');
-    const summary = $('#summary');
+function renderCards() {
+  if (!cardsGrid || !resultsMeta) return;
 
-    if (summary) {
-      summary.textContent = `Найдено справочников: ${list.length} из ${resources.length}`;
-    }
+  syncCategoryControls();
+  const filtered = filterItems();
 
-    if (list.length === 0) {
-      grid.innerHTML = '';
-      empty.hidden = false;
-    } else {
-      empty.hidden = true;
-      grid.innerHTML = list.map(renderCard).join('');
-    }
+  const categoryText =
+    state.category === 'all'
+      ? 'все категории'
+      : state.category === 'favorites'
+      ? 'избранное'
+      : categoryLabels[state.category] || state.category;
 
-    const totalEl = $('#total-count');
-    if (totalEl) totalEl.textContent = resources.length;
+  resultsMeta.textContent = `НАЙДЕНО: ${filtered.length} ИЗ ${referenceItems.length} // РАЗДЕЛ: ${categoryText.toUpperCase()} — НАЖМИТЕ НА НАЗВАНИЕ ДЛЯ ОТКРЫТИЯ СПРАВКИ`;
 
-    const favEl = $('#favorite-count');
-    if (favEl) favEl.textContent = state.favorites.length;
+  if (!filtered.length) {
+    cardsGrid.innerHTML = `
+      <article class="workflow-card" style="grid-column: 1 / -1;">
+        <h3>По вашему запросу ничего не найдено</h3>
+        <p>Попробуйте сбросить фильтр категории или ввести другое ключевое слово (например: border-radius, вход, tailwind, flex).</p>
+      </article>
+    `;
+    return;
   }
 
-  function toggleFavorite(id) {
-    const idx = state.favorites.indexOf(id);
-    if (idx >= 0) {
-      state.favorites.splice(idx, 1);
-      showToast('Удалено из избранного');
-    } else {
-      state.favorites.push(id);
-      showToast('Добавлено в избранное ★');
-    }
-    writeStorage('devshelf-favorites', state.favorites);
-    filterAndRender();
-  }
+  cardsGrid.innerHTML = filtered.map((item, idx) => createCompactCardMarkup(item, idx)).join('');
+}
 
-  let toastTimer = null;
-  function showToast(message) {
-    const toast = $('#toast');
-    if (!toast) return;
-    toast.textContent = message;
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toast.classList.remove('show');
-    }, 2200);
-  }
+// Event delegation on cardsGrid
+if (cardsGrid) {
+  cardsGrid.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
 
-  // ========================================================
-  // EVENT LISTENERS & DELEGATION
-  // ========================================================
-  document.addEventListener('click', (e) => {
-    // 1. Favorite star click (must be checked before card click)
-    const favBtn = e.target.closest('.fav');
-    if (favBtn) {
-      e.stopPropagation();
-      const id = favBtn.getAttribute('data-fav-id');
-      if (id) toggleFavorite(id);
-      return;
-    }
-
-    // 2. Open Topic Modal when clicking a card
-    const topicTrigger = e.target.closest('[data-open-topic]');
-    if (topicTrigger) {
-      e.preventDefault();
-      const topicId = topicTrigger.getAttribute('data-open-topic');
-      if (topicId) openTopicModal(topicId);
-      return;
-    }
-
-    // 3. Tab navigation
-    const tabBtn = e.target.closest('.tab[data-filter]');
-    if (tabBtn) {
-      const filter = tabBtn.getAttribute('data-filter');
-      $$('.tab[data-filter]').forEach(t => t.setAttribute('aria-pressed', 'false'));
-      tabBtn.setAttribute('aria-pressed', 'true');
-      state.filter = filter;
-      filterAndRender();
-      return;
-    }
-
-    // 4. Quick Hint Buttons
-    const hintBtn = e.target.closest('.hints button[data-query]');
-    if (hintBtn) {
-      const q = hintBtn.getAttribute('data-query');
-      const input = $('#search');
-      if (input) {
-        input.value = q;
-        state.query = q;
-        state.filter = 'all';
-        $$('.tab[data-filter]').forEach(t => t.setAttribute('aria-pressed', t.getAttribute('data-filter') === 'all'));
-        $('#clear-search').hidden = false;
-        filterAndRender();
-        input.focus();
-      }
-      return;
-    }
-
-    // 5. Reset button
-    if (e.target.id === 'reset') {
-      state.filter = 'all';
-      state.query = '';
-      const input = $('#search');
-      if (input) input.value = '';
-      $('#clear-search').hidden = true;
-      $$('.tab[data-filter]').forEach(t => t.setAttribute('aria-pressed', t.getAttribute('data-filter') === 'all'));
-      filterAndRender();
-      return;
-    }
-
-    // 6. Clear search button
-    if (e.target.id === 'clear-search') {
-      const input = $('#search');
-      if (input) input.value = '';
-      state.query = '';
-      e.target.hidden = true;
-      filterAndRender();
-      input.focus();
-      return;
-    }
-  });
-
-  const searchInput = $('#search');
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      state.query = e.target.value;
-      const clearBtn = $('#clear-search');
-      if (clearBtn) clearBtn.hidden = !e.target.value;
-      filterAndRender();
-    });
-  }
-
-  const sortSelect = $('#sort');
-  if (sortSelect) {
-    sortSelect.addEventListener('change', (e) => {
-      state.sort = e.target.value;
-      filterAndRender();
-    });
-  }
-
-  // ========================================================
-  // COMMAND PALETTE (Ctrl+K / Cmd+K)
-  // ========================================================
-  const cmdPalette = $('#cmd-palette');
-  const cmdInput = $('#cmd-search-input');
-  const cmdResults = $('#cmd-results');
-  let cmdActiveIndex = 0;
-
-  function openPalette() {
-    if (!cmdPalette) return;
-    cmdPalette.showModal();
-    if (cmdInput) {
-      cmdInput.value = '';
-      cmdInput.focus();
-    }
-    renderPaletteResults('');
-  }
-
-  function closePalette() {
-    if (cmdPalette) cmdPalette.close();
-  }
-
-  function renderPaletteResults(query) {
-    if (!cmdResults) return;
-    const q = normalize(query);
-    let matches = resources.filter(r => !q || r.searchText.includes(q));
-    if (q) {
-      matches.sort((a, b) => computeMatchScore(b, q) - computeMatchScore(a, q));
-    }
-    matches = matches.slice(0, 14);
-    cmdActiveIndex = 0;
-
-    if (matches.length === 0) {
-      cmdResults.innerHTML = '<li class="cmd-item" style="color:var(--faint);">Ничего не найдено</li>';
-      return;
-    }
-
-    cmdResults.innerHTML = matches.map((item, idx) => `
-      <li class="cmd-item ${idx === 0 ? 'active' : ''}" data-topic-id="${safe(item.id)}">
-        <span>${safe(item.title)}</span>
-        <span class="cmd-item-meta">${safe(LANG_LABELS[item.category] || '')}</span>
-      </li>
-    `).join('');
-  }
-
-  $('#open-palette-btn')?.addEventListener('click', openPalette);
-
-  if (cmdInput) {
-    cmdInput.addEventListener('input', (e) => renderPaletteResults(e.target.value));
-    cmdInput.addEventListener('keydown', (e) => {
-      const items = $$('#cmd-results .cmd-item[data-topic-id]');
-      if (!items.length) return;
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        items[cmdActiveIndex]?.classList.remove('active');
-        cmdActiveIndex = (cmdActiveIndex + 1) % items.length;
-        items[cmdActiveIndex]?.classList.add('active');
-        items[cmdActiveIndex]?.scrollIntoView({ block: 'nearest' });
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        items[cmdActiveIndex]?.classList.remove('active');
-        cmdActiveIndex = (cmdActiveIndex - 1 + items.length) % items.length;
-        items[cmdActiveIndex]?.classList.add('active');
-        items[cmdActiveIndex]?.scrollIntoView({ block: 'nearest' });
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        const active = items[cmdActiveIndex];
-        if (active) {
-          const topicId = active.getAttribute('data-topic-id');
-          closePalette();
-          if (topicId) openTopicModal(topicId);
+    const favButton = target.closest('.fav-btn');
+    if (favButton instanceof HTMLElement) {
+      event.stopPropagation();
+      const favId = favButton.dataset.favId;
+      if (favId) {
+        if (favorites.has(favId)) {
+          favorites.delete(favId);
+        } else {
+          favorites.add(favId);
         }
+        saveFavorites(favorites);
+        updateCategoryCounts();
+        renderCards();
       }
-    });
-  }
+      return;
+    }
 
-  if (cmdResults) {
-    cmdResults.addEventListener('click', (e) => {
-      const item = e.target.closest('.cmd-item[data-topic-id]');
-      if (item) {
-        const topicId = item.getAttribute('data-topic-id');
-        closePalette();
-        if (topicId) openTopicModal(topicId);
-      }
-    });
-  }
-
-  window.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      if (cmdPalette && cmdPalette.open) closePalette();
-      else openPalette();
-    } else if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
-      e.preventDefault();
-      searchInput?.focus();
-    } else if (e.key.toLowerCase() === 't' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
-      e.preventDefault();
-      toggleTheme();
+    const card = target.closest('.card-compact');
+    if (card instanceof HTMLElement && card.dataset.topicId) {
+      openTopicModal(card.dataset.topicId);
     }
   });
 
-  function toggleTheme() {
-    const isLight = document.body.classList.toggle('light');
-    writeStorage('devshelf-theme', isLight ? 'light' : 'dark');
-    const btn = $('#theme-toggle');
-    if (btn) btn.textContent = isLight ? '☀' : '☾';
-  }
-
-  $('#theme-toggle')?.addEventListener('click', toggleTheme);
-  if (readStorage('devshelf-theme', 'dark') === 'light') {
-    document.body.classList.add('light');
-    if ($('#theme-toggle')) $('#theme-toggle').textContent = '☀';
-  }
-
-  // ========================================================
-  // STANDALONE APPLICATION & SINGLE-FILE OFFLINE BUNDLER (Пункт 9 ТЗ)
-  // ========================================================
-  let deferredPrompt = null;
-  const standaloneBtn = $('#standalone-app-btn');
-  const standaloneModal = $('#standalone-modal');
-  const closeStandaloneBtn = $('#close-standalone-modal');
-  const triggerPwaBtn = $('#trigger-pwa-install');
-  const downloadStandaloneBtn = $('#download-standalone-html');
-  const pwaManualHint = $('#pwa-manual-hint');
-  const offlineBanner = $('#offline-banner');
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-  });
-
-  standaloneBtn?.addEventListener('click', () => {
-    standaloneModal?.showModal();
-  });
-
-  closeStandaloneBtn?.addEventListener('click', () => {
-    standaloneModal?.close();
-  });
-
-  standaloneModal?.addEventListener('click', (e) => {
-    if (e.target === standaloneModal) standaloneModal.close();
-  });
-
-  triggerPwaBtn?.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      await deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        showToast('✓ Приложение установлено на устройство!');
+  cardsGrid.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      const target = event.target;
+      if (target instanceof HTMLElement && target.classList.contains('card-compact') && target.dataset.topicId) {
+        event.preventDefault();
+        openTopicModal(target.dataset.topicId);
       }
-      deferredPrompt = null;
-    } else if (pwaManualHint) {
-      pwaManualHint.hidden = false;
-      const isIOS = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
-      pwaManualHint.innerHTML = isIOS
-        ? '<strong>Установка на iOS / iPadOS:</strong> Нажмите иконку <strong>«Поделиться»</strong> в панели Safari и выберите <strong>«На экран Домой»</strong>.'
-        : '<strong>Установка на ПК (Chrome / Edge / Яндекс):</strong> Нажмите на иконку установки <strong>⊕ / 🖥</strong> справа в адресной строке браузера (или меню ⋮ → «Сохранить и поделиться» → «Установить как приложение»).';
     }
   });
+}
 
-  // Генерация полностью автономного однофайлового приложения devshelf-standalone.html
-  downloadStandaloneBtn?.addEventListener('click', () => {
-    const standaloneDoc = `<!doctype html>
+// Modal events
+if (modalCloseBtn) {
+  modalCloseBtn.addEventListener('click', closeTopicModal);
+}
+
+if (modalBackdrop) {
+  modalBackdrop.addEventListener('click', (event) => {
+    if (event.target === modalBackdrop) {
+      closeTopicModal();
+    }
+  });
+}
+
+if (modalCodeTabs) {
+  modalCodeTabs.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const tabBtn = target.closest('.code-split-tab');
+    if (tabBtn instanceof HTMLElement && tabBtn.dataset.part) {
+      state.activeCodePart = tabBtn.dataset.part;
+      renderActiveModalCode();
+    }
+  });
+}
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && modalBackdrop && !modalBackdrop.hidden) {
+    closeTopicModal();
+  }
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+    event.preventDefault();
+    if (searchInput) searchInput.focus();
+  }
+});
+
+if (modalCopyBtn) {
+  modalCopyBtn.addEventListener('click', async () => {
+    if (!modalCode) return;
+    try {
+      await navigator.clipboard.writeText(state.activeRawCode || modalCode.textContent || '');
+      modalCopyBtn.textContent = '✓ Скопировано!';
+      setTimeout(() => {
+        modalCopyBtn.textContent = 'Копировать';
+      }, 1400);
+    } catch {
+      modalCopyBtn.textContent = 'Ошибка';
+    }
+  });
+}
+
+if (modalRefreshPreview) {
+  modalRefreshPreview.addEventListener('click', () => {
+    if (!state.activeModalTopicId || !modalPreviewFrame || !window.DevShelfPreview) return;
+    const item = topicsById.get(state.activeModalTopicId);
+    if (item) {
+      modalPreviewFrame.srcdoc = window.DevShelfPreview.buildTopicPreviewDoc(item);
+    }
+  });
+}
+
+if (searchInput) {
+  searchInput.addEventListener('input', (event) => {
+    state.search = event.target.value.trim();
+    renderCards();
+  });
+}
+
+if (categorySelect) {
+  categorySelect.addEventListener('change', (event) => {
+    state.category = event.target.value;
+    renderCards();
+  });
+}
+
+if (topicTabs) {
+  topicTabs.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const button = target.closest('.topic-tab');
+    if (!(button instanceof HTMLButtonElement)) return;
+    state.category = button.dataset.category || 'all';
+    renderCards();
+  });
+}
+
+if (quickFilters) {
+  quickFilters.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (!target.classList.contains('chip')) return;
+
+    quickFilters.querySelectorAll('.chip').forEach((chip) => chip.classList.remove('active'));
+    target.classList.add('active');
+    state.tag = target.dataset.tag || 'all';
+    renderCards();
+  });
+}
+
+// ============================================================================
+// STANDALONE GENERATOR (.HTML & WINDOWS NATIVE .EXE BUILDER)
+// ============================================================================
+function generateSelfContainedHtmlDocument() {
+  // CRITICAL: Escape closing </script tags inside JSON so the browser HTML parser never closes <script> early!
+  const safeTopicsJson = JSON.stringify(referenceItems).replace(/<\//g, '<\\/');
+
+  return `<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DevShelf Standalone — Офлайн-база веб-разработчика (${rawTopics.length} тем)</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevShelf Standalone // Инженерный справочник (${referenceItems.length} тем)</title>
 <style>
-  :root { --bg:#090d14; --surface:#0e1320; --panel:#141c2e; --line:rgba(255,255,255,0.1); --text:#f8fafc; --muted:#94a3b8; --accent:#38bdf8; }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,sans-serif; font-size:14px; line-height:1.55; }
-  header { position:sticky; top:0; z-index:20; background:rgba(9,13,20,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:12px 20px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; }
-  .brand { font-weight:800; font-size:16px; color:var(--text); }
-  .brand span { color:var(--accent); }
-  .tabs { display:flex; gap:6px; overflow-x:auto; }
-  .tab { padding:6px 12px; border-radius:6px; border:1px solid var(--line); background:var(--surface); color:var(--muted); cursor:pointer; font-size:12.5px; white-space:nowrap; }
-  .tab.active { background:var(--accent); color:#090d14; border-color:var(--accent); font-weight:700; }
-  main { max-width:1320px; margin:20px auto; padding:0 16px; }
-  .search { width:100%; padding:12px 14px; border-radius:8px; border:1px solid var(--line); background:var(--surface); color:var(--text); font-size:14px; margin-bottom:16px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); gap:10px; }
-  .card { padding:13px 15px; border-radius:8px; background:var(--surface); border:1px solid var(--line); cursor:pointer; }
-  .card:hover { border-color:var(--accent); background:var(--panel); }
-  .card strong { display:block; font-size:14px; margin-bottom:4px; }
-  .card small { color:var(--muted); font-family:monospace; font-size:11px; }
-  dialog { max-width:1080px; width:calc(100% - 24px); background:var(--surface); color:var(--text); border:1px solid var(--accent); border-radius:12px; padding:0; }
-  dialog::backdrop { background:rgba(0,0,0,0.75); }
-  .m-head { padding:14px 18px; background:var(--panel); border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
-  .m-body { padding:18px; display:grid; grid-template-columns:1.1fr 0.9fr; gap:18px; max-height:80vh; overflow-y:auto; }
-  @media(max-width:800px){ .m-body { grid-template-columns:1fr; } }
-  textarea { width:100%; min-height:200px; background:#070a10; color:#e2e8f0; border:1px solid var(--line); border-radius:8px; padding:12px; font-family:monospace; font-size:12.5px; }
-  iframe { width:100%; height:260px; border:1px solid var(--line); border-radius:8px; background:#0b101b; }
+  :root {
+    --bg: #0b0c0e;
+    --panel: #14171c;
+    --card: #191c23;
+    --text: #f4f4f6;
+    --muted: #9ca3af;
+    --line: #272b33;
+    --line-strong: #3a404d;
+    --primary: #facc15;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(to right, rgba(250, 204, 21, 0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(250, 204, 21, 0.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color: var(--text);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+  }
+  header {
+    padding: 16px 24px;
+    background: #101216;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .brand-row { display: flex; align-items: center; gap: 12px; }
+  .brand-box {
+    width: 38px;
+    height: 38px;
+    border: 2px solid var(--primary);
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    font-family: monospace;
+    font-weight: 900;
+    color: var(--primary);
+    background: #0b0c0e;
+  }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 20px; }
+  .bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  input, select, button {
+    padding: 9px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--line-strong);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 13.5px;
+  }
+  input { flex: 1; min-width: 240px; }
+  input:focus, select:focus { outline: none; border-color: var(--primary); }
+  .cat-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .cat-btn { cursor: pointer; font-weight: 700; font-size: 12px; text-transform: uppercase; font-family: monospace; }
+  .cat-btn.active { background: var(--primary); color: #09090b; border-color: var(--primary); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+  .item {
+    padding: 11px 13px;
+    border-radius: 4px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--line-strong);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .item:hover { border-color: var(--primary); border-left-color: var(--primary); background: #21252e; }
+  .item h4 { margin: 0; font-size: 13.5px; }
+  .tag {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    background: rgba(250, 204, 21, 0.12);
+    color: var(--primary);
+    border: 1px solid rgba(250, 204, 21, 0.4);
+    text-transform: uppercase;
+    font-weight: 800;
+    font-family: monospace;
+    white-space: nowrap;
+  }
+  .modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 6, 8, 0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 100;
+  }
+  .modal-bg[hidden] { display: none !important; }
+  .modal {
+    background: #121418;
+    border: 1px solid var(--primary);
+    border-top: 3px solid var(--primary);
+    border-radius: 6px;
+    width: min(1180px, 100%);
+    max-height: 92vh;
+    overflow: auto;
+    padding: 20px;
+  }
+  .modal-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 16px; margin-top: 14px; }
+  .info-box {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--primary);
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .info-box h5 { margin: 0 0 6px; color: var(--primary); font-family: monospace; text-transform: uppercase; font-size: 11px; }
+  .info-box p, .info-box ul { margin: 0; font-size: 13.5px; color: #d4d4d8; }
+  .code-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: #090a0c;
+    border: 1px solid var(--line-strong);
+    border-bottom: none;
+    flex-wrap: wrap;
+  }
+  .tab-btn { padding: 4px 9px; font-size: 11px; font-family: monospace; cursor: pointer; }
+  .tab-btn.active { background: var(--primary); color: #09090b; border-color: var(--primary); font-weight: 800; }
+  pre {
+    background: #08090b;
+    padding: 14px;
+    border-radius: 0 0 4px 4px;
+    overflow: auto;
+    color: #f4f4f6;
+    border: 1px solid var(--line-strong);
+    margin: 0 0 12px;
+    max-height: 280px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+  .tok-tag { color: #facc15; font-weight: 700; }
+  .tok-attr { color: #fde047; }
+  .tok-kw { color: #fb923c; font-weight: 700; }
+  .tok-fn { color: #fef08a; font-weight: 600; }
+  .tok-str { color: #86efac; }
+  .tok-num { color: #f472b6; }
+  .tok-var { color: #67e8f9; }
+  .tok-text { color: #f4f4f6; }
+  .tok-punc { color: #9ca3af; }
+  .tok-comment { color: #6b7280; font-style: italic; }
+  iframe {
+    width: 100%;
+    height: 250px;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background: #101216;
+  }
+  @media (max-width: 860px) { .modal-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 <header>
-  <div class="brand">&lt;/&gt; dev<span>shelf</span> standalone (${rawTopics.length})</div>
-  <div class="tabs" id="tabs">
-    <button class="tab active" data-cat="all">Всё (${rawTopics.length})</button>
-    <button class="tab" data-cat="html">HTML5</button>
-    <button class="tab" data-cat="css">CSS3</button>
-    <button class="tab" data-cat="javascript">JavaScript</button>
-    <button class="tab" data-cat="php">PHP 8</button>
-    <button class="tab" data-cat="xml">XML &amp; SEO</button>
-    <button class="tab" data-cat="recipes">Рецепты</button>
-    <button class="tab" data-cat="frameworks">Фреймворки</button>
+  <div class="brand-row">
+    <div class="brand-box">&lt;/&gt;</div>
+    <div>
+      <strong style="font-size:16px;letter-spacing:0.04em;">DEVSHELF // STANDALONE</strong>
+      <div style="font-size:11.5px;color:#9ca3af;font-family:monospace;">Автономная инженерная база (${referenceItems.length} тем, работает без интернета)</div>
+    </div>
   </div>
+  <div id="count-stat" style="font-family:monospace;color:#facc15;font-weight:800;"></div>
 </header>
-<main>
-  <input type="search" id="q" class="search" placeholder="Поиск по автономной базе (border-radius, форма входа, tailwind, react, flexbox)...">
-  <div id="grid" class="grid"></div>
-</main>
-<dialog id="dlg">
-  <div class="m-head">
-    <strong id="m-title"></strong>
-    <button onclick="document.getElementById('dlg').close()" style="background:var(--accent);color:#090d14;border:0;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;">Закрыть ✕</button>
+<div class="wrap">
+  <div class="bar">
+    <input id="q" type="search" placeholder="Поиск по ${referenceItems.length} темам (border-radius, вход, tailwind, react, flex, pdo)...">
   </div>
-  <div class="m-body">
-    <div>
-      <p id="m-sum" style="color:var(--muted);margin-top:0;"></p>
-      <ul id="m-pts" style="padding-left:18px;color:var(--muted);font-size:13px;"></ul>
-      <p style="font-size:12.5px;"><strong>Применение:</strong> <span id="m-when"></span></p>
-      <textarea id="m-code" spellcheck="false"></textarea>
+  <div class="cat-bar" id="cats">
+    <button class="cat-btn active" data-c="all">Все (${referenceItems.length})</button>
+    <button class="cat-btn" data-c="html">HTML5</button>
+    <button class="cat-btn" data-c="css">CSS3</button>
+    <button class="cat-btn" data-c="javascript">JavaScript</button>
+    <button class="cat-btn" data-c="frameworks">Фреймворки</button>
+    <button class="cat-btn" data-c="recipes">Рецепты</button>
+    <button class="cat-btn" data-c="php">PHP 8.3</button>
+    <button class="cat-btn" data-c="xml">XML &amp; SEO</button>
+  </div>
+  <div id="list" class="grid"></div>
+</div>
+
+<div id="m" class="modal-bg" hidden>
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #272b33;padding-bottom:12px;">
+      <h2 id="mt" style="margin:0;font-size:20px;"></h2>
+      <button onclick="document.getElementById('m').hidden=true" style="background:#facc15;color:#09090b;font-weight:800;cursor:pointer;">✕ Закрыть</button>
     </div>
-    <div>
-      <div style="font-size:11px;font-family:monospace;color:var(--accent);margin-bottom:6px;">ЖИВОЙ ПРЕДПРОСМОТР</div>
-      <iframe id="m-frame"></iframe>
+    <div class="modal-grid">
+      <div>
+        <div class="info-box"><h5>Описание</h5><p id="ms"></p></div>
+        <div class="info-box"><h5>Когда применять</h5><p id="mw"></p></div>
+        <div class="info-box"><h5>Альтернативы</h5><p id="ma"></p></div>
+        <div class="info-box"><h5>Ключевые правила</h5><ul id="mp"></ul></div>
+      </div>
+      <div>
+        <div class="code-bar">
+          <div style="display:flex;gap:4px;" id="ctabs">
+            <button class="tab-btn active" data-p="combined">Все вместе</button>
+            <button class="tab-btn" data-p="html">HTML</button>
+            <button class="tab-btn" data-p="css">CSS</button>
+            <button class="tab-btn" data-p="js">JS</button>
+          </div>
+          <button id="copy-b" class="tab-btn">Копировать</button>
+        </div>
+        <pre><code id="mc"></code></pre>
+        <div style="font-family:monospace;font-size:11px;color:#facc15;margin-bottom:6px;font-weight:800;">ЖИВОЙ ПРЕДПРОСМОТР:</div>
+        <iframe id="mf" sandbox="allow-scripts"></iframe>
+      </div>
     </div>
   </div>
-</dialog>
+</div>
+
 <script>
-const TOPICS = ${JSON.stringify(rawTopics)};
-let cat = 'all';
-const grid = document.getElementById('grid');
-const qInp = document.getElementById('q');
-function render() {
-  const q = qInp.value.toLowerCase().trim();
-  const list = TOPICS.filter(t => (cat === 'all' || t.lang === cat) && (!q || (t.title + ' ' + t.summary + ' ' + (t.tags||[]).join(' ')).toLowerCase().includes(q)));
-  grid.innerHTML = list.map(t => '<div class="card" onclick="openT(\\'' + t.id + '\\')"><strong>' + t.title.replace(/</g,'&lt;') + '</strong><small>' + (t.lang||'').toUpperCase() + ' · ' + (t.tags||[]).slice(0,3).join(', ') + '</small></div>').join('');
+const TOPICS = ${safeTopicsJson};
+const q = document.getElementById('q');
+const list = document.getElementById('list');
+const stat = document.getElementById('count-stat');
+let activeCat = 'all';
+let currentTopic = null;
+let currentPart = 'combined';
+
+function splitCode(t) {
+  const lang = (t.lang || 'html').toLowerCase();
+  const raw = String(t.code || '').trim();
+  const ex = String(t.example || '').trim();
+  let html = '', css = '', js = '';
+  if (lang === 'css') {
+    css = raw;
+    html = ex.startsWith('<') ? ex : '<div class="card box item" style="padding:16px;border:1px solid #facc15;">CSS Демо</div>';
+    js = '// Без JS';
+  } else if (lang === 'javascript') {
+    js = raw;
+    html = ex.startsWith('<') ? ex : '<div id="app">JS Демо</div>';
+    css = '/* Базовые стили */';
+  } else {
+    let rest = raw.includes('<') ? raw : (ex.includes('<') ? ex : raw);
+    const sm = [...rest.matchAll(/<style[^>]*>([\\s\\S]*?)<\\/style>/gi)];
+    if (sm.length) { css = sm.map(m => m[1].trim()).join('\\n'); rest = rest.replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '').trim(); }
+    const jm = [...rest.matchAll(/<script[^>]*>([\\s\\S]*?)<\\/script>/gi)];
+    if (jm.length) { js = jm.map(m => m[1].trim()).join('\\n'); rest = rest.replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '').trim(); }
+    html = rest;
+  }
+  return { combined: raw, html: html || raw, css: css || '/* Стили не требуются */', js: js || '// JS не требуется' };
 }
-window.openT = function(id) {
+
+function buildPreview(t) {
+  const base = '<style>*{box-sizing:border-box}body{margin:0;padding:14px;background:#101216;color:#f4f4f6;font-family:system-ui,sans-serif;font-size:14px}button:not([class]){background:#facc15;color:#09090b;border:none;padding:8px 14px;border-radius:4px;font-weight:800}</style>';
+  if (t.lang === 'css') {
+    const h = (t.example && t.example.startsWith('<')) ? t.example : '<div class="card box item" style="padding:16px;border:1px solid #facc15;">' + t.title + '</div>';
+    return '<!doctype html><html><head><meta charset="utf-8">' + base + '<style>' + t.code + '</style></head><body>' + h + '</body></html>';
+  }
+  if (t.lang === 'javascript') {
+    return '<!doctype html><html><head><meta charset="utf-8">' + base + '</head><body><div id="out" style="font-family:monospace;color:#fef08a;white-space:pre-wrap;"></div><script>const o=document.getElementById("out");console.log=(...a)=>{o.textContent+="> "+a.map(x=>typeof x==="object"?JSON.stringify(x):x).join(" ")+"\\\\n"};try{' + t.code + '}catch(e){o.textContent+="Error: "+e.message}<\\/script></body></html>';
+  }
+  const body = (t.example && t.example.startsWith('<')) ? t.example : t.code;
+  return '<!doctype html><html><head><meta charset="utf-8">' + base + '</head><body>' + body + '</body></html>';
+}
+
+function renderCodePart() {
+  if (!currentTopic) return;
+  const parts = splitCode(currentTopic);
+  document.getElementById('mc').textContent = parts[currentPart] || parts.combined;
+  document.querySelectorAll('#ctabs .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.p === currentPart));
+}
+
+window.openItem = (id) => {
   const t = TOPICS.find(x => x.id === id);
   if (!t) return;
-  document.getElementById('m-title').textContent = t.title;
-  document.getElementById('m-sum').textContent = t.summary;
-  document.getElementById('m-pts').innerHTML = (t.points||[]).map(p => '<li>' + p.replace(/</g,'&lt;') + '</li>').join('');
-  document.getElementById('m-when').textContent = t.when || '';
-  document.getElementById('m-code').value = t.code || '';
-  document.getElementById('m-frame').srcdoc = '<!doctype html><html><head><meta charset="utf-8"><style>body{background:#0b101b;color:#f8fafc;font-family:system-ui,sans-serif;padding:16px;}</style></head><body>' + (t.lang === 'css' ? '<style>' + t.code + '</style>' + (t.example || '<div class="card">Предпросмотр CSS</div>') : t.code) + '</body></html>';
-  document.getElementById('dlg').showModal();
+  currentTopic = t;
+  currentPart = 'combined';
+  document.getElementById('mt').textContent = t.title;
+  document.getElementById('ms').textContent = t.summary;
+  document.getElementById('mw').textContent = t.when || '';
+  document.getElementById('ma').textContent = t.alternatives || '';
+  document.getElementById('mp').innerHTML = (t.points || []).map(p => '<li>' + p + '</li>').join('');
+  renderCodePart();
+  document.getElementById('mf').srcdoc = buildPreview(t);
+  document.getElementById('m').hidden = false;
 };
-document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
-  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+
+document.getElementById('ctabs').addEventListener('click', (e) => {
+  const b = e.target.closest('.tab-btn');
+  if (b && b.dataset.p) { currentPart = b.dataset.p; renderCodePart(); }
+});
+
+document.getElementById('copy-b').addEventListener('click', () => {
+  navigator.clipboard.writeText(document.getElementById('mc').textContent || '');
+  document.getElementById('copy-b').textContent = '✓ Скопировано';
+  setTimeout(() => document.getElementById('copy-b').textContent = 'Копировать', 1200);
+});
+
+function render() {
+  const s = q.value.toLowerCase().trim();
+  const filtered = TOPICS.filter(t => (activeCat === 'all' || t.lang === activeCat) && (!s || (t.title + ' ' + t.summary + ' ' + (t.tags||[]).join(' ')).toLowerCase().includes(s)));
+  stat.textContent = 'НАЙДЕНО: ' + filtered.length + ' / ' + TOPICS.length;
+  list.innerHTML = filtered.map((t, idx) => '<div class="item" onclick="openItem(\\'' + t.id + '\\')"><h4>#' + String(idx+1).padStart(3,'0') + ' ' + t.title.replace(/</g,'&lt;') + '</h4><span class="tag">' + t.lang + '</span></div>').join('');
+}
+
+document.getElementById('cats').addEventListener('click', (e) => {
+  const b = e.target.closest('.cat-btn');
+  if (!b) return;
+  document.querySelectorAll('.cat-btn').forEach(x => x.classList.remove('active'));
   b.classList.add('active');
-  cat = b.dataset.cat;
+  activeCat = b.dataset.c;
   render();
 });
-qInp.oninput = render;
+q.oninput = render;
 render();
 <\/script>
 </body>
 </html>`;
+}
 
+// 1. Download Standalone .HTML
+const standaloneBtn = document.querySelector('#download-standalone-btn');
+if (standaloneBtn) {
+  standaloneBtn.addEventListener('click', () => {
+    const standaloneDoc = generateSelfContainedHtmlDocument();
     const blob = new Blob([standaloneDoc], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'devshelf-standalone.html';
+    document.body.appendChild(a);
     a.click();
+    a.remove();
     URL.revokeObjectURL(url);
-    showToast('✓ Файл devshelf-standalone.html скачан!');
   });
+}
 
-  function updateOnlineStatus() {
-    if (offlineBanner) offlineBanner.hidden = navigator.onLine;
-  }
-  window.addEventListener('online', updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
-  updateOnlineStatus();
+// 2. Download Windows Native .EXE Builder & Launcher (.bat that compiles real DevShelf.exe via Windows built-in .NET csc.exe)
+const exeBtn = document.querySelector('#download-exe-btn');
+if (exeBtn) {
+  exeBtn.addEventListener('click', () => {
+    const standaloneDoc = generateSelfContainedHtmlDocument();
+    const base64Html = btoa(unescape(encodeURIComponent(standaloneDoc)));
+    const chunkedBase64 = (base64Html.match(/.{1,64}/g) || [base64Html]).join('\r\n');
 
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    });
-  }
+    const batContent = [
+      '@echo off',
+      'setlocal',
+      'chcp 65001 >nul',
+      'title DevShelf // Сборка нативного приложения DevShelf.exe',
+      'echo ========================================================',
+      'echo [DEVSHELF] Сборка автономного приложения DevShelf.exe',
+      'echo Папка назначения: %~dp0',
+      'echo ========================================================',
+      'echo [1/2] Распаковка автономной базы (276 тем)...',
+      'certutil -f -decode "%~f0" "%~dp0devshelf-core.html" >nul 2>&1',
+      'echo [2/2] Компиляция нативного исполняемого файла DevShelf.exe...',
+      'powershell -NoProfile -ExecutionPolicy Bypass -Command "$src = \'using System; using System.IO; using System.Diagnostics; using Microsoft.Win32; class Program { [STAThread] static void Main() { string d = AppDomain.CurrentDomain.BaseDirectory; string h = Path.Combine(d, \\\"devshelf-core.html\\\"); string u = new Uri(h).AbsoluteUri; string prof = Path.Combine(Path.GetTempPath(), \\\"DevShelf_Profile\\\"); string args = \\\"--app=\\\\\\\"\\\" + u + \\\"\\\\\\\" --user-data-dir=\\\\\\\"\\\" + prof + \\\"\\\\\\\" --window-size=1380,880 --class=DevShelf --no-first-run --no-default-browser-check\\\"; string[] n = new string[] { \\\"browser.exe\\\", \\\"msedge.exe\\\", \\\"chrome.exe\\\", \\\"brave.exe\\\" }; foreach (var name in n) { try { using (var k = Registry.CurrentUser.OpenSubKey(@\\\"SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\\\\" + name)) { if (k != null) { string p = (k.GetValue(\\\"\\\") as string ?? \\\"\\\").Trim(\\\'\\\"\\\'); if (File.Exists(p)) { Process.Start(p, args); return; } } } using (var k = Registry.LocalMachine.OpenSubKey(@\\\"SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\\\\" + name)) { if (k != null) { string p = (k.GetValue(\\\"\\\") as string ?? \\\"\\\").Trim(\\\'\\\"\\\'); if (File.Exists(p)) { Process.Start(p, args); return; } } } } catch {} } string local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData); string prog86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86); string prog = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles); string[] paths = new string[] { Path.Combine(local, @\\\"Yandex\\\\YandexBrowser\\\\Application\\\\browser.exe\\\"), Path.Combine(prog86, @\\\"Microsoft\\\\Edge\\\\Application\\\\msedge.exe\\\"), Path.Combine(prog, @\\\"Microsoft\\\\Edge\\\\Application\\\\msedge.exe\\\"), Path.Combine(prog, @\\\"Google\\\\Chrome\\\\Application\\\\chrome.exe\\\"), Path.Combine(prog86, @\\\"Google\\\\Chrome\\\\Application\\\\chrome.exe\\\"), Path.Combine(local, @\\\"Google\\\\Chrome\\\\Application\\\\chrome.exe\\\") }; foreach (var p in paths) { try { if (File.Exists(p)) { Process.Start(p, args); return; } } catch {} } try { Process.Start(new ProcessStartInfo(h) { UseShellExecute = true }); } catch {} } }\'; Add-Type -TypeDefinition $src -OutputAssembly (Join-Path \'%~dp0\' \'DevShelf.exe\') -OutputType WindowsApplication" >nul 2>&1',
+      'if not exist "%~dp0DevShelf.exe" (',
+      '  set "CSC=%SystemRoot%\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe"',
+      '  if not exist "%CSC%" set "CSC=%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\csc.exe"',
+      '  if exist "%CSC%" (',
+      '    powershell -NoProfile -ExecutionPolicy Bypass -Command "[IO.File]::WriteAllText((Join-Path $env:TEMP \'DevShelfLauncher.cs\'), \'using System; using System.IO; using System.Diagnostics; using Microsoft.Win32; class Program { [STAThread] static void Main() { string d = AppDomain.CurrentDomain.BaseDirectory; string h = Path.Combine(d, \\\"devshelf-core.html\\\"); string u = new Uri(h).AbsoluteUri; string prof = Path.Combine(Path.GetTempPath(), \\\"DevShelf_Profile\\\"); string args = \\\"--app=\\\\\\\"\\\" + u + \\\"\\\\\\\" --user-data-dir=\\\\\\\"\\\" + prof + \\\"\\\\\\\" --window-size=1380,880 --class=DevShelf --no-first-run --no-default-browser-check\\\"; string[] n = new string[] { \\\"browser.exe\\\", \\\"msedge.exe\\\", \\\"chrome.exe\\\", \\\"brave.exe\\\" }; foreach (var name in n) { try { using (var k = Registry.CurrentUser.OpenSubKey(@\\\"SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\\\\" + name)) { if (k != null) { string p = (k.GetValue(\\\"\\\") as string ?? \\\"\\\").Trim(\\\'\\\"\\\'); if (File.Exists(p)) { Process.Start(p, args); return; } } } using (var k = Registry.LocalMachine.OpenSubKey(@\\\"SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\App Paths\\\\\\\" + name)) { if (k != null) { string p = (k.GetValue(\\\"\\\") as string ?? \\\"\\\").Trim(\\\'\\\"\\\'); if (File.Exists(p)) { Process.Start(p, args); return; } } } } catch {} } string local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData); string prog86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86); string prog = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles); string[] paths = new string[] { Path.Combine(local, @\\\"Yandex\\\\YandexBrowser\\\\Application\\\\browser.exe\\\"), Path.Combine(prog86, @\\\"Microsoft\\\\Edge\\\\Application\\\\msedge.exe\\\"), Path.Combine(prog, @\\\"Microsoft\\\\Edge\\\\Application\\\\msedge.exe\\\"), Path.Combine(prog, @\\\"Google\\\\Chrome\\\\Application\\\\chrome.exe\\\"), Path.Combine(prog86, @\\\"Google\\\\Chrome\\\\Application\\\\chrome.exe\\\"), Path.Combine(local, @\\\"Google\\\\Chrome\\\\Application\\\\chrome.exe\\\") }; foreach (var p in paths) { try { if (File.Exists(p)) { Process.Start(p, args); return; } } catch {} } try { Process.Start(new ProcessStartInfo(h) { UseShellExecute = true }); } catch {} } }\')"',
+      '    "%CSC%" /nologo /target:winexe /out:"%~dp0DevShelf.exe" "%TEMP%\\DevShelfLauncher.cs" >nul 2>&1',
+      '    del /q "%TEMP%\\DevShelfLauncher.cs" >nul 2>&1',
+      '  )',
+      ')',
+      'if exist "%~dp0DevShelf.exe" (',
+      '  echo [OK] Готово! Исполняемый файл создан: "%~dp0DevShelf.exe"',
+      '  start "" "%~dp0DevShelf.exe"',
+      ') else (',
+      '  echo [INFO] Открываем ядро справочника в браузере...',
+      '  start "" "%~dp0devshelf-core.html"',
+      ')',
+      'exit /b 0',
+      '-----BEGIN CERTIFICATE-----',
+      chunkedBase64,
+      '-----END CERTIFICATE-----'
+    ].join('\r\n');
 
-  // Initial Boot
-  filterAndRender();
+    const blob = new Blob([batContent], { type: 'application/bat;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'DevShelf-Build-EXE.bat';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+}
 
-  // Если в URL передан ?topic=<id> или ?lang=<lang>, сразу открываем нужную тему/раздел
-  const initParams = new URLSearchParams(window.location.search);
-  const initLang = initParams.get('lang');
-  const initTopic = initParams.get('topic');
-  if (initLang && LANG_LABELS[initLang]) {
-    state.filter = initLang;
-    $$('.tab[data-filter]').forEach(t => t.setAttribute('aria-pressed', String(t.getAttribute('data-filter') === initLang)));
-    filterAndRender();
-  }
-  if (initTopic && resourcesById[initTopic]) {
-    openTopicModal(initTopic);
-  }
-})();
+// Initial boot
+updateCategoryCounts();
+renderCards();
+
+// Deep link: open topic modal if ?topic= is in URL
+const initialTopic = new URLSearchParams(window.location.search).get('topic');
+if (initialTopic && topicsById.has(initialTopic)) {
+  openTopicModal(initialTopic);
+}

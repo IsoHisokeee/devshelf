@@ -1,18 +1,20 @@
 <!doctype html>
 <html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Переход в справочник — DevShelf</title>
-<script>
-  // Единая точка входа: открываем выбранную тему прямо в модальном окне на главной DevShelf
-  (function () {
-    var search = window.location.search || '';
-    window.location.replace('index.html' + search);
-  })();
-</script>
-</head>
-<body style="background:#090d14;color:#f8fafc;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:90vh;margin:0;">
-  <p>Открытие справочника DevShelf... <a href="index.html" style="color:#38bdf8;">Перейти</a></p>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Перенаправление в справочник DevShelf...</title>
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var topic = params.get('topic');
+        var target = './index.html' + (topic ? '?topic=' + encodeURIComponent(topic) : '#catalog');
+        window.location.replace(target);
+      })();
+    </script>
+  </head>
+  <body style="background:#0b0c0e;color:#f4f4f6;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;">
+    <p>Открытие карточки справочника... <a href="./index.html" style="color:#facc15;">Перейти на главную</a></p>
+  </body>
 </html>

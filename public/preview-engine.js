@@ -1,508 +1,675 @@
-// DevShelf Universal Live Preview Engine & Multi-Tab Code Splitter (HTML5, CSS3, JS, PHP 8, XML/SEO, Recipes, Frameworks)
+// DevShelf Universal Preview Engine, Code Splitter & Techno-Industrial Syntax Highlighter
 (function () {
-  'use strict';
-
-  function esc(str) {
-    if (str === null || str === undefined) return '';
-    return String(str).replace(/[&<>"']/g, c => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    }[c]));
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
-  const BASE_PREVIEW_CSS = `
-    *, *::before, *::after { box-sizing: border-box; }
-    body {
+  function wrapToken(cls, text) {
+    return `<span class="tok-${cls}">${escapeHtml(text)}</span>`;
+  }
+
+  function highlightCss(code) {
+    const src = String(code || '');
+    const tokenRegex =
+      /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|("[^"\n]*"|'[^'\n]*')|(@[a-zA-Z_-]+)|(--[a-zA-Z0-9_-]+|\$[a-zA-Z0-9_-]+)|([a-zA-Z-]+)(\s*:)|(#[0-9a-fA-F]{3,8}\b|\b\d+(?:\.\d+)?(?:px|rem|em|vh|vw|vmin|vmax|deg|s|ms|%|fr)?\b)|(\b[a-zA-Z_-]+)(?=\s*\()|(::?[a-zA-Z-]+|[.#][a-zA-Z0-9_-]+)|([{}();,>~+])/g;
+
+    let out = '';
+    let lastIndex = 0;
+    let match;
+
+    while ((match = tokenRegex.exec(src)) !== null) {
+      if (match.index > lastIndex) {
+        out += wrapToken('text', src.slice(lastIndex, match.index));
+      }
+
+      const [
+        full,
+        comment,
+        str,
+        atRule,
+        variable,
+        propName,
+        propColon,
+        numOrColor,
+        fnName,
+        selector,
+        punc
+      ] = match;
+
+      if (comment !== undefined) {
+        out += wrapToken('comment', comment);
+      } else if (str !== undefined) {
+        out += wrapToken('str', str);
+      } else if (atRule !== undefined) {
+        out += wrapToken('kw', atRule);
+      } else if (variable !== undefined) {
+        out += wrapToken('var', variable);
+      } else if (propName !== undefined) {
+        out += wrapToken('attr', propName) + wrapToken('punc', propColon);
+      } else if (numOrColor !== undefined) {
+        out += wrapToken('num', numOrColor);
+      } else if (fnName !== undefined) {
+        out += wrapToken('fn', fnName);
+      } else if (selector !== undefined) {
+        out += wrapToken('tag', selector);
+      } else if (punc !== undefined) {
+        out += wrapToken('punc', punc);
+      } else {
+        out += escapeHtml(full);
+      }
+
+      lastIndex = tokenRegex.lastIndex;
+    }
+
+    if (lastIndex < src.length) {
+      out += wrapToken('text', src.slice(lastIndex));
+    }
+    return out;
+  }
+
+  function highlightJsOrPhp(code) {
+    const src = String(code || '');
+    const tokenRegex =
+      /(\/\*[\s\S]*?\*\/|\/\/[^\n]*|#[^\n]*)|(`(?:\\[\s\S]|[^`])*`|"(?:\\.|[^"\n])*"|'(?:\\.|[^'\n])*')|(<\?php|\?>)|(\$[a-zA-Z_][a-zA-Z0-9_]*)|\b(const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|new|try|catch|finally|throw|async|await|import|from|export|default|class|extends|interface|type|enum|public|private|protected|static|use|namespace|echo|print|fn|match|array|true|false|null|undefined|typeof|instanceof|in|of|void)\b|\b(document|window|console|navigator|localStorage|JSON|Math|Object|Array|Promise|Intl|URL|Blob|FileReader|PDO|Route|Project|React)\b|\b([a-zA-Z_][a-zA-Z0-9_]*)(?=\s*\()|\b(\d+(?:\.\d+)?)\b|([{}()[\].,:;+\-*/=<>!&|?~]+)/g;
+
+    let out = '';
+    let lastIndex = 0;
+    let match;
+
+    while ((match = tokenRegex.exec(src)) !== null) {
+      if (match.index > lastIndex) {
+        out += wrapToken('text', src.slice(lastIndex, match.index));
+      }
+
+      const [
+        full,
+        comment,
+        str,
+        phpTag,
+        variable,
+        keyword,
+        builtin,
+        fnName,
+        number,
+        punc
+      ] = match;
+
+      if (comment !== undefined) {
+        out += wrapToken('comment', comment);
+      } else if (str !== undefined) {
+        out += wrapToken('str', str);
+      } else if (phpTag !== undefined) {
+        out += wrapToken('tag', phpTag);
+      } else if (variable !== undefined) {
+        out += wrapToken('var', variable);
+      } else if (keyword !== undefined) {
+        out += wrapToken('kw', keyword);
+      } else if (builtin !== undefined) {
+        out += wrapToken('tag', builtin);
+      } else if (fnName !== undefined) {
+        out += wrapToken('fn', fnName);
+      } else if (number !== undefined) {
+        out += wrapToken('num', number);
+      } else if (punc !== undefined) {
+        out += wrapToken('punc', punc);
+      } else {
+        out += escapeHtml(full);
+      }
+
+      lastIndex = tokenRegex.lastIndex;
+    }
+
+    if (lastIndex < src.length) {
+      out += wrapToken('text', src.slice(lastIndex));
+    }
+    return out;
+  }
+
+  function highlightTagAttributes(attrString) {
+    const src = String(attrString || '');
+    const attrRegex = /([a-zA-Z0-9_:@.\-[\]]+)(\s*=\s*)("[^"]*"|'[^']*'|[^\s"'>]+)|([a-zA-Z0-9_:@.\-[\]]+)/g;
+    let out = '';
+    let lastIndex = 0;
+    let match;
+
+    while ((match = attrRegex.exec(src)) !== null) {
+      if (match.index > lastIndex) {
+        out += escapeHtml(src.slice(lastIndex, match.index));
+      }
+      const [, nameWithVal, eqSign, valStr, standaloneAttr] = match;
+      if (nameWithVal !== undefined) {
+        out +=
+          wrapToken('attr', nameWithVal) +
+          wrapToken('punc', eqSign) +
+          wrapToken('str', valStr);
+      } else if (standaloneAttr !== undefined) {
+        out += wrapToken('attr', standaloneAttr);
+      }
+      lastIndex = attrRegex.lastIndex;
+    }
+
+    if (lastIndex < src.length) {
+      out += escapeHtml(src.slice(lastIndex));
+    }
+    return out;
+  }
+
+  function highlightMarkup(code) {
+    const src = String(code || '');
+    if (!/<[a-zA-Z!?/]/.test(src)) {
+      if (src.includes('@mixin') || src.includes('@include')) {
+        return highlightCss(src);
+      }
+      return highlightJsOrPhp(src);
+    }
+
+    const masterRegex =
+      /(<!--[\s\S]*?-->)|(<\?php[\s\S]*?\?>)|(<style\b[^>]*>)([\s\S]*?)(<\/style>)|(<script\b[^>]*>)([\s\S]*?)(<\/script>)|(<\/?)([a-zA-Z0-9:-]+)([\s\S]*?)(\/?>)/gi;
+
+    let out = '';
+    let lastIndex = 0;
+    let match;
+
+    function highlightSingleTag(openBracket, tagName, attrs, closeBracket) {
+      return (
+        wrapToken('punc', openBracket) +
+        wrapToken('tag', tagName) +
+        highlightTagAttributes(attrs) +
+        wrapToken('punc', closeBracket)
+      );
+    }
+
+    function parseRawTagString(rawTag) {
+      const m = /^(\s*<\/?)([a-zA-Z0-9:-]+)([\s\S]*?)(\/?>\s*)$/.exec(rawTag);
+      if (!m) return wrapToken('tag', rawTag);
+      return highlightSingleTag(m[1], m[2], m[3], m[4]);
+    }
+
+    while ((match = masterRegex.exec(src)) !== null) {
+      if (match.index > lastIndex) {
+        const plainText = src.slice(lastIndex, match.index);
+        out += wrapToken('text', plainText);
+      }
+
+      const [
+        full,
+        htmlComment,
+        phpBlock,
+        styleOpen,
+        styleBody,
+        styleClose,
+        scriptOpen,
+        scriptBody,
+        scriptClose,
+        tagOpenBracket,
+        tagName,
+        tagAttrs,
+        tagCloseBracket
+      ] = match;
+
+      if (htmlComment !== undefined) {
+        out += wrapToken('comment', htmlComment);
+      } else if (phpBlock !== undefined) {
+        out += highlightJsOrPhp(phpBlock);
+      } else if (styleOpen !== undefined) {
+        out +=
+          parseRawTagString(styleOpen) +
+          highlightCss(styleBody) +
+          parseRawTagString(styleClose);
+      } else if (scriptOpen !== undefined) {
+        out +=
+          parseRawTagString(scriptOpen) +
+          highlightJsOrPhp(scriptBody) +
+          parseRawTagString(scriptClose);
+      } else if (tagName !== undefined) {
+        out += highlightSingleTag(tagOpenBracket, tagName, tagAttrs, tagCloseBracket);
+      } else {
+        out += escapeHtml(full);
+      }
+
+      lastIndex = masterRegex.lastIndex;
+    }
+
+    if (lastIndex < src.length) {
+      out += wrapToken('text', src.slice(lastIndex));
+    }
+
+    return out;
+  }
+
+  function highlightCode(code, mode = 'combined') {
+    const m = String(mode || 'combined').toLowerCase();
+    if (m === 'css') {
+      return highlightCss(code);
+    }
+    if (m === 'js' || m === 'javascript' || m === 'php') {
+      const trimmed = String(code || '').trim();
+      if (trimmed.startsWith('<!--') && trimmed.includes('<?php')) {
+        return highlightMarkup(code);
+      }
+      return highlightJsOrPhp(code);
+    }
+    return highlightMarkup(code);
+  }
+
+  const basePreviewStyles = `
+    * { box-sizing: border-box; }
+    html, body {
       margin: 0;
-      padding: 18px;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 14px;
+      background: #101216;
+      color: #f4f4f5;
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
       font-size: 14px;
-      line-height: 1.55;
-      color: #f8fafc;
-      background: #0b101b;
+      line-height: 1.5;
     }
-    a { color: #38bdf8; }
-    h1, h2, h3, h4 { margin: 0 0 10px; line-height: 1.25; color: #f8fafc; }
-    h1 { font-size: 20px; }
-    h2 { font-size: 17px; }
-    h3 { font-size: 15px; }
-    p { margin: 0 0 10px; color: #cbd5e1; }
-    button, .btn, .btn-primary, .demo-btn {
+    a { color: #facc15; }
+    button, input, select, textarea {
       font: inherit;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 7px 14px;
-      border-radius: 6px;
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      background: rgba(56, 189, 248, 0.14);
-      color: #f8fafc;
+    }
+    button:not([class]) {
+      background: #facc15;
+      color: #09090b;
+      border: 1px solid #facc15;
+      border-radius: 4px;
+      padding: 8px 14px;
+      font-weight: 800;
       cursor: pointer;
-      transition: all 150ms ease;
     }
-    button:hover, .btn:hover { background: rgba(56, 189, 248, 0.25); border-color: #38bdf8; }
-    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
-    select, textarea {
-      font: inherit;
-      font-size: 13px;
-      padding: 7px 11px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: #121827;
-      color: #f8fafc;
-      margin: 4px 6px 4px 0;
-      outline: none;
-    }
-    input:focus, select:focus, textarea:focus { border-color: #38bdf8; }
-    label { display: inline-flex; align-items: center; gap: 8px; margin: 4px 10px 4px 0; color: #e2e8f0; font-size: 13px; }
-    fieldset { border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; }
-    legend { padding: 0 6px; font-weight: 600; color: #38bdf8; }
-    table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 13px; }
-    th, td { border: 1px solid rgba(255,255,255,0.12); padding: 8px 12px; text-align: left; }
-    th { background: #141c2e; color: #38bdf8; font-weight: 600; }
-    caption { text-align: left; font-weight: 600; margin-bottom: 6px; color: #94a3b8; }
-    pre { background: #070a10; border: 1px solid rgba(255,255,255,0.1); padding: 10px 12px; border-radius: 6px; overflow-x: auto; font-family: monospace; font-size: 12px; color: #e2e8f0; }
-    code { font-family: monospace; background: rgba(56,189,248,0.12); color: #7dd3fc; padding: 2px 5px; border-radius: 4px; font-size: 12.5px; }
-    pre code { background: transparent; padding: 0; color: inherit; }
-    kbd { font-family: monospace; font-size: 11.5px; padding: 2px 6px; background: #161e31; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #f8fafc; }
-    mark { background: rgba(56, 189, 248, 0.28); color: #fff; padding: 1px 5px; border-radius: 3px; }
-    blockquote { margin: 8px 0; padding: 10px 14px; border-left: 3px solid #38bdf8; background: rgba(255,255,255,0.03); border-radius: 0 6px 6px 0; }
-    figure { margin: 0; padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; background: #101726; }
-    figcaption { font-size: 12px; color: #94a3b8; margin-top: 6px; }
-    details { border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 10px 14px; background: #101726; margin-bottom: 8px; }
-    summary { font-weight: 600; cursor: pointer; color: #f8fafc; }
-    dialog { background: #121827; color: #f8fafc; border: 1px solid #38bdf8; border-radius: 10px; padding: 20px; max-width: 380px; box-shadow: 0 16px 40px rgba(0,0,0,0.7); }
-    dialog::backdrop { background: rgba(0,0,0,0.65); backdrop-filter: blur(3px); }
-    progress, meter { height: 14px; width: 180px; vertical-align: middle; margin-right: 12px; }
-    dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; }
-    dt { font-weight: 600; color: #94a3b8; }
-    dd { margin: 0; color: #f8fafc; }
-    header, nav, main, article, section, aside, footer {
-      border: 1px dashed rgba(255,255,255,0.12);
-      border-radius: 6px;
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([class]),
+    select:not([class]),
+    textarea:not([class]) {
+      background: #181a20;
+      color: #f4f4f5;
+      border: 1px solid #3f3f46;
+      border-radius: 4px;
       padding: 8px 12px;
-      margin-bottom: 8px;
-      background: rgba(255,255,255,0.02);
+    }
+    table:not([class]) {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #2e323b;
+    }
+    th, td {
+      border: 1px solid #2e323b;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th { background: #181a20; color: #facc15; }
+    code, pre {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    blockquote {
+      margin: 0;
+      padding: 10px 14px;
+      border-left: 3px solid #facc15;
+      background: rgba(250, 204, 21, 0.08);
+    }
+    dialog[open] {
+      background: #181a20;
+      color: #f4f4f5;
+      border: 1px solid #facc15;
+      border-radius: 6px;
+      padding: 16px;
     }
   `;
 
-  function buildCssStageHtml(cssCode, topic) {
-    if (topic?.example && /<[a-z][\s\S]*>/i.test(topic.example)) {
-      return topic.example.trim();
-    }
-    const fullCss = cssCode + '\n' + (topic?.example || '');
-    const id = topic?.id || '';
-
-    if (id.includes('flexbox') || id.includes('flex-items') || /\.flex-container|\.layout|\.header-flex|\.toolbar/.test(fullCss)) {
-      if (/\.layout/.test(fullCss) && /\.sidebar/.test(fullCss)) {
-        return `<div class="layout" style="min-height:130px;">
-  <div class="sidebar" style="background:#162033;border:1px solid #38bdf8;padding:12px;border-radius:6px;">
-    <strong>.sidebar</strong><br><small style="color:#94a3b8">Фиксированная колонка</small>
-  </div>
-  <div class="content" style="background:#121827;border:1px solid rgba(255,255,255,0.14);padding:12px;border-radius:6px;">
-    <strong>.content (flex: 1)</strong>
-    <p style="margin:6px 0 0;font-size:12.5px;">Занимает всё свободное пространство благодаря flex: 1 и min-width: 0.</p>
-  </div>
-</div>`;
-      }
-      return `<div class="flex-container cards-container header-flex toolbar" style="min-height:135px;padding:14px;border:1px dashed rgba(56,189,248,0.35);border-radius:8px;background:#0e1525;">
-  <div class="special-badge" style="padding:12px 18px;background:#0284c7;color:#fff;border-radius:6px;font-weight:700;">Блок 1</div>
-  <div style="padding:12px 18px;background:#4f46e5;color:#fff;border-radius:6px;font-weight:700;">Блок 2</div>
-  <div style="padding:12px 18px;background:#0d9488;color:#fff;border-radius:6px;font-weight:700;">Блок 3</div>
-</div>`;
+  function buildCssHarness(topic, cssCode) {
+    if (topic.example && topic.example.trim().startsWith('<')) {
+      return `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><style>${basePreviewStyles}\n${cssCode}</style></head><body>${topic.example}</body></html>`;
     }
 
-    if (id.includes('grid-areas') || /\.app-shell/.test(fullCss)) {
-      return `<div class="app-shell" style="min-height:160px;gap:8px;">
-  <div class="app-header" style="background:#162238;border:1px solid #38bdf8;padding:8px 12px;border-radius:6px;font-weight:600;">header (Шапка)</div>
-  <div class="app-sidebar" style="background:#121a2d;border:1px solid rgba(255,255,255,0.15);padding:10px;border-radius:6px;">sidebar</div>
-  <div class="app-main" style="background:#0f172a;border:1px solid rgba(255,255,255,0.15);padding:10px;border-radius:6px;">main (Основной контент)</div>
-  <div class="app-footer" style="background:#121827;border:1px solid rgba(255,255,255,0.1);padding:6px 12px;border-radius:6px;font-size:12px;color:#94a3b8;">footer (Подвал)</div>
-</div>`;
-    }
+    const id = (topic.id || '').toLowerCase();
+    const code = String(cssCode || '');
 
-    if (id.includes('grid') || id.includes('subgrid') || id.includes('columns') || /\.grid-layout|\.cards-grid|\.bento-grid|\.catalog-grid|\.features-row|\.masonry-gallery/.test(fullCss)) {
-      return `<div class="grid-layout cards-grid bento-grid catalog-grid features-row masonry-gallery" style="gap:12px;">
-  <div class="card card-wide masonry-card" style="background:#141d30;border:1px solid rgba(56,189,248,0.35);padding:12px;border-radius:8px;">
-    <h3 class="card-title" style="font-size:14px;margin:0 0 4px;">Карточка 1</h3>
-    <p style="font-size:12px;margin:0;">Адаптивная ячейка сетки</p>
-  </div>
-  <div class="card masonry-card" style="background:#141d30;border:1px solid rgba(255,255,255,0.12);padding:12px;border-radius:8px;">
-    <h3 class="card-title" style="font-size:14px;margin:0 0 4px;">Карточка 2</h3>
-    <p style="font-size:12px;margin:0;">Автоматическая колонка</p>
-  </div>
-  <div class="card card-tall masonry-card" style="background:#141d30;border:1px solid rgba(255,255,255,0.12);padding:12px;border-radius:8px;">
-    <h3 class="card-title" style="font-size:14px;margin:0 0 4px;">Карточка 3</h3>
-    <p style="font-size:12px;margin:0;">Равномерный отступ gap</p>
-  </div>
-</div>`;
-    }
-
-    const classMatches = [...fullCss.matchAll(/\.([a-zA-Z0-9_-]+)/g)].map(m => m[1]);
-    const uniqueClasses = [...new Set(classMatches)].filter(
-      c => !['is-open', 'is-visible', 'is-removed', 'is-invisible', 'is-faded', 'active', 'disabled', 'sr-only', 'visually-hidden'].includes(c)
-    );
-    const combinedClassStr = uniqueClasses.join(' ') || 'demo-card';
-
-    return `<div class="container center-box hero-stack canvas-dots" style="padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);">
-  <div class="${esc(combinedClassStr)} card card-interactive elevated-card glass-navbar hero-banner outer-card prose" style="padding:16px;border-radius:8px;border:1px solid rgba(255,255,255,0.14);background:#121929;">
-    <span class="card-badge section-badge" style="font-size:11px;color:#38bdf8;font-family:monospace;">CSS LIVE PREVIEW</span>
-    <h2 class="card-title gradient-title text-gradient" style="margin:6px 0;">Интерактивный блок предпросмотра</h2>
-    <p class="card-excerpt article-body" style="margin:0 0 12px;">
-      Классы из примера (<code>${esc(uniqueClasses.slice(0, 4).map(c => '.' + c).join(', ') || 'селекторы')}</code>) применены к этому стенду в реальном времени.
-    </p>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <button type="button" class="btn btn-tactile">Наведи или нажми</button>
-      <a href="#demo" class="external-link">Тестовая ссылка</a>
-    </div>
-  </div>
-</div>`;
-  }
-
-  function splitTopicIntoCodeParts(topic) {
-    if (!topic) return { all: '', html: '', css: '', js: '' };
-    const lang = topic.lang || topic.category || 'html';
-    const rawCode = String(topic.code || '').trim();
-    const rawExample = String(topic.example || '').trim();
-
-    if (lang === 'css') {
-      const htmlPart = buildCssStageHtml(rawCode, topic);
-      const cssPart = rawCode;
-      const jsPart = `// JS-скрипт для интерактивной проверки стилей\nconsole.log('Загружен CSS-стенд: ${topic.title.replace(/'/g, "\\'")}');`;
-      const allPart = `<!-- Разметка (HTML) -->\n${htmlPart}\n\n<style>\n/* Стили (CSS) */\n${cssPart}\n</style>\n\n<script>\n${jsPart}\n</script>`;
-      return { all: allPart, html: htmlPart, css: cssPart, js: jsPart };
-    }
-
-    if (lang === 'javascript') {
-      const jsPart = rawCode.replace(/<\/?script[^>]*>/gi, '').trim();
-      const htmlPart = /<[a-z][\s\S]*>/i.test(rawExample)
-        ? rawExample.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '').replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '').trim()
-        : `<div id="app" class="card">\n  <h3>Тестовый стенд: ${esc(topic.title)}</h3>\n  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">\n    <input id="searchInput" type="search" placeholder="Введите текст...">\n    <button id="button" type="button">Проверить функцию</button>\n    <span id="cartBadge" class="badge">0</span>\n  </div>\n  <div id="list" style="margin-top:8px;"></div>\n</div>`;
-      const cssPart = `.card {\n  padding: 16px;\n  border-radius: 10px;\n  background: #111827;\n  border: 1px solid rgba(255, 255, 255, 0.14);\n}\n.badge {\n  padding: 2px 8px;\n  border-radius: 4px;\n  background: #0284c7;\n  color: #fff;\n  font-weight: 700;\n}`;
-      const allPart = `<!-- Разметка (HTML) -->\n${htmlPart}\n\n<style>\n${cssPart}\n</style>\n\n<script>\n${jsPart}\n</script>`;
-      return { all: allPart, html: htmlPart, css: cssPart, js: jsPart };
-    }
-
-    const combinedRaw = (rawCode.includes('<style') || rawCode.includes('<script'))
-      ? rawCode
-      : (rawExample.includes('<div') || rawExample.includes('<script') || rawExample.includes('<style'))
-        ? `${rawCode}\n\n${rawExample}`
-        : rawCode;
-
-    const styleMatches = [...combinedRaw.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)].map(m => m[1].trim());
-    const scriptMatches = [...combinedRaw.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1].trim());
-
-    let extraCss = styleMatches.join('\n\n');
-    if (!extraCss && rawExample && /\{[\s\S]*\}/.test(rawExample) && !/<[a-z]/i.test(rawExample)) {
-      extraCss = rawExample;
-    }
-
-    let cleanHtml = rawCode
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-      .replace(/<script(?![^>]*src=)[^>]*>[\s\S]*?<\/script>/gi, '')
-      .trim();
-
-    if (!cleanHtml && /<[a-z][\s\S]*>/i.test(rawExample)) {
-      cleanHtml = rawExample
-        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-        .replace(/<script(?![^>]*src=)[^>]*>[\s\S]*?<\/script>/gi, '')
-        .trim();
-    }
-
-    const htmlPart = cleanHtml || rawCode;
-    const cssPart = extraCss || `/* Базовые стили компонента */\nbody {\n  font-family: system-ui, sans-serif;\n  background: #0b101b;\n  color: #f8fafc;\n  padding: 16px;\n}`;
-    const jsPart = scriptMatches.join('\n\n') || `// Скрипт инициализации компонента\nconsole.log('Компонент активен:', '${topic.title.replace(/'/g, "\\'")}');`;
-
-    let allPart = rawCode;
-    if (lang === 'html' || lang === 'recipes' || lang === 'frameworks') {
-      allPart = `${htmlPart}\n\n<style>\n${cssPart}\n</style>\n\n<script>\n${jsPart}\n</script>`;
-    }
-    return { all: allPart, html: htmlPart, css: cssPart, js: jsPart };
-  }
-
-  function mergeCodeParts(parts) {
-    if (!parts) return '';
-    return `${(parts.html || '').trim()}\n\n<style>\n${(parts.css || '').trim()}\n</style>\n\n<script>\n${(parts.js || '').trim()}\n</script>`;
-  }
-
-  function buildSeoOrXmlPreviewHtml(code, topic) {
-    const raw = String(code || '');
-
-    if (/<svg[\s>]/i.test(raw)) {
-      return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_PREVIEW_CSS}
-        .svg-stage {
-          display: flex; align-items: center; justify-content: center; gap: 20px;
-          min-height: 145px; padding: 20px; border-radius: 8px;
-          background-color: #090d14;
-          background-image: radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);
-          background-size: 16px 16px;
-          border: 1px solid rgba(56,189,248,0.3);
-          color: #38bdf8;
-        }
-        .svg-stage svg { min-width: 42px; min-height: 42px; transition: transform 200ms ease, color 200ms ease; cursor: pointer; }
-        .svg-stage svg:hover { transform: scale(1.18); color: #7dd3fc; }
-      </style></head><body>
-        <div class="svg-stage">${raw}</div>
-      </body></html>`;
-    }
-
-    const titleMatch = raw.match(/<title>([^<]+)<\/title>/i) || raw.match(/og:title"\s+content="([^"]+)"/i) || raw.match(/"name":\s*"([^"]+)"/i);
-    const descMatch = raw.match(/name="description"\s+content="([^"]+)"/i) || raw.match(/og:description"\s+content="([^"]+)"/i) || raw.match(/"description":\s*"([^"]+)"/i);
-    const urlMatch = raw.match(/href="([^"]+)"/i) || raw.match(/<loc>([^<]+)<\/loc>/i) || raw.match(/Sitemap:\s*(\S+)/i);
-    const robotsMatch = raw.match(/name="robots"\s+content="([^"]+)"/i);
-
-    const previewTitle = titleMatch ? titleMatch[1] : (topic?.title || 'DevShelf — Справочник разработчика');
-    const previewDesc = descMatch ? descMatch[1] : (topic?.summary || 'Предпросмотр сниппета поисковой выдачи и карточки соцсетей.');
-    const previewUrl = urlMatch ? urlMatch[1] : 'https://devshelf.ru/docs';
-
-    const locs = [...raw.matchAll(/<loc>([^<]+)<\/loc>/gi)].map(m => m[1]);
-    const robotLines = raw.split('\n').filter(l => /^(User-agent|Allow|Disallow|Sitemap|RewriteRule|Header|add_header)/i.test(l.trim()));
-
-    return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_PREVIEW_CSS}
-      .seo-preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
-      .serp-card { background: #111827; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 12px 14px; }
-      .serp-kicker { font-size: 10px; font-family: monospace; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-      .serp-url { font-size: 11.5px; color: #10b981; font-family: monospace; margin-bottom: 3px; word-break: break-all; }
-      .serp-title { font-size: 15px; font-weight: 700; color: #60a5fa; margin-bottom: 4px; }
-      .serp-desc { font-size: 12.5px; color: #cbd5e1; margin: 0; line-height: 1.45; }
-      .tg-card { border-left: 3px solid #38bdf8; background: rgba(56,189,248,0.07); padding: 10px 12px; border-radius: 0 8px 8px 0; }
-      .rule-list { font-family: monospace; font-size: 11.5px; color: #a5f3fc; margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
-      .rule-item { background: #070a10; padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.08); }
-    </style></head><body>
-      <div class="seo-preview-grid">
-        <div class="serp-card">
-          <div class="serp-kicker">🔍 Предпросмотр сниппета (Google / Яндекс / Telegram)</div>
-          <div class="serp-url">${esc(previewUrl)} ${robotsMatch ? `· [${esc(robotsMatch[1])}]` : ''}</div>
-          <div class="serp-title">${esc(previewTitle)}</div>
-          <p class="serp-desc">${esc(previewDesc)}</p>
+    let bodyHtml = '';
+    if (id.includes('flex') || id.includes('grid') || id.includes('gap') || id.includes('align') || id.includes('justify')) {
+      bodyHtml = `
+        <div class="demo-container container grid flex row layout cards">
+          <div class="item card box col">МОД 1</div>
+          <div class="item card box col">МОД 2</div>
+          <div class="item card box col">МОД 3</div>
         </div>
-        ${(locs.length > 0 || robotLines.length > 0) ? `
-        <div class="serp-card">
-          <div class="serp-kicker">⚙️ Распознанные директивы (${locs.length + robotLines.length})</div>
-          <div class="rule-list">
-            ${locs.slice(0, 4).map(u => `<div class="rule-item">📍 URL: ${esc(u)}</div>`).join('')}
-            ${robotLines.slice(0, 4).map(r => `<div class="rule-item">🛡️ ${esc(r.trim())}</div>`).join('')}
+      `;
+    } else if (id.includes('button') || id.includes('hover') || id.includes('focus') || id.includes('transition') || id.includes('outline')) {
+      bodyHtml = `
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:8px;">
+          <button class="btn button demo-btn focus-demo-btn">Интерактивная кнопка</button>
+          <a href="#demo" class="link demo-link">Тестовая ссылка →</a>
+        </div>
+      `;
+    } else if (id.includes('input') || id.includes('form') || id.includes('placeholder') || id.includes('checkbox')) {
+      bodyHtml = `
+        <form onsubmit="event.preventDefault()" style="display:grid;gap:10px;max-width:320px;">
+          <input type="text" class="input field" placeholder="Введите значение..." value="Пример текста">
+          <label style="display:flex;gap:8px;align-items:center;"><input type="checkbox" checked> Опция активна</label>
+        </form>
+      `;
+    } else {
+      bodyHtml = `
+        <div class="demo-stage container wrapper box card panel element target" style="padding:16px;border-radius:6px;border:1px solid rgba(250,204,21,0.35);background:rgba(24,26,32,0.85);">
+          <h4 class="title heading" style="margin:0 0 6px 0;color:#facc15;">${escapeHtml(topic.title || 'CSS Демонстрация')}</h4>
+          <p class="text desc content" style="margin:0 0 10px 0;color:#d4d4d8;font-size:13px;">${escapeHtml(topic.summary || '')}</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="badge tag pill item" style="padding:4px 10px;border-radius:4px;background:rgba(250,204,21,0.15);color:#facc15;font-size:12px;font-weight:700;">Элемент A</span>
+            <span class="badge tag pill item" style="padding:4px 10px;border-radius:4px;background:rgba(34,197,94,0.16);color:#86efac;font-size:12px;font-weight:700;">Элемент B</span>
           </div>
-        </div>` : `
-        <div class="serp-card">
-          <div class="serp-kicker">💬 Карточка репоста (Open Graph / Schema)</div>
-          <div class="tg-card">
-            <div style="font-size:11px;color:#38bdf8;font-weight:700;">DevShelf</div>
-            <div style="font-size:13.5px;font-weight:600;color:#f8fafc;margin:2px 0;">${esc(previewTitle)}</div>
-            <div style="font-size:12px;color:#94a3b8;">${esc(previewDesc)}</div>
-          </div>
-        </div>`}
+        </div>
+      `;
+    }
+
+    const extraRules = `
+      .demo-container { display: flex; gap: 10px; flex-wrap: wrap; }
+      .demo-container > div {
+        padding: 14px 18px;
+        border-radius: 4px;
+        background: rgba(250, 204, 21, 0.14);
+        border: 1px solid rgba(250, 204, 21, 0.45);
+        font-weight: 800;
+        color: #fef08a;
+        font-family: monospace;
+      }
+    `;
+
+    return `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><style>${basePreviewStyles}\n${extraRules}\n${code}</style></head><body>${bodyHtml}</body></html>`;
+  }
+
+  function buildJsHarness(topic, jsCode) {
+    const htmlFixture = (topic.example && topic.example.trim().startsWith('<'))
+      ? `<div id="demo-fixture" style="margin-bottom:12px;">${topic.example}</div>`
+      : `<div id="app" class="box card item" style="margin-bottom:10px;padding:10px 12px;border-radius:4px;background:#181a20;border:1px solid #2e323b;display:flex;justify-content:space-between;align-items:center;">
+          <span id="demo-text" class="title">Интерактивный DOM-узел (#app)</span>
+          <button id="btn" class="btn" type="button" style="padding:5px 10px;font-size:12px;">Выполнить действие</button>
+        </div>`;
+
+    return `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><style>
+      ${basePreviewStyles}
+      .console-box {
+        background: #090a0c;
+        border: 1px solid #272a30;
+        border-left: 3px solid #facc15;
+        border-radius: 4px;
+        padding: 10px 12px;
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 12.5px;
+      }
+      .console-head {
+        display: flex;
+        justify-content: space-between;
+        color: #facc15;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 6px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #1f2229;
+        font-weight: 700;
+      }
+      .log-line {
+        padding: 4px 0;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+        color: #fef08a;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .log-line:last-child { border-bottom: none; }
+      .log-warn { color: #fb923c; }
+      .log-err { color: #f87171; }
+    </style></head><body>
+      ${htmlFixture}
+      <div class="console-box">
+        <div class="console-head"><span>Консоль выполнения JS</span><span>LIVE // STDOUT</span></div>
+        <div id="console-out"></div>
+      </div>
+      <script>
+        (function() {
+          const out = document.getElementById('console-out');
+          function formatVal(v) {
+            if (v === undefined) return 'undefined';
+            if (v === null) return 'null';
+            if (typeof v === 'function') return '[Function: ' + (v.name || 'anonymous') + ']';
+            if (typeof v === 'object') {
+              try { return JSON.stringify(v, null, 2); } catch (e) { return String(v); }
+            }
+            return String(v);
+          }
+          function appendLine(cls, args) {
+            const div = document.createElement('div');
+            div.className = 'log-line ' + (cls || '');
+            div.textContent = '> ' + Array.from(args).map(formatVal).join(' ');
+            out.appendChild(div);
+          }
+          console.log = function() { appendLine('', arguments); };
+          console.info = function() { appendLine('', arguments); };
+          console.warn = function() { appendLine('log-warn', arguments); };
+          console.error = function() { appendLine('log-err', arguments); };
+          console.table = function(data) { appendLine('', [data]); };
+
+          try {
+            ${jsCode}
+            if (!out.children.length) {
+              appendLine('', ['Код успешно выполнен (без ошибок).']);
+            }
+          } catch (err) {
+            appendLine('log-err', ['Ошибка: ' + (err && err.message ? err.message : String(err))]);
+          }
+        })();
+      <\/script>
+    </body></html>`;
+  }
+
+  function buildPhpHarness(topic, phpCode) {
+    const lines = [];
+    const code = String(phpCode || '');
+    const echoMatches = [...code.matchAll(/(?:echo|print|var_dump|print_r)\s*\(?([^;\n]+)\)?;/g)];
+    if (echoMatches.length) {
+      echoMatches.forEach((m, idx) => {
+        const expr = m[1].trim().replace(/^['"]|['"]$/g, '');
+        lines.push(`Вывод #${idx + 1}: ${expr}`);
+      });
+    } else if (code.includes('json_encode')) {
+      lines.push('{"ok": true, "status": 200, "engine": "PHP 8.3"}');
+    } else if (code.includes('PDO') || code.includes('SELECT')) {
+      lines.push('Успешное подключение PDO -> получено строк: 3');
+    } else if (code.includes('password_hash')) {
+      lines.push('$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+    } else {
+      lines.push(`Скрипт "${topic.title || 'PHP 8.3'}" выполнен успешно (0 ошибок, код возврата 0).`);
+    }
+
+    return `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><style>
+      ${basePreviewStyles}
+      .php-sim {
+        background: #090a0c;
+        border: 1px solid #272a30;
+        border-left: 3px solid #facc15;
+        border-radius: 4px;
+        padding: 12px;
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+      }
+      .php-head {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #facc15;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #1f2229;
+        font-weight: 700;
+      }
+      .php-out {
+        color: #e4e4e7;
+        font-size: 12.5px;
+        white-space: pre-wrap;
+      }
+    </style></head><body>
+      <div class="php-sim">
+        <div class="php-head"><span>PHP 8.3 CLI / FPM Симулятор</span><span>200 OK</span></div>
+        <div class="php-out">${escapeHtml(lines.join('\n'))}</div>
       </div>
     </body></html>`;
   }
 
-  function buildPhpPreviewHtml(code, topic) {
-    const raw = String(code || '').trim();
-    const lines = raw.split('\n');
-    const outputs = [];
-    for (const line of lines) {
-      const t = line.trim();
-      if (/^echo\s+/i.test(t)) {
-        outputs.push(t.replace(/^echo\s+/i, '').replace(/;$/, ''));
+  function buildXmlHarness(topic, xmlCode) {
+    const raw = String(xmlCode || '').trim();
+    if (raw.startsWith('<svg') || raw.includes('<svg')) {
+      return `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><style>${basePreviewStyles}</style></head><body>${raw}</body></html>`;
+    }
+    return `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><style>
+      ${basePreviewStyles}
+      .xml-card {
+        background: #141619;
+        border: 1px solid #2e323b;
+        border-left: 3px solid #facc15;
+        border-radius: 4px;
+        padding: 12px;
       }
-    }
-
-    let simulatedResult = '';
-    const id = topic?.id || '';
-    if (id.includes('json')) {
-      simulatedResult = `HTTP/1.1 201 Created\nContent-Type: application/json; charset=utf-8\n\n{\n  "status": "ok",\n  "received": "${esc(topic.title)}"\n}`;
-    } else if (id.includes('pdo') || id.includes('sql') || id.includes('laravel')) {
-      simulatedResult = `[PDO / Eloquent ORM utf8mb4] Запрос подготовлен и выполнен успешно (0.8 ms)\n\nArray (\n  [0] => Array (\n    [id] => 1\n    [title] => "${esc(topic.title)}"\n    [status] => "active"\n  )\n)`;
-    } else if (id.includes('password') || id.includes('random')) {
-      simulatedResult = `password_hash(): "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi"\npassword_verify(): true (Авторизация успешна)\nrandom_bytes(16): "4f8a9c2e1b7d036a5f12e8c9d4b7a102"`;
-    } else if (outputs.length > 0) {
-      simulatedResult = outputs.map((o, idx) => `[Вывод #${idx + 1}]: ${o}`).join('\n');
-    } else {
-      simulatedResult = `[PHP 8.3 Strict Mode] Скрипт выполнен без ошибок (exit code 0).\nТема: ${topic?.title || 'PHP'}\nПроверено выражений: ${lines.length} строк.`;
-    }
-
-    return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_PREVIEW_CSS}
-      .php-sim { display: grid; grid-template-columns: 1fr; gap: 10px; }
-      .php-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; background: #141d30; border: 1px solid rgba(56,189,248,0.3); border-radius: 6px; font-family: monospace; font-size: 11.5px; color: #7dd3fc; }
-      .php-out { background: #070a10; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 12px; font-family: monospace; font-size: 12.5px; color: #86efac; white-space: pre-wrap; margin: 0; }
+      .xml-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 4px;
+        background: rgba(250, 204, 21, 0.14);
+        color: #facc15;
+        font-size: 11px;
+        font-weight: 700;
+        font-family: monospace;
+        margin-bottom: 8px;
+      }
+      pre {
+        margin: 0;
+        padding: 10px;
+        border-radius: 4px;
+        background: #090a0c;
+        color: #e4e4e7;
+        font-size: 12px;
+        overflow-x: auto;
+      }
     </style></head><body>
-      <div class="php-sim">
-        <div class="php-bar">
-          <span>🐘 PHP 8.3 Sandbox Runner (declare(strict_types=1))</span>
-          <span style="color:#10b981;">● 200 OK</span>
-        </div>
-        <pre class="php-out">${esc(simulatedResult)}</pre>
+      <div class="xml-card">
+        <span class="xml-badge">✓ ВАЛИДНЫЙ ДОКУМЕНТ / КОНФИГУРАЦИЯ (${escapeHtml((topic.id || 'XML').toUpperCase())})</span>
+        <pre>${escapeHtml(raw)}</pre>
       </div>
     </body></html>`;
   }
 
   function buildTopicPreviewDoc(topic, customCode) {
-    const lang = topic?.lang || topic?.category || 'html';
-    const code = (customCode !== undefined ? customCode : (topic?.code || '')).trim();
+    if (!topic) return '';
+    const lang = (topic.lang || 'html').toLowerCase();
+    const code = customCode !== undefined ? customCode : (topic.code || '');
 
-    if (customCode !== undefined && (/<style[\s>]/i.test(code) || /<script[\s>]/i.test(code)) && /<[a-z]/i.test(code)) {
-      return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_PREVIEW_CSS}</style></head><body>${code}</body></html>`;
+    if (lang === 'css') {
+      return buildCssHarness(topic, code);
     }
-
-    if (lang === 'frameworks') {
-      if (topic?.id === 'fw-laravel' || /<\?php/i.test(code)) {
-        return buildPhpPreviewHtml(code, topic);
-      }
-      if (topic?.example && /<(div|button|input|script|style)/i.test(topic.example)) {
-        return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_PREVIEW_CSS}</style></head><body>${topic.example}</body></html>`;
-      }
-      if (/<(div|header|main|section|button|input)/i.test(code)) {
-        return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_PREVIEW_CSS}</style></head><body>${code}</body></html>`;
-      }
-      return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_PREVIEW_CSS}</style></head><body>
-        <div style="padding:16px;background:#131c2e;border:1px solid rgba(56,189,248,0.35);border-radius:12px;">
-          <div style="font-size:11px;color:#38bdf8;font-family:monospace;font-weight:700;margin-bottom:6px;">⚡ MODERN FRAMEWORK RUNTIME</div>
-          <h3 style="margin:0 0 6px;">${esc(topic?.title || 'Фреймворк')}</h3>
-          <p style="margin:0 0 10px;font-size:13px;color:#94a3b8;">${esc(topic?.summary || '')}</p>
-          <div style="padding:10px;background:#070a10;border-radius:8px;font-family:monospace;font-size:12px;color:#86efac;">✓ Конфигурация и синтаксис проверены. Готово к подключению в проект.</div>
-        </div>
-      </body></html>`;
+    if (lang === 'javascript' || lang === 'js') {
+      return buildJsHarness(topic, code);
     }
-
-    const isHeadOnlyHtml = lang === 'html' && !/<(body|main|header|article|section|div|p|h[1-6]|ul|ol|dl|table|form|input|select|textarea|button|dialog|details|figure|blockquote|video|audio|canvas|svg|progress|meter|output|template|search|nav|aside|footer)\b/i.test(code);
-
-    if (lang === 'xml' || isHeadOnlyHtml) {
-      return buildSeoOrXmlPreviewHtml(code, topic);
-    }
-
     if (lang === 'php') {
-      return buildPhpPreviewHtml(code, topic);
+      return buildPhpHarness(topic, code);
+    }
+    if (lang === 'xml') {
+      return buildXmlHarness(topic, code);
+    }
+
+    const exampleHtml = (customCode === undefined && topic.example && topic.example.trim().startsWith('<'))
+      ? topic.example
+      : code;
+
+    return `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><style>${basePreviewStyles}</style></head><body>${exampleHtml}</body></html>`;
+  }
+
+  function splitTopicIntoCodeParts(topic) {
+    if (!topic) return { combined: '', html: '', css: '', js: '' };
+    const lang = (topic.lang || 'html').toLowerCase();
+    const rawCode = String(topic.code || '').trim();
+    const rawExample = String(topic.example || '').trim();
+
+    let html = '';
+    let css = '';
+    let js = '';
+
+    function extractFromMarkup(source) {
+      let rest = source;
+      const styleMatches = [...rest.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)];
+      if (styleMatches.length) {
+        css = styleMatches.map((m) => m[1].trim()).join('\n\n');
+        rest = rest.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '').trim();
+      }
+      const scriptMatches = [...rest.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/gi)];
+      if (scriptMatches.length) {
+        js = scriptMatches.map((m) => m[1].trim()).join('\n\n');
+        rest = rest.replace(/<script(?![^>]*src=)[^>]*>[\s\S]*?<\/script>/gi, '').trim();
+      }
+      html = rest.trim();
     }
 
     if (lang === 'css') {
-      const stageHtml = buildCssStageHtml(code, topic);
-      return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_PREVIEW_CSS}\n${code}</style></head><body>${stageHtml}</body></html>`;
+      css = rawCode;
+      if (rawExample && rawExample.startsWith('<')) {
+        html = rawExample;
+      } else {
+        html = `<div class="demo-container">\n  <div class="card box item">Элемент 1</div>\n  <div class="card box item">Элемент 2</div>\n  <div class="card box item">Элемент 3</div>\n</div>`;
+      }
+      js = '// JavaScript не требуется для чистого CSS-свойства';
+    } else if (lang === 'javascript' || lang === 'js') {
+      js = rawCode;
+      if (rawExample && rawExample.startsWith('<')) {
+        html = rawExample;
+      } else {
+        html = `<div id="app" class="demo-box">\n  <span id="demo-text">${topic.title || 'JS Демо'}</span>\n  <button id="btn" type="button">Запустить</button>\n</div>`;
+      }
+      css = `.demo-box {\n  padding: 14px;\n  border-radius: 6px;\n  background: #141619;\n  border: 1px solid #2e323b;\n  color: #f4f4f5;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}`;
+    } else if (lang === 'php') {
+      html = `<!-- Серверный скрипт PHP 8.3 -->\n` + rawCode;
+      css = `/* Стили вывода для клиентской части */\n.php-output {\n  font-family: monospace;\n  color: #facc15;\n}`;
+      js = `// Клиентский запрос к PHP-обработчику:\n// fetch('/api/handler.php').then(r => r.json()).then(console.log);`;
+    } else if (lang === 'xml') {
+      html = rawCode;
+      css = `/* Конфигурационный / XML / SEO файл не требует CSS */`;
+      js = `// Файл обрабатывается браузером, сборщиком или поисковым роботом`;
+    } else {
+      const sourceToParse = rawCode.includes('<') ? rawCode : (rawExample.includes('<') ? rawExample : rawCode);
+      extractFromMarkup(sourceToParse);
+
+      if (!html && rawCode) {
+        html = rawCode;
+      }
+      if (!css) {
+        css = `/* Базовые стили компонента */\n.demo-card {\n  padding: 16px;\n  border-radius: 6px;\n  background: #141619;\n  border: 1px solid #2e323b;\n  color: #f4f4f5;\n}`;
+      }
+      if (!js) {
+        js = `// Интерактивная логика компонента\nconsole.log('Модуль инициализирован:', ${JSON.stringify(topic.title || '')});`;
+      }
     }
 
-    if (lang === 'javascript') {
-      const autoVars = [
-        'total', 'uniqueTags', 'grouped', 'byName', 'byScore', 'discounted',
-        'clean', 'timerText', 'slug', 'id', 'pages', 'nextState', 'safeUrl',
-        'zipCode', 'count', 'target', 'hasInactive', 'allActive', 'allTags',
-        'updated', 'withoutFirst', 'last', 'secondLast', 'volume', 'diffDays'
-      ];
-      const inspectScript = `
-        try {
-          const _found = [];
-          ${JSON.stringify(autoVars)}.forEach(k => {
-            try {
-              const v = eval(k);
-              if (v !== undefined) _found.push(k + ' = ' + (typeof v === 'object' ? JSON.stringify(v) : String(v)));
-            } catch {}
-          });
-          if (_found.length) console.log(_found.join('\\n'));
-        } catch {}
-      `;
-
-      return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_PREVIEW_CSS}
-        .js-stage { display: flex; flex-direction: column; gap: 10px; }
-        .js-dom-playground { padding: 12px; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; background: #111827; }
-        .js-log-view { margin: 0; padding: 10px 12px; border-radius: 6px; background: #070a10; border: 1px solid rgba(56,189,248,0.28); color: #86efac; font-family: monospace; font-size: 12px; white-space: pre-wrap; min-height: 44px; }
-        .is-visible, .is-pinned { border-color: #38bdf8 !important; box-shadow: 0 0 0 2px rgba(56,189,248,0.25); }
-        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; background: #0284c7; color: #fff; font-size: 11px; font-weight: 700; margin-bottom: 6px; }
-      </style></head><body>
-        <div class="js-stage">
-          <div class="js-dom-playground" id="app">
-            <div class="card chart-container" style="padding:10px;border:1px solid rgba(255,255,255,0.12);border-radius:6px;margin-bottom:8px;">
-              <strong>Интерактивный DOM-стенд (.card)</strong>
-              <div id="list" style="margin-top:6px;"></div>
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-              <input id="searchInput" type="search" placeholder="Живой ввод текста..." style="margin:0;">
-              <button type="button" id="button" class="tab-btn" data-tab-target="pricing" data-plan-id="42">Тест кнопки</button>
-              <span id="cartBadge" class="badge">0</span>
-            </div>
-            <ul id="todo-list" style="margin:8px 0 0;padding-left:18px;font-size:13px;">
-              <li>Задача 1 <button type="button" data-action="delete" style="padding:2px 6px;font-size:11px;margin-left:6px;">Удалить</button></li>
-              <li>Задача 2 <button type="button" data-action="delete" style="padding:2px 6px;font-size:11px;margin-left:6px;">Удалить</button></li>
-            </ul>
-            <form id="profile-form" hidden><input name="user" value="Павел"><input type="file" id="fileInput"></form>
-            <img id="avatarImg" hidden alt="">
-            <div id="drop-zone" hidden></div>
-            <div id="pricing" hidden></div>
-            <div id="progressBar" hidden></div>
-            <input id="password" value="123456" hidden><input id="password-confirm" value="123456" hidden>
-            <input id="inputElement" type="number" value="42.5" hidden>
-          </div>
-          <div>
-            <div style="font-size:10.5px;font-family:monospace;color:#38bdf8;margin-bottom:4px;">▶ РЕЗУЛЬТАТ ВЫПОЛНЕНИЯ JS / CONSOLE.LOG:</div>
-            <pre id="inline-js-log" class="js-log-view">Выполнение скрипта...</pre>
-          </div>
-        </div>
-        <script>
-          const _logBox = document.getElementById('inline-js-log');
-          const _lines = [];
-          const _send = (type, args) => {
-            const formatted = Array.from(args).map(x => {
-              try { return typeof x === 'object' ? JSON.stringify(x, null, 2) : String(x); }
-              catch { return String(x); }
-            });
-            _lines.push((type === 'error' ? '❌ ' : '✓ ') + formatted.join(' '));
-            _logBox.textContent = _lines.join('\\n');
-            parent.postMessage({ devshelfRef: true, type, args: formatted }, '*');
-          };
-          ['log', 'info', 'warn', 'error', 'table'].forEach(k => {
-            const old = console[k];
-            console[k] = function () { _send(k, arguments); if (old) old.apply(console, arguments); };
-          });
-          window.onerror = (msg, url, line) => _send('error', [msg + ' (строка ' + line + ')']);
-          const searchInput = document.getElementById('searchInput');
-          const button = document.getElementById('button');
-          const card = document.querySelector('.card');
-          const cartBadge = document.getElementById('cartBadge');
-          const fileInput = document.getElementById('fileInput');
-          const avatarImg = document.getElementById('avatarImg');
-          const progressBar = document.getElementById('progressBar');
-          const inputElement = document.getElementById('inputElement');
-          const isPinnedBoolean = true;
-          const users = [{ id: 1, name: 'Павел', role: 'admin' }, { id: 2, name: 'Елена', role: 'editor' }];
-          function renderItems() {}
-          function resizeCanvas() {}
-          function openCommandPalette() { console.log('Открыта палитра команд Ctrl+K'); }
-          function hideNotification() {}
-        <\/script>
-        <script>
-          try {
-            ${code.replace(/<\/script/gi, '<\\/script')}
-            ${inspectScript}
-            if (_lines.length === 0) {
-              _logBox.textContent = '✓ Скрипт успешно выполнен и подключён к интерактивным элементам выше.';
-              parent.postMessage({ devshelfRef: true, type: 'info', args: ['Скрипт выполнен без ошибок.'] }, '*');
-            }
-          } catch (err) {
-            _send('error', [err.message]);
-          }
-        <\/script>
-      </body></html>`;
+    let combined = '';
+    if (lang === 'php' || lang === 'xml') {
+      combined = rawCode;
+    } else {
+      const parts = [];
+      if (html) parts.push(`<!-- ==================== HTML ==================== -->\n${html}`);
+      if (css && !css.startsWith('/* Базовые стили компонента */')) {
+        parts.push(`<style>\n/* ==================== CSS ==================== */\n${css}\n</style>`);
+      } else if (lang === 'css' && css) {
+        parts.push(`<style>\n${css}\n</style>`);
+      }
+      if (js && !js.startsWith('// JavaScript не требуется') && !js.startsWith('// Интерактивная логика компонента')) {
+        parts.push(`<script>\n// ==================== JS ====================\n${js}\n<\/script>`);
+      } else if ((lang === 'javascript' || lang === 'js') && js) {
+        parts.push(`<script>\n${js}\n<\/script>`);
+      }
+      combined = parts.join('\n\n') || rawCode;
     }
 
-    let extraCss = '';
-    if (topic?.example && /\{[\s\S]*\}/.test(topic.example) && !/<[a-z]/i.test(topic.example)) {
-      extraCss = topic.example;
-    }
-
-    const autoEnhanceScript = `
-      <script>
-        const dlg = document.querySelector('dialog');
-        if (dlg && !dlg.open && !document.getElementById('open-modal') && !document.getElementById('open-dialog')) {
-          dlg.setAttribute('open', '');
-        }
-      <\/script>
-    `;
-
-    return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_PREVIEW_CSS}\n${extraCss}</style></head><body>${code}${autoEnhanceScript}</body></html>`;
+    return { combined, html, css, js };
   }
 
   window.DevShelfPreview = {
     buildTopicPreviewDoc,
     splitTopicIntoCodeParts,
-    mergeCodeParts
+    highlightCode
   };
 })();

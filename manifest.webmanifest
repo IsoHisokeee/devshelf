@@ -1,0 +1,18 @@
+{
+  "name": "DevShelf // Инженерный справочник и верстак веб-разработчика",
+  "short_name": "DevShelf",
+  "description": "Инженерный справочник по HTML, CSS, JS, PHP, фреймворкам и рецептам с интерактивной песочницей и визуальными конструкторами.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0c0d0f",
+  "theme_color": "#facc15",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

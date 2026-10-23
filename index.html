@@ -1,285 +1,404 @@
 <!doctype html>
 <html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DevShelf — полка веб-разработчика</title>
-<meta name="description" content="Профессиональная русскоязычная библиотека документации по HTML5, CSS3, JavaScript, PHP 8, XML/SEO, UI-рецептам и современным фреймворкам с интерактивными генераторами и живой песочницей.">
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#090d14">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="DevShelf">
-<link rel="canonical" href="index.html">
-<link rel="manifest" href="/manifest.webmanifest">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevShelf // Инженерный справочник, конструкторы и песочница веб-разработчика</title>
+    <meta
+      name="description"
+      content="Полный интерактивный справочник по HTML5, CSS3, JavaScript, PHP 8.3, фреймворкам, SEO и рецептам с песочницей и 8 визуальными генераторами."
+    />
+    <meta property="og:title" content="DevShelf // Инженерный справочник и песочница веб-разработчика" />
+    <meta
+      property="og:description"
+      content="Справочник по HTML5, CSS3, JS, PHP 8, фреймворкам и рецептам с живым предпросмотром, разделением кода на HTML/CSS/JS и визуальными конструкторами."
+    />
+    <meta name="theme-color" content="#facc15" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a class="brand" href="./index.html" aria-label="DevShelf — На главную">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 18L10 32L22 46" stroke="#facc15" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+              <path d="M36 14L28 50" stroke="#f4f4f6" stroke-width="5.5" stroke-linecap="square"/>
+              <path d="M42 18L54 32L42 46" stroke="#facc15" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+            </svg>
+          </span>
+          <span class="brand-copy">
+            <span class="brand-title-row">
+              <strong>DEVSHELF</strong>
+              <span class="brand-sys-tag">SYS // v4.2</span>
+            </span>
+            <small>Инженерный справочник &amp; конструктор</small>
+          </span>
+        </a>
 
-<!-- Open Graph -->
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="DevShelf">
-<meta property="og:title" content="DevShelf — полка веб-разработчика">
-<meta property="og:description" content="Профессиональный справочник по HTML5, современному CSS, JavaScript, PHP 8, XML и фреймворкам с живой песочницей.">
-<meta property="og:locale" content="ru_RU">
-<meta property="og:url" content="index.html">
-<meta property="og:image" content="/pwa-512x512.png">
+        <nav class="topnav" aria-label="Разделы страницы">
+          <a href="#catalog" class="active">Справочник</a>
+          <a href="#workflow">Алгоритм</a>
+          <a href="#architecture">Архитектура</a>
+          <a href="#checklists">Чек-листы</a>
+        </nav>
 
-<!-- Twitter Cards -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="DevShelf — полка веб-разработчика">
-<meta name="twitter:description" content="Профессиональный справочник по HTML5, современному CSS, JavaScript, PHP 8, XML и фреймворкам с живой песочницей.">
-<meta name="twitter:image" content="/pwa-512x512.png">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<header class="top">
-  <div class="top-inner">
-    <!-- Zone 1: Brand Wordmark -->
-    <a class="brand" href="index.html">
-      <span class="brand-icon">&lt;/&gt;</span>
-      <span>dev<span>shelf</span></span>
-    </a>
-
-    <!-- Zone 2: Navigation & Categories -->
-    <nav class="tabs" aria-label="Разделы библиотеки">
-      <button class="tab" data-filter="all" aria-pressed="true">Всё <small id="total-count"></small></button>
-      <button class="tab" data-filter="html" aria-pressed="false">HTML5</button>
-      <button class="tab" data-filter="css" aria-pressed="false">CSS3</button>
-      <button class="tab" data-filter="javascript" aria-pressed="false">JavaScript</button>
-      <button class="tab" data-filter="php" aria-pressed="false">PHP 8</button>
-      <button class="tab" data-filter="xml" aria-pressed="false">XML &amp; SEO</button>
-      <button class="tab" data-filter="recipes" aria-pressed="false">Рецепты</button>
-      <button class="tab" data-filter="frameworks" aria-pressed="false">Фреймворки</button>
-      <button class="tab" data-filter="favorites" aria-pressed="false">★ Избранное <small id="favorite-count">0</small></button>
-      <a class="tab" href="playground.html" style="color:var(--accent);">Песочница &amp; Генераторы ↗</a>
-    </nav>
-
-    <!-- Zone 3: Actions -->
-    <div class="top-actions">
-      <button class="cmd-btn" id="open-palette-btn" title="Быстрый поиск (Ctrl+K)">
-        <span>Поиск</span>
-        <kbd>Ctrl+K</kbd>
-      </button>
-      <button class="pwa-btn" id="standalone-app-btn" title="Установить приложение или скачать автономный HTML-файл">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>Standalone</span>
-      </button>
-      <button class="theme-button" id="theme-toggle" title="Переключить тему (T)" aria-label="Переключить тему">☾</button>
-    </div>
-  </div>
-</header>
-
-<main class="wrap">
-  <section class="intro" role="search" aria-label="Поиск по справочнику">
-    <div class="intro-badge">STANDARDS, FRAMEWORKS &amp; CODE WORKBENCH</div>
-    <h1>Справочник веб-разработчика</h1>
-    <p>Русскоязычная база по HTML5, CSS3, JavaScript, PHP 8, SEO/XML, готовым UI-рецептам и современным фреймворкам. Нажмите на любую тему, чтобы открыть разбор, разделённый код (HTML / CSS / JS) и живой предпросмотр.</p>
-
-    <label class="searchbox">
-      <span aria-hidden="true">⌕</span>
-      <input id="search" type="search" aria-label="Поиск по библиотеке" placeholder="Ищи свойство, тег, рецепт или фреймворк (например: border-radius, форма входа, tailwind, react, бургер)..." autocomplete="off" spellcheck="false">
-      <kbd>/</kbd>
-      <button class="clear" id="clear-search" aria-label="Очистить поиск" hidden>×</button>
-    </label>
-
-    <div class="hints">
-      <span>Популярные запросы:</span>
-      <button type="button" data-query="border-radius">border-radius</button>
-      <button type="button" data-query="border">border</button>
-      <button type="button" data-query="форма входа">форма входа</button>
-      <button type="button" data-query="регистрация">регистрация</button>
-      <button type="button" data-query="бургер меню">бургер меню</button>
-      <button type="button" data-query="tailwind">tailwind css</button>
-      <button type="button" data-query="react">react 19</button>
-      <button type="button" data-query="alpine">alpine.js</button>
-      <button type="button" data-query="flexbox">flexbox</button>
-      <button type="button" data-query="grid">grid</button>
-    </div>
-  </section>
-
-  <!-- Recipe / Intent Banner -->
-  <div id="recipe-banner" class="recipe-banner" hidden>
-    <div class="recipe-icon">💡</div>
-    <div class="recipe-body">
-      <div class="recipe-kicker">БЫСТРЫЙ ПЕРЕХОД К РЕШЕНИЮ</div>
-      <div id="recipe-title" class="recipe-title"></div>
-      <p id="recipe-desc" class="recipe-desc"></p>
-      <div class="recipe-actions">
-        <button type="button" id="recipe-open-btn" class="open-btn" style="border-color:var(--accent);color:var(--accent);">Открыть справку и код</button>
-        <a id="recipe-sandbox-link" href="playground.html" class="open-btn">В песочницу ↗</a>
-      </div>
-    </div>
-  </div>
-
-  <section aria-labelledby="resources-title">
-    <div class="results-head">
-      <div>
-        <h2 id="resources-title">Каталог тем (нажмите на название для открытия справки)</h2>
-        <p id="summary"></p>
-      </div>
-      <label class="sort-label">Сортировка
-        <select id="sort">
-          <option value="recommended">По релевантности</option>
-          <option value="az">По алфавиту А—Я</option>
-        </select>
-      </label>
-    </div>
-
-    <ul id="resource-grid" class="rows" aria-live="polite"></ul>
-
-    <div id="empty-state" class="empty" hidden>
-      <h3>Ничего не найдено</h3>
-      <p>Попробуйте изменить запрос или выберите раздел «Всё» в верхнем меню.</p>
-      <button type="button" id="reset">Сбросить фильтры</button>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <span>© 2026 DevShelf · Автономный справочник и песочница (276 руководств)</span>
-  <span>Адаптивная верстка · Работает офлайн (PWA &amp; Standalone HTML)</span>
-</footer>
-
-<!-- ЕДИНОЕ ОКНО СПРАВКИ, РАЗДЕЛЁННОГО КОДА (HTML/CSS/JS) И ЖИВОГО ПРЕДПРОСМОТРА -->
-<dialog id="topic-modal" class="topic-modal">
-  <div class="topic-modal-box">
-    <header class="topic-modal-head">
-      <div class="tm-head-info">
-        <div id="tm-kicker" class="intro-badge" style="margin-bottom:4px;">СПРАВОЧНИК DEVSHELF</div>
-        <h2 id="tm-title"></h2>
-      </div>
-      <div class="tm-head-actions">
-        <button type="button" id="tm-fav-btn" class="open-btn" title="Добавить в избранное">☆ В избранное</button>
-        <a id="tm-pg-link" href="#" class="open-btn" style="color:var(--accent);border-color:var(--accent);">Открыть в песочнице ↗</a>
-        <button type="button" id="tm-close" class="theme-button" aria-label="Закрыть окно">✕</button>
+        <div class="topbar-actions">
+          <a
+            href="./DevShelf.exe"
+            download="DevShelf.exe"
+            id="download-exe-direct-btn"
+            class="exe-btn"
+            title="Скачать готовый исполняемый файл DevShelf.exe (Windows 64-bit, автономный)"
+          >
+            ⬇ Скачать DevShelf.exe
+          </a>
+          <button
+            type="button"
+            id="download-exe-btn"
+            class="standalone-btn"
+            title="Скачать скрипт сборки DevShelf-Build-EXE.bat"
+          >
+            ⚙ Сборщик .BAT
+          </button>
+          <button
+            type="button"
+            id="download-standalone-btn"
+            class="standalone-btn"
+            title="Скачать весь справочник одним автономным HTML-файлом (работает без интернета)"
+          >
+            ⬇ Автономный .HTML
+          </button>
+          <a class="cta-link" href="./playground.html">Песочница и конструкторы →</a>
+        </div>
       </div>
     </header>
 
-    <div class="topic-modal-body">
-      <p id="tm-summary" class="topic-modal-lead"></p>
-
-      <div class="topic-modal-grid">
-        <div class="topic-modal-col">
-          <div class="tm-section">
-            <h3>Как это работает</h3>
-            <ul id="tm-points" class="tm-points"></ul>
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div>
+            <p class="eyebrow">TECHNO-INDUSTRIAL // WEB ENGINEERING REFERENCE</p>
+            <h1>Справочник веб-разработчика: от HTML и CSS до фреймворков и рецептов</h1>
+            <p class="lead">
+              Компактный инженерный каталог без визуального шума. Нажмите на любую карточку, чтобы открыть
+              полную спецификацию: описание, правила применения, альтернативы, разделённый код (HTML / CSS / JS) и живой результат.
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#catalog">Перейти к справочнику</a>
+              <a class="btn btn-ghost" href="./playground.html#generators">8 визуальных конструкторов</a>
+              <a class="btn btn-ghost" href="./playground.html">Интерактивная песочница</a>
+            </div>
           </div>
 
-          <div class="tm-practical-grid">
-            <div class="tm-info-box">
+          <aside class="hero-panel" aria-label="Сводка справочника">
+            <div class="stat-card">
+              <span>Индекс базы</span>
+              <strong id="total-count">276 тем</strong>
+            </div>
+            <div class="stat-card">
+              <span>Разделы стека</span>
+              <strong>HTML / CSS / JS / PHP / FW</strong>
+            </div>
+            <div class="stat-card">
+              <span>Код и синтаксис</span>
+              <strong>Все + HTML / CSS / JS</strong>
+            </div>
+            <div class="stat-card">
+              <span>Автономный режим</span>
+              <strong>Windows .EXE &amp; .HTML</strong>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="catalog" class="section">
+        <div class="container">
+          <div class="section-head">
+            <h2>Каталог справочников, рецептов и фреймворков</h2>
+            <p>
+              Нажмите на любую тему для открытия подробного окна с разбором кода (HTML / CSS / JS) и интерактивным превью.
+            </p>
+          </div>
+
+          <div class="controls" role="region" aria-label="Фильтры справочника">
+            <label class="search-wrap" for="search-input">
+              <span>Поиск по названию, свойству, тегу или задаче</span>
+              <div class="search-input-box">
+                <input
+                  id="search-input"
+                  type="search"
+                  placeholder="Например: border-radius, вход, tailwind, react, flex, fetch, pdo..."
+                  autocomplete="off"
+                />
+                <kbd class="kbd-hint">Ctrl + K</kbd>
+              </div>
+            </label>
+
+            <label class="select-wrap" for="category-select">
+              <span>Категория</span>
+              <select id="category-select">
+                <option value="all">Все категории</option>
+                <option value="html">HTML5</option>
+                <option value="css">CSS3</option>
+                <option value="javascript">JavaScript</option>
+                <option value="frameworks">Фреймворки (React, Tailwind, Vue, Vite...)</option>
+                <option value="recipes">Готовые рецепты (Вход, Регистрация, Корзина...)</option>
+                <option value="php">PHP 8.3 &amp; MySQL</option>
+                <option value="xml">XML / Конфиги / SEO</option>
+                <option value="favorites">★ Избранное</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="topic-tabs" class="topic-tabs" role="tablist" aria-label="Разделы по технологиям">
+            <button type="button" class="topic-tab active" data-category="all">
+              Все <span data-count-for="all">0</span>
+            </button>
+            <button type="button" class="topic-tab" data-category="html">
+              HTML5 <span data-count-for="html">0</span>
+            </button>
+            <button type="button" class="topic-tab" data-category="css">
+              CSS3 <span data-count-for="css">0</span>
+            </button>
+            <button type="button" class="topic-tab" data-category="javascript">
+              JavaScript <span data-count-for="javascript">0</span>
+            </button>
+            <button type="button" class="topic-tab" data-category="frameworks">
+              Фреймворки <span data-count-for="frameworks">0</span>
+            </button>
+            <button type="button" class="topic-tab" data-category="recipes">
+              Готовые рецепты <span data-count-for="recipes">0</span>
+            </button>
+            <button type="button" class="topic-tab" data-category="php">
+              PHP 8.3 <span data-count-for="php">0</span>
+            </button>
+            <button type="button" class="topic-tab" data-category="xml">
+              XML и SEO <span data-count-for="xml">0</span>
+            </button>
+            <button type="button" class="topic-tab" data-category="favorites">
+              ★ Избранное <span data-count-for="favorites">0</span>
+            </button>
+          </div>
+
+          <div class="quick-filters" id="quick-filters" aria-label="Быстрые теги">
+            <button type="button" class="chip active" data-tag="all">Все теги</button>
+            <button type="button" class="chip" data-tag="border-radius">border-radius</button>
+            <button type="button" class="chip" data-tag="border">border</button>
+            <button type="button" class="chip" data-tag="вход">форма входа</button>
+            <button type="button" class="chip" data-tag="framework">фреймворки</button>
+            <button type="button" class="chip" data-tag="flex">flexbox</button>
+            <button type="button" class="chip" data-tag="grid">css grid</button>
+            <button type="button" class="chip" data-tag="animation">анимация</button>
+            <button type="button" class="chip" data-tag="array">массивы JS</button>
+            <button type="button" class="chip" data-tag="dom">DOM и события</button>
+            <button type="button" class="chip" data-tag="async">async / fetch</button>
+            <button type="button" class="chip" data-tag="pdo">PHP PDO / БД</button>
+            <button type="button" class="chip" data-tag="seo">SEO и метатеги</button>
+          </div>
+
+          <p id="results-meta" class="results-meta" aria-live="polite"></p>
+          <div id="cards-grid" class="cards-grid"></div>
+        </div>
+      </section>
+
+      <section id="workflow" class="section">
+        <div class="container">
+          <div class="section-head">
+            <h2>Инженерный цикл разработки</h2>
+            <p>Последовательность действий от проектирования структуры до выгрузки на сервер.</p>
+          </div>
+
+          <div class="workflow-grid">
+            <article class="workflow-card">
+              <span class="step-index">ШАГ // 01</span>
+              <h3>Семантический каркас (HTML5)</h3>
+              <p>Разметьте логические зоны документа, формы с валидацией и атрибутами доступности.</p>
+            </article>
+            <article class="workflow-card">
+              <span class="step-index">ШАГ // 02</span>
+              <h3>Адаптивная сетка и токены (CSS3 / Tailwind)</h3>
+              <p>Задайте CSS-переменные, настройте Flexbox/Grid и проверьте отображение на мобильных экранах.</p>
+            </article>
+            <article class="workflow-card">
+              <span class="step-index">ШАГ // 03</span>
+              <h3>Интерактивность (JS / React / Vue / Alpine)</h3>
+              <p>Подключите события, локальное состояние или реактивный фреймворк под масштаб задачи.</p>
+            </article>
+            <article class="workflow-card">
+              <span class="step-index">ШАГ // 04</span>
+              <h3>Сервер, БД и SEO (PHP 8 / Laravel / Конфиги)</h3>
+              <p>Защитите запросы через PDO, настройте .htaccess / Nginx, проверьте Open Graph и микроразметку.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="architecture" class="section">
+        <div class="container">
+          <div class="section-head">
+            <h2>Выбор инструмента: нативный стек или фреймворк</h2>
+            <p>Когда достаточно чистого HTML/CSS/JS, а когда стоит подключить современный фреймворк.</p>
+          </div>
+
+          <div class="Explain-grid">
+            <article class="explain-card">
+              <h3>Чистый CSS3 vs Tailwind CSS v4</h3>
+              <p>
+                Нативный CSS сегодня умеет переменные, вложенность и <code>:has()</code>. Но если нужно собирать
+                десятки экранов без придумывания названий классов — подключите Tailwind CSS через Vite или CDN.
+              </p>
+            </article>
+            <article class="explain-card">
+              <h3>Vanilla JS vs Alpine.js / HTMX</h3>
+              <p>
+                Для простых сайтов на PHP или WordPress не нужен тяжёлый сборщик: 1 строка подключения Alpine.js
+                (15 КБ) или HTMX заменяет сотни строк ручного <code>querySelector</code> и <code>fetch</code>.
+              </p>
+            </article>
+            <article class="explain-card">
+              <h3>SPA и SSR: React 19 / Vue 3 / Next.js</h3>
+              <p>
+                Для личных кабинетов, дашбордов и SaaS со сложным состоянием выбирайте компонентный подход
+                (React 19 или Vue 3 в связке со сборщиком Vite и типизацией TypeScript).
+              </p>
+            </article>
+            <article class="explain-card">
+              <h3>Процедурный PHP vs Laravel 11</h3>
+              <p>
+                Для одного обработчика формы достаточно чистого PHP 8.3 с PDO. Для проекта с авторизацией,
+                ролями, очередями и миграциями БД стандартом де-факто является Laravel.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="checklists" class="section">
+        <div class="container">
+          <div class="section-head">
+            <h2>Чек-листы перед публикацией проекта</h2>
+            <p>Быстрая самопроверка качества вёрстки, безопасности и SEO.</p>
+          </div>
+
+          <div class="Checklists-grid">
+            <article class="check-card">
+              <h3>HTML, SEO и метаданные</h3>
+              <ul>
+                <li>Заполнены уникальные <code>&lt;title&gt;</code>, <code>meta description</code> и Open Graph.</li>
+                <li>У всех картинок указаны <code>alt</code>, <code>width</code> и <code>height</code> (без скачков CLS).</li>
+                <li>Настроены <code>robots.txt</code>, <code>sitemap.xml</code> и канонические ссылки.</li>
+              </ul>
+            </article>
+            <article class="check-card">
+              <h3>Адаптивность (Mobile / Tablet / Desktop)</h3>
+              <ul>
+                <li>Нет горизонтального скролла на экранах 320px–375px (iPhone SE / Android).</li>
+                <li>Модальные окна и таблицы корректно прокручиваются на планшетах и ноутбуках.</li>
+                <li>Сохранены видимые контуры фокуса <code>:focus-visible</code> для клавиатуры.</li>
+              </ul>
+            </article>
+            <article class="check-card">
+              <h3>JavaScript и безопасность PHP</h3>
+              <ul>
+                <li>Все сетевые вызовы <code>fetch</code> обёрнуты в <code>try / catch</code> со статусами загрузки.</li>
+                <li>SQL-запросы выполняются только через подготовленные выражения <code>PDO::prepare</code>.</li>
+                <li>Пароли хешируются через <code>password_hash()</code>, а вывод экранируется от XSS.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ЕДИНОЕ МОДАЛЬНОЕ ОКНО СПРАВОЧНИКА С РАЗДЕЛЕНИЕМ КОДА НА ВСЕ / HTML / CSS / JS -->
+    <div id="topic-modal-backdrop" class="topic-modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="topic-modal">
+        <header class="topic-modal-header">
+          <div class="topic-modal-title-wrap">
+            <div class="topic-modal-badges" id="modal-badges"></div>
+            <h2 id="modal-title">Название темы</h2>
+          </div>
+          <div class="topic-modal-actions">
+            <a id="modal-sandbox-link" class="sandbox-jump-btn primary" href="./playground.html">
+              Открыть в песочнице →
+            </a>
+            <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Закрыть окно">✕</button>
+          </div>
+        </header>
+
+        <div class="topic-modal-body">
+          <div class="topic-modal-info">
+            <div class="modal-info-block">
+              <h4>Краткое описание</h4>
+              <p id="modal-summary"></p>
+            </div>
+            <div class="modal-info-block">
               <h4>Когда применять</h4>
-              <p id="tm-when"></p>
+              <p id="modal-when"></p>
             </div>
-            <div class="tm-info-box">
-              <h4>Альтернативы и выбор</h4>
-              <p id="tm-alt"></p>
+            <div class="modal-info-block">
+              <h4>Альтернативы и замена</h4>
+              <p id="modal-alternatives"></p>
+            </div>
+            <div class="modal-info-block">
+              <h4>Ключевые тонкости и подключение</h4>
+              <ul id="modal-points"></ul>
             </div>
           </div>
 
-          <div class="tm-section">
-            <div class="tm-code-header">
-              <div>
-                <h3 style="margin:0 0 6px;">Код и синтаксис (редактируемый)</h3>
-                <div class="tm-code-tabs" role="tablist" aria-label="Вкладки кода">
-                  <button type="button" class="tm-code-tab active" data-code-tab="all">Слитый (Всё)</button>
-                  <button type="button" class="tm-code-tab" data-code-tab="html">HTML</button>
-                  <button type="button" class="tm-code-tab" data-code-tab="css">CSS</button>
-                  <button type="button" class="tm-code-tab" data-code-tab="js">JS</button>
+          <div class="topic-modal-workspace">
+            <div class="modal-workspace-box">
+              <div class="modal-workspace-bar">
+                <span>Код и синтаксис</span>
+                <div class="code-split-tabs" id="modal-code-tabs" role="tablist" aria-label="Режим просмотра кода">
+                  <button type="button" class="code-split-tab active" data-part="combined">Все вместе</button>
+                  <button type="button" class="code-split-tab" data-part="html">HTML</button>
+                  <button type="button" class="code-split-tab" data-part="css">CSS</button>
+                  <button type="button" class="code-split-tab" data-part="js">JS</button>
                 </div>
+                <button type="button" id="modal-copy-btn" class="copy-btn">Копировать</button>
               </div>
-              <div class="tm-code-btns">
-                <button type="button" id="tm-copy-code" class="copy-btn">Скопировать вкладку</button>
-                <button type="button" id="tm-run-code" class="open-btn" style="background:var(--accent);color:#090d14;font-weight:700;border-color:var(--accent);">▶ Обновить превью</button>
+              <div class="syntax-legend" aria-label="Цветовая разметка синтаксиса">
+                <span class="syntax-legend-item"><i class="syntax-dot" style="background:#facc15"></i><span class="tok-tag">&lt;тег / селектор&gt;</span></span>
+                <span class="syntax-legend-item"><i class="syntax-dot" style="background:#fde047"></i><span class="tok-attr">атрибут / свойство</span></span>
+                <span class="syntax-legend-item"><i class="syntax-dot" style="background:#fb923c"></i><span class="tok-kw">ключ / скрипт</span></span>
+                <span class="syntax-legend-item"><i class="syntax-dot" style="background:#86efac"></i><span class="tok-str">"строка"</span></span>
+                <span class="syntax-legend-item"><i class="syntax-dot" style="background:#67e8f9"></i><span class="tok-var">$переменная</span></span>
+                <span class="syntax-legend-item"><i class="syntax-dot" style="background:#f4f4f6"></i><span class="tok-text">обычный текст</span></span>
               </div>
+              <pre class="modal-code-pre"><code id="modal-code"></code></pre>
             </div>
-            <textarea id="tm-code-editor" class="tm-code-editor" spellcheck="false" aria-label="Редактор кода темы"></textarea>
-          </div>
-        </div>
 
-        <div class="topic-modal-col">
-          <div class="tm-preview-card">
-            <div class="tm-preview-bar">
-              <span>ЖИВОЙ ПРЕДПРОСМОТР (LIVE PREVIEW)</span>
-              <span style="color:var(--success);">● Активно</span>
+            <div class="modal-workspace-box">
+              <div class="modal-workspace-bar">
+                <span>Живой интерактивный предпросмотр</span>
+                <button type="button" id="modal-refresh-preview" class="copy-btn">↻ Перезапустить</button>
+              </div>
+              <iframe id="modal-preview-frame" class="modal-preview-frame" title="Живой предпросмотр" sandbox="allow-scripts"></iframe>
             </div>
-            <iframe id="tm-preview-iframe" class="tm-preview-iframe" title="Живой предпросмотр функции"></iframe>
-          </div>
-
-          <div id="tm-example-wrap" class="tm-section" style="margin-top:14px;">
-            <h3>Дополнительный пример / Подключение</h3>
-            <pre class="row-code-preview" style="margin:0;"><code id="tm-example"></code></pre>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</dialog>
 
-<!-- STANDALONE APP & OFFLINE DOWNLOAD MODAL -->
-<dialog id="standalone-modal" class="cmd-modal">
-  <div class="cmd-box standalone-box">
-    <div class="standalone-head">
-      <div>
-        <div class="intro-badge" style="margin-bottom:2px;">STANDALONE &amp; OFFLINE РЕЖИМ</div>
-        <h3 style="margin:0;font-size:18px;color:var(--text);">Автономное приложение DevShelf</h3>
+    <footer class="footer">
+      <div class="container footer-inner">
+        <p>DEVSHELF // Инженерный справочник, рецепты и песочница веб-разработчика.</p>
+        <p><a href="./playground.html" style="color: var(--primary); text-decoration: none;">Перейти в песочницу и конструкторы →</a></p>
       </div>
-      <button type="button" id="close-standalone-modal" class="theme-button" aria-label="Закрыть">✕</button>
-    </div>
+    </footer>
 
-    <div class="standalone-body">
-      <div class="standalone-card">
-        <div class="standalone-card-title">1. Портативная версия в 1 файле (Single-File HTML)</div>
-        <p>Скачайте всю базу из <strong>276 справочников</strong> (HTML5, CSS3, JS, PHP 8, SEO, Рецепты и Фреймворки) с поиском, разделением кода на HTML/CSS/JS и живым предпросмотром в одном автономном файле <code>devshelf-standalone.html</code>. Открывается двойным кликом с рабочего стола или флешки без интернета и без сервера.</p>
-        <button type="button" id="download-standalone-html" class="pwa-btn" style="height:38px;padding:0 16px;font-size:13px;">
-          ⬇ Скачать devshelf-standalone.html (Вся база в 1 файле)
-        </button>
-      </div>
-
-      <div class="standalone-card">
-        <div class="standalone-card-title">2. Установка как системного приложения (PWA Desktop / Mobile)</div>
-        <p id="pwa-status-text">Запускайте DevShelf в отдельном окне Windows, macOS, Android или iOS без адресной строки браузера с автоматическим офлайн-кэшированием через Service Worker.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-          <button type="button" id="trigger-pwa-install" class="open-btn" style="border-color:var(--accent);color:var(--accent);padding:7px 14px;">
-            Установить приложение на устройство
-          </button>
-        </div>
-        <div id="pwa-manual-hint" class="standalone-hint" hidden></div>
-      </div>
-    </div>
-  </div>
-</dialog>
-
-<!-- Command Palette Modal (Ctrl+K) -->
-<dialog id="cmd-palette" class="cmd-modal">
-  <div class="cmd-box">
-    <div class="cmd-input-wrap">
-      <span style="color:var(--faint);">⌕</span>
-      <input type="text" id="cmd-search-input" placeholder="Быстрый поиск по 276 темам (стрелки ↑↓, Enter — открыть)..." autocomplete="off" spellcheck="false">
-      <kbd>Esc</kbd>
-    </div>
-    <ul id="cmd-results" class="cmd-results"></ul>
-    <div class="cmd-footer">
-      <span>↑↓ Навигация</span>
-      <span>Enter Открыть справку</span>
-      <span>Esc Закрыть</span>
-    </div>
-  </div>
-</dialog>
-
-<div id="offline-banner" class="offline-banner" hidden>
-  <span>● Офлайн-режим — работа из локального кэша</span>
-</div>
-
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-<script src="/reference-data.js"></script>
-<script src="/preview-engine.js"></script>
-<script type="module" src="/script.js"></script>
-</body>
+    <script src="./reference-data.js"></script>
+    <script src="./preview-engine.js"></script>
+    <script type="module" src="./script.js"></script>
+  </body>
 </html>

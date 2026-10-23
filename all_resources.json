@@ -3,7 +3,7 @@
     "id": "css-border-radius",
     "lang": "css",
     "title": "CSS: скругление углов (border-radius)",
-    "summary": "Свойство для скругления одного или всех четырёх углов элемента: от мягких кнопок и карточек до идеальных кругов, капсул (pill) и органических форм.",
+    "summary": "Свойство для скругления одного или всех четырёх углов элемента: от строгих карточек и кнопок до идеальных кругов, капсул (pill) и асимметричных форм.",
     "tags": [
       "css",
       "border-radius",
@@ -13,8 +13,8 @@
       "pill",
       "форма"
     ],
-    "when": "Для всех современных UI-компонентов: карточек (8px–16px), кнопок (6px–12px), тегов-капсул (9999px) и круглых аватарок (50%).",
-    "alternatives": "Для сложных многоугольников и срезанных углов используйте свойство clip-path: polygon(...).",
+    "when": "Для всех современных UI-компонентов: карточек (6px–14px), кнопок (4px–10px), тегов-капсул (9999px) и круглых аватарок (50%).",
+    "alternatives": "Для сложных многоугольников и срезанных индустриальных углов используйте свойство clip-path: polygon(...).",
     "points": [
       "Одно значение (border-radius: 12px) задаёт одинаковое скругление для всех 4 углов.",
       "Четыре значения (border-radius: 16px 4px 16px 4px) задают углы по часовой стрелке: верхний-левый, верхний-правый, нижний-правый, нижний-левый.",
@@ -22,8 +22,8 @@
       "Значение 9999px (или 100vmax) создаёт форму капсулы (pill) независимо от ширины и высоты кнопки.",
       "Вложенные карточки: радиус внутреннего блока должен быть равен радиусу внешнего минус padding (r_inner = r_outer - padding)."
     ],
-    "code": "/* 1. Стандартная карточка */\n.card {\n  border-radius: 14px;\n  border: 1px solid #334155;\n  padding: 16px;\n  background: #1e293b;\n  color: #f8fafc;\n}\n\n/* 2. Кнопка-капсула (Pill) */\n.pill-btn {\n  border-radius: 9999px;\n  padding: 8px 20px;\n  background: #38bdf8;\n  color: #090d16;\n  font-weight: 700;\n  border: none;\n}\n\n/* 3. Круглая аватарка */\n.avatar {\n  width: 56px;\n  height: 56px;\n  border-radius: 50%;\n  background: linear-gradient(135deg, #6366f1, #ec4899);\n  display: inline-grid;\n  place-items: center;\n  font-weight: 800;\n}\n\n/* 4. Асимметричная форма (4 угла по часовой стрелке) */\n.organic-badge {\n  border-radius: 24px 4px 24px 4px;\n  padding: 10px 18px;\n  background: rgba(16, 185, 129, 0.2);\n  border: 1px solid #10b981;\n}",
-    "example": "<div style=\"display:flex;gap:14px;flex-wrap:wrap;align-items:center;\">\n  <div class=\"card\">Карточка (14px)</div>\n  <button class=\"pill-btn\">Капсула (9999px)</button>\n  <div class=\"avatar\">DS</div>\n  <div class=\"organic-badge\">24px 4px 24px 4px</div>\n</div>"
+    "code": "/* 1. Индустриальная карточка */\n.card {\n  border-radius: 10px;\n  border: 1px solid #3f3f46;\n  padding: 14px 18px;\n  background: #18181b;\n  color: #f4f4f5;\n}\n\n/* 2. Кнопка-капсула (Pill) */\n.pill-btn {\n  border-radius: 9999px;\n  padding: 9px 20px;\n  background: #facc15;\n  color: #09090b;\n  font-weight: 800;\n  border: none;\n  cursor: pointer;\n}\n\n/* 3. Круглая аватарка */\n.avatar {\n  width: 52px;\n  height: 52px;\n  border-radius: 50%;\n  background: #27272a;\n  border: 2px solid #facc15;\n  color: #facc15;\n  display: inline-grid;\n  place-items: center;\n  font-weight: 800;\n}\n\n/* 4. Асимметричная форма (4 угла по часовой стрелке) */\n.organic-badge {\n  border-radius: 20px 2px 20px 2px;\n  padding: 10px 18px;\n  background: rgba(250, 204, 21, 0.12);\n  border: 1px solid #facc15;\n  color: #fef08a;\n}",
+    "example": "<div style=\"display:flex;gap:14px;flex-wrap:wrap;align-items:center;\">\n  <div class=\"card\">Карточка (10px)</div>\n  <button class=\"pill-btn\">Капсула (9999px)</button>\n  <div class=\"avatar\">DS</div>\n  <div class=\"organic-badge\">20px 2px 20px 2px</div>\n</div>"
   },
   {
     "id": "css-border",
@@ -40,16 +40,16 @@
       "border-style",
       "dashed"
     ],
-    "when": "Для визуального разделения карточек, полей ввода (input), таблиц, цитат и зон загрузки файлов (dashed).",
+    "when": "Для визуального разделения карточек, полей ввода (input), технических таблиц, цитат и зон загрузки файлов (dashed).",
     "alternatives": "Используйте outline для подсветки фокуса (не влияет на размеры блока) или box-shadow: 0 0 0 1px для субпиксельных рамок.",
     "points": [
-      "Краткая запись: border: 1px solid rgba(148, 163, 184, 0.2) (толщина, стиль, цвет).",
+      "Краткая запись: border: 1px solid #3f3f46 (толщина, стиль, цвет).",
       "Без указания border-style (например, solid или dashed) рамка не отобразится, так как по умолчанию стиль равен none.",
       "Можно задавать отдельные стороны: border-top, border-bottom, border-left, border-right или логические свойства border-inline, border-block.",
       "При box-sizing: border-box толщина border включается в общую ширину и высоту элемента и не ломает сетку."
     ],
-    "code": "/* Тонкая современная рамка карточки */\n.box-solid {\n  border: 1px solid rgba(56, 189, 248, 0.45);\n  border-radius: 10px;\n  padding: 14px;\n  background: #131c2e;\n}\n\n/* Пунктирная зона для Drag-and-Drop загрузки */\n.box-dashed {\n  border: 2px dashed #6366f1;\n  border-radius: 10px;\n  padding: 14px;\n  background: rgba(99, 102, 241, 0.08);\n}\n\n/* Акцентная полоса только снизу */\n.box-bottom {\n  border-bottom: 3px solid #10b981;\n  padding: 12px;\n  background: #1e293b;\n}",
-    "example": "<div style=\"display:grid;gap:12px;\">\n  <div class=\"box-solid\">1px solid — стандартная рамка интерфейса</div>\n  <div class=\"box-dashed\">2px dashed — пунктирная область для файлов</div>\n  <div class=\"box-bottom\">border-bottom: 3px solid — нижний акцент</div>\n</div>"
+    "code": "/* Тонкая техническая рамка карточки */\n.box-solid {\n  border: 1px solid rgba(250, 204, 21, 0.45);\n  border-radius: 6px;\n  padding: 14px;\n  background: #18181b;\n  color: #f4f4f5;\n}\n\n/* Пунктирная зона для Drag-and-Drop загрузки */\n.box-dashed {\n  border: 2px dashed #facc15;\n  border-radius: 6px;\n  padding: 14px;\n  background: rgba(250, 204, 21, 0.06);\n  color: #fef08a;\n}\n\n/* Акцентная индустриальная полоса слева */\n.box-left {\n  border-left: 4px solid #facc15;\n  padding: 12px 14px;\n  background: #27272a;\n  color: #f4f4f5;\n}",
+    "example": "<div style=\"display:grid;gap:12px;\">\n  <div class=\"box-solid\">1px solid — стандартная рамка интерфейса</div>\n  <div class=\"box-dashed\">2px dashed — пунктирная область для файлов</div>\n  <div class=\"box-left\">border-left: 4px solid — индустриальный маркер</div>\n</div>"
   },
   {
     "id": "css-outline",
@@ -68,17 +68,17 @@
     "alternatives": "Никогда не пишите outline: none без замены на кастомный :focus-visible, иначе пользователи с клавиатурой потеряют навигацию.",
     "points": [
       "В отличие от border, свойство outline не влияет на размеры элемента и никогда не вызывает сдвиг соседних элементов.",
-      "Свойство outline-offset позволяет отодвинуть контур от края кнопки (например, на 2px–3px) или сдвинуть внутрь (отрицательное значение).",
+      "Свойство outline-offset позволяет отодвинуть контур от края кнопки (например, на 2px–4px) или сдвинуть внутрь (отрицательное значение).",
       "В современных браузерах outline автоматически повторяет скругление border-radius элемента."
     ],
-    "code": ".focus-demo-btn {\n  padding: 10px 18px;\n  border-radius: 8px;\n  background: #38bdf8;\n  color: #090d16;\n  font-weight: 700;\n  border: none;\n  outline: 2px solid #38bdf8;\n  outline-offset: 4px;\n}",
+    "code": ".focus-demo-btn {\n  padding: 10px 18px;\n  border-radius: 6px;\n  background: #facc15;\n  color: #09090b;\n  font-weight: 800;\n  border: none;\n  outline: 2px solid #facc15;\n  outline-offset: 4px;\n  cursor: pointer;\n}",
     "example": "<div style=\"padding:16px;\">\n  <button class=\"focus-demo-btn\">Кнопка с outline-offset: 4px</button>\n</div>"
   },
   {
     "id": "css-box-shadow",
     "lang": "css",
-    "title": "CSS: многослойные тени и свечение (box-shadow)",
-    "summary": "Добавление внешних и внутренних (inset) теней к блокам для создания глубины, парящих модальных окон, неоморфизма и тонких обводок.",
+    "title": "CSS: многослойные тени и жёсткие индустриальные тени (box-shadow)",
+    "summary": "Добавление мягких или жёстких смещённых теней (brutalist/industrial offset) и внутренних (inset) свечений к блокам.",
     "tags": [
       "css",
       "box-shadow",
@@ -87,14 +87,15 @@
       "свечение",
       "elevation"
     ],
-    "when": "Для выделения модальных окон, выпадающих списков (dropdown), карточек при наведении и кнопок.",
+    "when": "Для выделения модальных окон, выпадающих списков, карточек при наведении и тактильных кнопок.",
     "alternatives": "Для теней вокруг прозрачных PNG/SVG-иконок используйте filter: drop-shadow(...), так как box-shadow рисует тень по прямоугольной рамке.",
     "points": [
       "Синтаксис: смещение-X, смещение-Y, размытие (blur), растяжение (spread), цвет.",
-      "Отрицательный spread (например, -8px) делает тень уже самого блока, создавая естественный объём снизу.",
-      "Через запятую можно комбинировать несколько слоёв теней для реалистичного рассеянного света."
+      "При blur: 0px (например, box-shadow: 4px 4px 0 #facc15) получается чёткая техно-индустриальная тень.",
+      "Через запятую можно комбинировать несколько слоёв теней для реалистичного объёма."
     ],
-    "code": ".elevated-card {\n  padding: 20px;\n  border-radius: 14px;\n  background: #1e293b;\n  border: 1px solid rgba(255, 255, 255, 0.1);\n  box-shadow:\n    0 20px 25px -5px rgba(0, 0, 0, 0.5),\n    0 8px 10px -6px rgba(0, 0, 0, 0.4),\n    0 0 24px rgba(56, 189, 248, 0.18);\n}"
+    "code": ".elevated-card {\n  padding: 18px 20px;\n  border-radius: 6px;\n  background: #18181b;\n  color: #f4f4f5;\n  border: 1px solid #facc15;\n  box-shadow: 5px 5px 0px #facc15;\n}",
+    "example": "<div style=\"padding:12px;\">\n  <div class=\"elevated-card\">Техно-индустриальная карточка с жёсткой тенью 5px 5px 0 #facc15</div>\n</div>"
   },
   {
     "id": "css-margin-padding",
@@ -116,13 +117,13 @@
       "margin создаёт прозрачный буфер снаружи рамки border; вертикальные margin соседних блоков могут схлопываться.",
       "Логические свойства padding-inline (слева/справа) и padding-block (сверху/снизу) удобнее классической записи из 4 чисел."
     ],
-    "code": ".container-card {\n  max-width: 420px;\n  margin-inline: auto; /* Центрирование по горизонтали */\n  padding: 20px 24px;  /* 20px сверху/снизу, 24px слева/справа */\n  background: #162032;\n  border: 1px solid #334155;\n  border-radius: 12px;\n}"
+    "code": ".container-card {\n  max-width: 420px;\n  margin-inline: auto; /* Центрирование по горизонтали */\n  padding: 18px 22px;  /* 18px сверху/снизу, 22px слева/справа */\n  background: #18181b;\n  border: 1px solid #3f3f46;\n  border-left: 4px solid #facc15;\n  border-radius: 6px;\n  color: #f4f4f5;\n}"
   },
   {
     "id": "recipe-login-form",
     "lang": "recipes",
     "title": "Рецепт: Форма входа (Login / Авторизация + Показ пароля)",
-    "summary": "Готовая карточка входа в аккаунт с переключением видимости пароля (глазок), валидацией полей, чекбоксом «Запомнить меня» и индикацией загрузки.",
+    "summary": "Готовая карточка входа в аккаунт с переключением видимости пароля, валидацией полей, чекбоксом «Запомнить меня» и индикацией загрузки.",
     "tags": [
       "рецепт",
       "вход",
@@ -134,19 +135,19 @@
       "auth"
     ],
     "when": "Для страниц входа в личный кабинет, админ-панель, SaaS-сервис или модального окна авторизации.",
-    "alternatives": "Можно дополнить кнопками OAuth (Войти через Google / GitHub) или беспарольным входом по одноразовому коду (OTP).",
+    "alternatives": "Можно дополнить кнопками OAuth (Войти через GitHub / Google) или беспарольным входом по одноразовому коду (OTP).",
     "points": [
       "Использует правильные атрибуты autocomplete=\"username\" и autocomplete=\"current-password\" для работы менеджеров паролей.",
       "Кнопка переключения типа поля (password ↔ text) имеет aria-label для доступности.",
-      "При отправке формы блокирует кнопку submit, предотвращая двойные клики."
+      "При отправке формы выводит статус авторизации без перезагрузки страницы."
     ],
-    "code": "<form class=\"login-card\" id=\"login-form\">\n  <div class=\"login-head\">\n    <h3>Вход в систему</h3>\n    <p>Введите данные вашего рабочего аккаунта</p>\n  </div>\n\n  <div class=\"form-group\">\n    <label for=\"login-email\">Email адрес</label>\n    <input type=\"email\" id=\"login-email\" value=\"developer@devshelf.ru\" required autocomplete=\"username\" placeholder=\"name@company.com\">\n  </div>\n\n  <div class=\"form-group\">\n    <div class=\"label-row\">\n      <label for=\"login-pass\">Пароль</label>\n      <a href=\"#forgot\" class=\"forgot-link\">Забыли пароль?</a>\n    </div>\n    <div class=\"pass-wrap\">\n      <input type=\"password\" id=\"login-pass\" value=\"SecretPass2026\" required minlength=\"6\" autocomplete=\"current-password\">\n      <button type=\"button\" id=\"toggle-pass\" class=\"eye-btn\" aria-label=\"Показать пароль\">Показать</button>\n    </div>\n  </div>\n\n  <label class=\"remember-row\">\n    <input type=\"checkbox\" checked>\n    <span>Запомнить устройство на 30 дней</span>\n  </label>\n\n  <button type=\"submit\" class=\"submit-btn\" id=\"login-submit\">Войти в аккаунт →</button>\n  <div id=\"login-status\" class=\"login-status\" hidden></div>\n</form>\n\n<style>\n.login-card {\n  max-width: 360px;\n  margin: 0 auto;\n  padding: 22px;\n  background: #131c2e;\n  border: 1px solid rgba(148, 163, 184, 0.2);\n  border-radius: 14px;\n  color: #f8fafc;\n  font-family: system-ui, sans-serif;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n.login-head h3 { margin: 0 0 4px; font-size: 18px; }\n.login-head p { margin: 0; font-size: 13px; color: #94a3b8; }\n.form-group { display: flex; flex-direction: column; gap: 6px; }\n.form-group label { font-size: 12.5px; font-weight: 600; color: #cbd5e1; }\n.label-row { display: flex; justify-content: space-between; align-items: center; }\n.forgot-link { font-size: 12px; color: #38bdf8; text-decoration: none; }\n.form-group input {\n  width: 100%;\n  padding: 10px 12px;\n  border-radius: 8px;\n  border: 1px solid #334155;\n  background: #090d16;\n  color: #f8fafc;\n  font-size: 14px;\n  box-sizing: border-box;\n}\n.form-group input:focus { outline: none; border-color: #38bdf8; }\n.pass-wrap { position: relative; display: flex; align-items: center; }\n.pass-wrap input { padding-right: 78px; }\n.eye-btn {\n  position: absolute;\n  right: 6px;\n  padding: 5px 8px;\n  border-radius: 6px;\n  background: #1e293b;\n  color: #94a3b8;\n  border: 1px solid #334155;\n  font-size: 11px;\n  cursor: pointer;\n}\n.remember-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #94a3b8; cursor: pointer; }\n.submit-btn {\n  padding: 11px;\n  border-radius: 8px;\n  border: none;\n  background: #38bdf8;\n  color: #090d16;\n  font-weight: 700;\n  font-size: 14px;\n  cursor: pointer;\n}\n.login-status {\n  padding: 9px 12px;\n  border-radius: 8px;\n  background: rgba(16, 185, 129, 0.15);\n  border: 1px solid rgba(16, 185, 129, 0.4);\n  color: #6ee7b7;\n  font-size: 12.5px;\n}\n</style>\n\n<script>\nconst passInput = document.getElementById('login-pass');\nconst toggleBtn = document.getElementById('toggle-pass');\nconst loginForm = document.getElementById('login-form');\nconst statusBox = document.getElementById('login-status');\n\ntoggleBtn.addEventListener('click', () => {\n  const isPass = passInput.type === 'password';\n  passInput.type = isPass ? 'text' : 'password';\n  toggleBtn.textContent = isPass ? 'Скрыть' : 'Показать';\n});\n\nloginForm.addEventListener('submit', (e) => {\n  e.preventDefault();\n  statusBox.hidden = false;\n  statusBox.textContent = '✓ Успешный вход! Перенаправление в кабинет...';\n});\n</script>"
+    "code": "<form class=\"login-card\" id=\"login-form\">\n  <div class=\"login-head\">\n    <span class=\"login-tag\">AUTH // MODULE</span>\n    <h3>Вход в систему</h3>\n    <p>Введите данные вашего рабочего аккаунта</p>\n  </div>\n\n  <div class=\"form-group\">\n    <label for=\"login-email\">Email адрес</label>\n    <input type=\"email\" id=\"login-email\" value=\"engineer@devshelf.ru\" required autocomplete=\"username\" placeholder=\"name@company.com\">\n  </div>\n\n  <div class=\"form-group\">\n    <div class=\"label-row\">\n      <label for=\"login-pass\">Пароль</label>\n      <a href=\"#forgot\" class=\"forgot-link\">Сбросить доступ?</a>\n    </div>\n    <div class=\"pass-wrap\">\n      <input type=\"password\" id=\"login-pass\" value=\"SecretPass2026\" required minlength=\"6\" autocomplete=\"current-password\">\n      <button type=\"button\" id=\"toggle-pass\" class=\"eye-btn\" aria-label=\"Показать пароль\">Показать</button>\n    </div>\n  </div>\n\n  <label class=\"remember-row\">\n    <input type=\"checkbox\" checked>\n    <span>Запомнить терминал на 30 дней</span>\n  </label>\n\n  <button type=\"submit\" class=\"submit-btn\" id=\"login-submit\">АВТОРИЗОВАТЬСЯ →</button>\n  <div id=\"login-status\" class=\"login-status\" hidden></div>\n</form>\n\n<style>\n.login-card {\n  max-width: 360px;\n  margin: 0 auto;\n  padding: 20px;\n  background: #141619;\n  border: 1px solid #2e323b;\n  border-top: 3px solid #facc15;\n  border-radius: 6px;\n  color: #f4f4f5;\n  font-family: system-ui, sans-serif;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n.login-tag { font-family: monospace; font-size: 11px; color: #facc15; letter-spacing: 0.08em; }\n.login-head h3 { margin: 2px 0 4px; font-size: 18px; }\n.login-head p { margin: 0; font-size: 12.5px; color: #a1a1aa; }\n.form-group { display: flex; flex-direction: column; gap: 6px; }\n.form-group label { font-size: 12px; font-weight: 700; color: #d4d4d8; text-transform: uppercase; letter-spacing: 0.04em; }\n.label-row { display: flex; justify-content: space-between; align-items: center; }\n.forgot-link { font-size: 12px; color: #facc15; text-decoration: none; }\n.form-group input {\n  width: 100%;\n  padding: 10px 12px;\n  border-radius: 4px;\n  border: 1px solid #3f3f46;\n  background: #0c0d0f;\n  color: #f4f4f5;\n  font-size: 14px;\n  box-sizing: border-box;\n}\n.form-group input:focus { outline: none; border-color: #facc15; }\n.pass-wrap { position: relative; display: flex; align-items: center; }\n.pass-wrap input { padding-right: 82px; }\n.eye-btn {\n  position: absolute;\n  right: 6px;\n  padding: 5px 8px;\n  border-radius: 4px;\n  background: #27272a;\n  color: #e4e4e7;\n  border: 1px solid #3f3f46;\n  font-size: 11px;\n  cursor: pointer;\n}\n.remember-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #a1a1aa; cursor: pointer; }\n.submit-btn {\n  padding: 11px;\n  border-radius: 4px;\n  border: none;\n  background: #facc15;\n  color: #09090b;\n  font-weight: 800;\n  font-size: 13px;\n  letter-spacing: 0.04em;\n  cursor: pointer;\n}\n.login-status {\n  padding: 9px 12px;\n  border-radius: 4px;\n  background: rgba(250, 204, 21, 0.14);\n  border: 1px solid #facc15;\n  color: #fef08a;\n  font-size: 12.5px;\n}\n</style>\n\n<script>\nconst passInput = document.getElementById('login-pass');\nconst toggleBtn = document.getElementById('toggle-pass');\nconst loginForm = document.getElementById('login-form');\nconst statusBox = document.getElementById('login-status');\n\ntoggleBtn.addEventListener('click', () => {\n  const isPass = passInput.type === 'password';\n  passInput.type = isPass ? 'text' : 'password';\n  toggleBtn.textContent = isPass ? 'Скрыть' : 'Показать';\n});\n\nloginForm.addEventListener('submit', (e) => {\n  e.preventDefault();\n  statusBox.hidden = false;\n  statusBox.textContent = '✓ Доступ разрешён! Сессия инициализирована.';\n});\n</script>"
   },
   {
     "id": "recipe-register-form",
     "lang": "recipes",
     "title": "Рецепт: Регистрация с индикатором надёжности пароля",
-    "summary": "Интерактивная форма создания аккаунта с живой шкалой оценки сложности пароля (длина, цифры, спецсимволы) и проверкой совпадения.",
+    "summary": "Интерактивная форма создания аккаунта с живой шкалой оценки сложности пароля (длина, цифры, спецсимволы) и проверкой в реальном времени.",
     "tags": [
       "рецепт",
       "регистрация",
@@ -160,16 +161,16 @@
     "alternatives": "Используйте OAuth 2.0 / Passkeys (WebAuthn), если хотите избавить пользователя от придумывания пароля.",
     "points": [
       "Оценивает пароль по 4 критериям в реальном времени при вводе (событие input).",
-      "Визуально меняет цвет прогресс-бара от красного (слабый) до изумрудного (надёжный).",
+      "Визуально меняет цвет прогресс-бара от красного (слабый) до жёлтого и изумрудного (надёжный).",
       "Информирует пользователя, каких именно символов не хватает для защиты аккаунта."
     ],
-    "code": "<div class=\"reg-card\">\n  <h3>Создание аккаунта</h3>\n  <label class=\"reg-field\">\n    <span>Имя и фамилия</span>\n    <input type=\"text\" placeholder=\"Павел Пардаев\" value=\"Павел Разработчик\">\n  </label>\n  <label class=\"reg-field\">\n    <span>Придумайте пароль</span>\n    <input type=\"text\" id=\"reg-pass\" value=\"DevShelf#2026\" placeholder=\"Минимум 8 символов\">\n  </label>\n  <div class=\"meter-bar\"><div id=\"meter-fill\" class=\"meter-fill\"></div></div>\n  <div id=\"meter-text\" class=\"meter-text\">Оценка пароля...</div>\n</div>\n\n<style>\n.reg-card { max-width: 350px; margin: 0 auto; padding: 20px; background: #131c2e; border: 1px solid #263449; border-radius: 14px; color: #f8fafc; font-family: system-ui, sans-serif; display: flex; flex-direction: column; gap: 12px; }\n.reg-card h3 { margin: 0; font-size: 17px; }\n.reg-field { display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; color: #cbd5e1; }\n.reg-field input { padding: 9px 12px; border-radius: 8px; border: 1px solid #334155; background: #090d16; color: #fff; }\n.meter-bar { height: 6px; background: #1e293b; border-radius: 99px; overflow: hidden; }\n.meter-fill { height: 100%; width: 0%; transition: width 0.25s, background 0.25s; }\n.meter-text { font-size: 12px; color: #94a3b8; }\n</style>\n\n<script>\nconst input = document.getElementById('reg-pass');\nconst fill = document.getElementById('meter-fill');\nconst text = document.getElementById('meter-text');\n\nfunction checkStrength(val) {\n  let score = 0;\n  if (val.length >= 8) score++;\n  if (/[A-ZА-Я]/.test(val)) score++;\n  if (/[0-9]/.test(val)) score++;\n  if (/[^A-Za-zА-Яа-я0-9]/.test(val)) score++;\n\n  const levels = [\n    { w: '15%', c: '#ef4444', t: 'Слабый пароль (добавьте цифры и спецсимволы)' },\n    { w: '40%', c: '#f59e0b', t: 'Средний пароль' },\n    { w: '75%', c: '#38bdf8', t: 'Хороший пароль' },\n    { w: '100%', c: '#10b981', t: '✓ Отличный надёжный пароль' }\n  ];\n  const lvl = levels[Math.max(0, score - 1)];\n  fill.style.width = val ? lvl.w : '0%';\n  fill.style.background = lvl.c;\n  text.textContent = val ? lvl.t : 'Введите пароль';\n}\ninput.addEventListener('input', (e) => checkStrength(e.target.value));\ncheckStrength(input.value);\n</script>"
+    "code": "<div class=\"reg-card\">\n  <h3>Регистрация инженера</h3>\n  <label class=\"reg-field\">\n    <span>Позывной / Имя</span>\n    <input type=\"text\" placeholder=\"Павел Пардаев\" value=\"Павел Разработчик\">\n  </label>\n  <label class=\"reg-field\">\n    <span>Ключ доступа (пароль)</span>\n    <input type=\"text\" id=\"reg-pass\" value=\"DevShelf#2026\" placeholder=\"Минимум 8 символов\">\n  </label>\n  <div class=\"meter-bar\"><div id=\"meter-fill\" class=\"meter-fill\"></div></div>\n  <div id=\"meter-text\" class=\"meter-text\">Оценка пароля...</div>\n</div>\n\n<style>\n.reg-card { max-width: 350px; margin: 0 auto; padding: 20px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; display: flex; flex-direction: column; gap: 12px; }\n.reg-card h3 { margin: 0; font-size: 17px; }\n.reg-field { display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; color: #d4d4d8; }\n.reg-field input { padding: 9px 12px; border-radius: 4px; border: 1px solid #3f3f46; background: #0c0d0f; color: #fff; }\n.meter-bar { height: 6px; background: #27272a; border-radius: 2px; overflow: hidden; }\n.meter-fill { height: 100%; width: 0%; transition: width 0.25s, background 0.25s; }\n.meter-text { font-size: 12px; color: #a1a1aa; font-family: monospace; }\n</style>\n\n<script>\nconst input = document.getElementById('reg-pass');\nconst fill = document.getElementById('meter-fill');\nconst text = document.getElementById('meter-text');\n\nfunction checkStrength(val) {\n  let score = 0;\n  if (val.length >= 8) score++;\n  if (/[A-ZА-Я]/.test(val)) score++;\n  if (/[0-9]/.test(val)) score++;\n  if (/[^A-Za-zА-Яа-я0-9]/.test(val)) score++;\n\n  const levels = [\n    { w: '20%', c: '#ef4444', t: '[LOW] Слабый пароль (добавьте цифры/символы)' },\n    { w: '50%', c: '#f59e0b', t: '[MED] Средний уровень защиты' },\n    { w: '80%', c: '#facc15', t: '[HIGH] Хороший рабочий пароль' },\n    { w: '100%', c: '#22c55e', t: '[MAX] ✓ Отличный криптостойкий пароль' }\n  ];\n  const lvl = levels[Math.max(0, score - 1)];\n  fill.style.width = val ? lvl.w : '0%';\n  fill.style.background = lvl.c;\n  text.textContent = val ? lvl.t : 'Введите пароль';\n}\ninput.addEventListener('input', (e) => checkStrength(e.target.value));\ncheckStrength(input.value);\n</script>"
   },
   {
     "id": "recipe-otp-verification",
     "lang": "recipes",
-    "title": "Рецепт: Ввод SMS / 2FA пин-кода из 4–6 цифр (OTP Input)",
-    "summary": "Удобное поле ввода проверочного кода с автоматическим переходом фокуса на следующую ячейку, поддержкой клавиши Backspace и вставки из буфера.",
+    "title": "Рецепт: Ввод SMS / 2FA пин-кода из 4 цифр (OTP Input)",
+    "summary": "Удобное поле ввода проверочного кода с автоматическим переходом фокуса на следующую ячейку и поддержкой клавиши Backspace.",
     "tags": [
       "рецепт",
       "otp",
@@ -184,15 +185,15 @@
     "points": [
       "При вводе цифры курсор мгновенно перепрыгивает в следующее поле без лишних кликов.",
       "Нажатие Backspace в пустой ячейке возвращает фокус на предыдущую цифру.",
-      "Атрибут inputmode=\"numeric\" открывает крупную цифровую клавиатуру на iPhone и Android."
+      "Атрибут inputmode=\"numeric\" открывает крупную цифровую клавиатуру на мобильных устройствах."
     ],
-    "code": "<div class=\"otp-card\">\n  <h4>Подтверждение входа (2FA)</h4>\n  <p>Введите 4-значный код, отправленный в Telegram</p>\n  <div class=\"otp-inputs\" id=\"otp-box\">\n    <input type=\"text\" maxlength=\"1\" inputmode=\"numeric\" value=\"4\">\n    <input type=\"text\" maxlength=\"1\" inputmode=\"numeric\" value=\"8\">\n    <input type=\"text\" maxlength=\"1\" inputmode=\"numeric\" value=\"2\">\n    <input type=\"text\" maxlength=\"1\" inputmode=\"numeric\" value=\"\">\n  </div>\n  <div id=\"otp-result\" class=\"otp-hint\">Введите последнюю цифру...</div>\n</div>\n\n<style>\n.otp-card { max-width: 320px; margin: 0 auto; padding: 20px; background: #131c2e; border: 1px solid #263449; border-radius: 14px; text-align: center; color: #f8fafc; font-family: system-ui, sans-serif; }\n.otp-card h4 { margin: 0 0 6px; font-size: 16px; }\n.otp-card p { margin: 0 0 14px; font-size: 12.5px; color: #94a3b8; }\n.otp-inputs { display: flex; justify-content: center; gap: 10px; margin-bottom: 12px; }\n.otp-inputs input { width: 48px; height: 54px; text-align: center; font-size: 22px; font-weight: 800; border-radius: 10px; border: 1px solid #334155; background: #090d16; color: #38bdf8; }\n.otp-inputs input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56,189,248,0.2); }\n.otp-hint { font-size: 12.5px; color: #10b981; }\n</style>\n\n<script>\nconst inputs = [...document.querySelectorAll('#otp-box input')];\nconst res = document.getElementById('otp-result');\n\ninputs.forEach((inp, idx) => {\n  inp.addEventListener('input', (e) => {\n    e.target.value = e.target.value.replace(/[^0-9]/g, '');\n    if (e.target.value && idx < inputs.length - 1) inputs[idx + 1].focus();\n    const code = inputs.map(i => i.value).join('');\n    res.textContent = code.length === 4 ? '✓ Код принят: ' + code : 'Ожидание ввода...';\n  });\n  inp.addEventListener('keydown', (e) => {\n    if (e.key === 'Backspace' && !inp.value && idx > 0) inputs[idx - 1].focus();\n  });\n});\n</script>"
+    "code": "<div class=\"otp-card\">\n  <h4>Двухфакторный код (2FA)</h4>\n  <p>Введите 4-значный код подтверждения</p>\n  <div class=\"otp-inputs\" id=\"otp-box\">\n    <input type=\"text\" maxlength=\"1\" inputmode=\"numeric\" value=\"7\">\n    <input type=\"text\" maxlength=\"1\" inputmode=\"numeric\" value=\"4\">\n    <input type=\"text\" maxlength=\"1\" inputmode=\"numeric\" value=\"9\">\n    <input type=\"text\" maxlength=\"1\" inputmode=\"numeric\" value=\"\">\n  </div>\n  <div id=\"otp-result\" class=\"otp-hint\">Введите последнюю цифру...</div>\n</div>\n\n<style>\n.otp-card { max-width: 320px; margin: 0 auto; padding: 20px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; text-align: center; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.otp-card h4 { margin: 0 0 6px; font-size: 16px; }\n.otp-card p { margin: 0 0 14px; font-size: 12.5px; color: #a1a1aa; }\n.otp-inputs { display: flex; justify-content: center; gap: 10px; margin-bottom: 12px; }\n.otp-inputs input { width: 48px; height: 54px; text-align: center; font-size: 22px; font-weight: 800; border-radius: 4px; border: 1px solid #3f3f46; background: #0c0d0f; color: #facc15; font-family: monospace; }\n.otp-inputs input:focus { outline: none; border-color: #facc15; box-shadow: 0 0 0 2px rgba(250,204,21,0.2); }\n.otp-hint { font-size: 12.5px; color: #facc15; font-family: monospace; }\n</style>\n\n<script>\nconst inputs = [...document.querySelectorAll('#otp-box input')];\nconst res = document.getElementById('otp-result');\n\ninputs.forEach((inp, idx) => {\n  inp.addEventListener('input', (e) => {\n    e.target.value = e.target.value.replace(/[^0-9]/g, '');\n    if (e.target.value && idx < inputs.length - 1) inputs[idx + 1].focus();\n    const code = inputs.map(i => i.value).join('');\n    res.textContent = code.length === 4 ? '✓ КОД ПОДТВЕРЖДЁН: ' + code : 'Ожидание ввода...';\n  });\n  inp.addEventListener('keydown', (e) => {\n    if (e.key === 'Backspace' && !inp.value && idx > 0) inputs[idx - 1].focus();\n  });\n});\n</script>"
   },
   {
     "id": "recipe-shopping-cart",
     "lang": "recipes",
     "title": "Рецепт: Интерактивная корзина товаров с пересчётом суммы",
-    "summary": "Готовый модуль корзины интернет-магазина с кнопками +/- количества, удалением позиции, расчётом скидки и итоговой стоимости.",
+    "summary": "Готовый модуль корзины интернет-магазина с кнопками +/- количества и автоматическим форматированием стоимости.",
     "tags": [
       "рецепт",
       "корзина",
@@ -201,14 +202,14 @@
       "cart",
       "калькулятор цены"
     ],
-    "when": "Для интернет-магазинов, конфигураторов услуг, оформления заказа и мини-корзины в шапке.",
+    "when": "Для интернет-магазинов, конфигураторов оборудования, оформления заказа и мини-корзины.",
     "alternatives": "Для сложных многостраничных магазинов состояние корзины синхронизируют с localStorage и серверной БД.",
     "points": [
       "Динамически пересчитывает подитог и общую сумму при изменении количества любого товара.",
       "Форматирует валюту по русскому стандарту через Intl.NumberFormat(\"ru-RU\").",
       "Не позволяет уменьшить количество товара ниже 1."
     ],
-    "code": "<div class=\"cart-box\">\n  <h4>Корзина заказа</h4>\n  <div id=\"cart-items\" class=\"cart-items\"></div>\n  <div class=\"cart-footer\">\n    <span>Итого к оплате:</span>\n    <strong id=\"cart-total\">0 ₽</strong>\n  </div>\n</div>\n\n<style>\n.cart-box { max-width: 380px; margin: 0 auto; padding: 18px; background: #131c2e; border: 1px solid #263449; border-radius: 14px; color: #f8fafc; font-family: system-ui, sans-serif; }\n.cart-box h4 { margin: 0 0 12px; font-size: 16px; }\n.cart-items { display: flex; flex-direction: column; gap: 8px; }\n.cart-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #090d16; border-radius: 8px; border: 1px solid #1e293b; font-size: 13px; }\n.qty-ctrl { display: flex; align-items: center; gap: 8px; }\n.qty-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #fff; cursor: pointer; font-weight: 700; }\n.cart-footer { margin-top: 14px; padding-top: 12px; border-top: 1px solid #263449; display: flex; justify-content: space-between; align-items: center; font-size: 15px; }\n.cart-footer strong { color: #38bdf8; font-size: 18px; }\n</style>\n\n<script>\nconst items = [\n  { id: 1, name: 'Подписка DevShelf Pro', price: 1490, qty: 1 },\n  { id: 2, name: 'UI-кит компонентов', price: 990, qty: 2 }\n];\nconst listEl = document.getElementById('cart-items');\nconst totalEl = document.getElementById('cart-total');\n\nfunction renderCart() {\n  listEl.innerHTML = items.map(item => `\n    <div class=\"cart-row\">\n      <div>\n        <div><strong>${item.name}</strong></div>\n        <div style=\"color:#94a3b8;font-size:12px;\">${item.price} ₽ / шт.</div>\n      </div>\n      <div class=\"qty-ctrl\">\n        <button class=\"qty-btn\" onclick=\"changeQty(${item.id}, -1)\">−</button>\n        <span>${item.qty}</span>\n        <button class=\"qty-btn\" onclick=\"changeQty(${item.id}, 1)\">+</button>\n      </div>\n    </div>\n  `).join('');\n  const sum = items.reduce((acc, i) => acc + i.price * i.qty, 0);\n  totalEl.textContent = new Intl.NumberFormat('ru-RU').format(sum) + ' ₽';\n}\nwindow.changeQty = (id, delta) => {\n  const found = items.find(i => i.id === id);\n  if (found) found.qty = Math.max(1, found.qty + delta);\n  renderCart();\n};\nrenderCart();\n</script>"
+    "code": "<div class=\"cart-box\">\n  <h4>Спецификация заказа</h4>\n  <div id=\"cart-items\" class=\"cart-items\"></div>\n  <div class=\"cart-footer\">\n    <span>Итого к оплате:</span>\n    <strong id=\"cart-total\">0 ₽</strong>\n  </div>\n</div>\n\n<style>\n.cart-box { max-width: 380px; margin: 0 auto; padding: 18px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.cart-box h4 { margin: 0 0 12px; font-size: 16px; }\n.cart-items { display: flex; flex-direction: column; gap: 8px; }\n.cart-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #0c0d0f; border-radius: 4px; border: 1px solid #27272a; font-size: 13px; }\n.qty-ctrl { display: flex; align-items: center; gap: 8px; font-family: monospace; }\n.qty-btn { width: 26px; height: 26px; border-radius: 4px; border: 1px solid #3f3f46; background: #18181b; color: #facc15; cursor: pointer; font-weight: 700; }\n.cart-footer { margin-top: 14px; padding-top: 12px; border-top: 1px solid #2e323b; display: flex; justify-content: space-between; align-items: center; font-size: 15px; }\n.cart-footer strong { color: #facc15; font-size: 18px; font-family: monospace; }\n</style>\n\n<script>\nconst items = [\n  { id: 1, name: 'Лицензия DevShelf Pro', price: 1490, qty: 1 },\n  { id: 2, name: 'Индустриальный UI-кит', price: 990, qty: 2 }\n];\nconst listEl = document.getElementById('cart-items');\nconst totalEl = document.getElementById('cart-total');\n\nfunction renderCart() {\n  listEl.innerHTML = items.map(item => `\n    <div class=\"cart-row\">\n      <div>\n        <div><strong>${item.name}</strong></div>\n        <div style=\"color:#a1a1aa;font-size:12px;\">${item.price} ₽ / ед.</div>\n      </div>\n      <div class=\"qty-ctrl\">\n        <button class=\"qty-btn\" onclick=\"changeQty(${item.id}, -1)\">−</button>\n        <span>${item.qty}</span>\n        <button class=\"qty-btn\" onclick=\"changeQty(${item.id}, 1)\">+</button>\n      </div>\n    </div>\n  `).join('');\n  const sum = items.reduce((acc, i) => acc + i.price * i.qty, 0);\n  totalEl.textContent = new Intl.NumberFormat('ru-RU').format(sum) + ' ₽';\n}\nwindow.changeQty = (id, delta) => {\n  const found = items.find(i => i.id === id);\n  if (found) found.qty = Math.max(1, found.qty + delta);\n  renderCart();\n};\nrenderCart();\n</script>"
   },
   {
     "id": "recipe-catalog-filter",
@@ -224,19 +225,19 @@
       "filter",
       "search"
     ],
-    "when": "Для каталогов товаров, портфолио проектов, списков статей, FAQ и таблиц сотрудников.",
+    "when": "Для каталогов товаров, портфолио проектов, списков документации, FAQ и таблиц.",
     "alternatives": "При объёме более 5 000 записей используйте серверную фильтрацию через Fetch API и пагинацию.",
     "points": [
       "Сочетает фильтр по выбранной категории и текстовый поиск по подстроке.",
       "При отсутствии совпадений аккуратно выводит пустое состояние (Empty State)."
     ],
-    "code": "<div class=\"flt-demo\">\n  <div class=\"flt-bar\">\n    <input type=\"search\" id=\"flt-input\" placeholder=\"Поиск по стеку...\">\n    <button class=\"flt-tag active\" data-cat=\"all\">Все</button>\n    <button class=\"flt-tag\" data-cat=\"front\">Frontend</button>\n    <button class=\"flt-tag\" data-cat=\"back\">Backend</button>\n  </div>\n  <div id=\"flt-list\" class=\"flt-list\"></div>\n</div>\n\n<style>\n.flt-demo { max-width: 420px; margin: 0 auto; color: #f8fafc; font-family: system-ui, sans-serif; }\n.flt-bar { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }\n.flt-bar input { flex: 1; min-width: 140px; padding: 7px 10px; border-radius: 7px; border: 1px solid #334155; background: #090d16; color: #fff; font-size: 13px; }\n.flt-tag { padding: 6px 10px; border-radius: 7px; border: 1px solid #334155; background: #131c2e; color: #94a3b8; font-size: 12px; cursor: pointer; }\n.flt-tag.active { background: #38bdf8; color: #090d16; border-color: #38bdf8; font-weight: 700; }\n.flt-list { display: grid; gap: 8px; }\n.flt-item { padding: 10px 12px; border-radius: 8px; background: #131c2e; border: 1px solid #263449; display: flex; justify-content: space-between; font-size: 13px; }\n</style>\n\n<script>\nconst data = [\n  { name: 'React 19 + TypeScript', cat: 'front' },\n  { name: 'Tailwind CSS v4', cat: 'front' },\n  { name: 'PHP 8.3 + Laravel 11', cat: 'back' },\n  { name: 'PostgreSQL & Redis', cat: 'back' }\n];\nlet activeCat = 'all';\nconst inp = document.getElementById('flt-input');\nconst list = document.getElementById('flt-list');\n\nfunction render() {\n  const q = inp.value.toLowerCase();\n  const res = data.filter(d => (activeCat === 'all' || d.cat === activeCat) && d.name.toLowerCase().includes(q));\n  list.innerHTML = res.length\n    ? res.map(d => `<div class=\"flt-item\"><strong>${d.name}</strong><span style=\"color:#38bdf8\">${d.cat}</span></div>`).join('')\n    : '<div style=\"color:#94a3b8;font-size:13px;\">Ничего не найдено</div>';\n}\ndocument.querySelectorAll('.flt-tag').forEach(btn => {\n  btn.onclick = () => {\n    document.querySelectorAll('.flt-tag').forEach(b => b.classList.remove('active'));\n    btn.classList.add('active');\n    activeCat = btn.dataset.cat;\n    render();\n  };\n});\ninp.oninput = render;\nrender();\n</script>"
+    "code": "<div class=\"flt-demo\">\n  <div class=\"flt-bar\">\n    <input type=\"search\" id=\"flt-input\" placeholder=\"Поиск по модулям...\">\n    <button class=\"flt-tag active\" data-cat=\"all\">Все</button>\n    <button class=\"flt-tag\" data-cat=\"front\">Frontend</button>\n    <button class=\"flt-tag\" data-cat=\"back\">Backend</button>\n  </div>\n  <div id=\"flt-list\" class=\"flt-list\"></div>\n</div>\n\n<style>\n.flt-demo { max-width: 420px; margin: 0 auto; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.flt-bar { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }\n.flt-bar input { flex: 1; min-width: 140px; padding: 7px 10px; border-radius: 4px; border: 1px solid #3f3f46; background: #0c0d0f; color: #fff; font-size: 13px; }\n.flt-tag { padding: 6px 10px; border-radius: 4px; border: 1px solid #3f3f46; background: #141619; color: #a1a1aa; font-size: 12px; cursor: pointer; }\n.flt-tag.active { background: #facc15; color: #09090b; border-color: #facc15; font-weight: 800; }\n.flt-list { display: grid; gap: 8px; }\n.flt-item { padding: 10px 12px; border-radius: 4px; background: #141619; border: 1px solid #27272a; display: flex; justify-content: space-between; font-size: 13px; }\n</style>\n\n<script>\nconst data = [\n  { name: 'React 19 + TypeScript', cat: 'front' },\n  { name: 'Tailwind CSS v4', cat: 'front' },\n  { name: 'PHP 8.3 + Laravel 11', cat: 'back' },\n  { name: 'PostgreSQL & Redis', cat: 'back' }\n];\nlet activeCat = 'all';\nconst inp = document.getElementById('flt-input');\nconst list = document.getElementById('flt-list');\n\nfunction render() {\n  const q = inp.value.toLowerCase();\n  const res = data.filter(d => (activeCat === 'all' || d.cat === activeCat) && d.name.toLowerCase().includes(q));\n  list.innerHTML = res.length\n    ? res.map(d => `<div class=\"flt-item\"><strong>${d.name}</strong><span style=\"color:#facc15;font-family:monospace;\">[${d.cat.toUpperCase()}]</span></div>`).join('')\n    : '<div style=\"color:#a1a1aa;font-size:13px;\">Совпадений не обнаружено</div>';\n}\ndocument.querySelectorAll('.flt-tag').forEach(btn => {\n  btn.onclick = () => {\n    document.querySelectorAll('.flt-tag').forEach(b => b.classList.remove('active'));\n    btn.classList.add('active');\n    activeCat = btn.dataset.cat;\n    render();\n  };\n});\ninp.oninput = render;\nrender();\n</script>"
   },
   {
     "id": "recipe-file-dropzone",
     "lang": "recipes",
-    "title": "Рецепт: Drag-and-Drop загрузка файлов с превью изображения",
-    "summary": "Зона перетаскивания файлов с подсветкой при наведении, проверкой размера и мгновенным показом миниатюры через FileReader / URL.createObjectURL.",
+    "title": "Рецепт: Drag-and-Drop загрузка файлов с проверкой размера",
+    "summary": "Зона перетаскивания файлов с подсветкой при наведении и мгновенным выводом параметров выбранного файла.",
     "tags": [
       "рецепт",
       "загрузка файла",
@@ -245,13 +246,13 @@
       "file upload",
       "превью картинки"
     ],
-    "when": "Для загрузки аватарок, прикрепления документов в формах обратной связи и загрузки фото товаров.",
+    "when": "Для загрузки аватарок, прикрепления чертежей и документов в формах обратной связи.",
     "alternatives": "Обычный <input type=\"file\">, который выглядит по-разному во всех браузерах.",
     "points": [
       "События dragover и drop требуют вызова event.preventDefault(), чтобы браузер не открывал файл в новой вкладке.",
       "Метод URL.createObjectURL(file) мгновенно создаёт локальную ссылку на выбранную картинку для предпросмотра до отправки на сервер."
     ],
-    "code": "<label class=\"dropzone\" id=\"dropzone\">\n  <input type=\"file\" id=\"file-inp\" accept=\"image/*\" hidden>\n  <div id=\"drop-info\">\n    <strong>Перетащите изображение сюда</strong>\n    <p>или нажмите для выбора файла (PNG, JPG, WebP)</p>\n  </div>\n</label>\n\n<style>\n.dropzone {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  max-width: 360px;\n  margin: 0 auto;\n  min-height: 140px;\n  padding: 20px;\n  border: 2px dashed #38bdf8;\n  border-radius: 14px;\n  background: rgba(56, 189, 248, 0.06);\n  color: #f8fafc;\n  text-align: center;\n  cursor: pointer;\n  font-family: system-ui, sans-serif;\n  transition: background 0.2s, border-color 0.2s;\n}\n.dropzone:hover, .dropzone.dragover { background: rgba(56, 189, 248, 0.14); border-color: #7dd3fc; }\n.dropzone p { margin: 6px 0 0; font-size: 12px; color: #94a3b8; }\n</style>\n\n<script>\nconst dz = document.getElementById('dropzone');\nconst inp = document.getElementById('file-inp');\nconst info = document.getElementById('drop-info');\n\nfunction handleFile(file) {\n  if (!file) return;\n  info.innerHTML = `<strong>✓ Выбран файл: ${file.name}</strong><p>Размер: ${(file.size / 1024).toFixed(1)} КБ</p>`;\n}\ndz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); });\ndz.addEventListener('dragleave', () => dz.classList.remove('dragover'));\ndz.addEventListener('drop', (e) => {\n  e.preventDefault();\n  dz.classList.remove('dragover');\n  handleFile(e.dataTransfer.files[0]);\n});\ninp.addEventListener('change', (e) => handleFile(e.target.files[0]));\n</script>"
+    "code": "<label class=\"dropzone\" id=\"dropzone\">\n  <input type=\"file\" id=\"file-inp\" accept=\"image/*\" hidden>\n  <div id=\"drop-info\">\n    <strong>ПЕРЕТАЩИТЕ ФАЙЛ В ЭТУ ЗОНУ</strong>\n    <p>или нажмите для выбора с диска (PNG, JPG, SVG, PDF)</p>\n  </div>\n</label>\n\n<style>\n.dropzone {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  max-width: 360px;\n  margin: 0 auto;\n  min-height: 136px;\n  padding: 20px;\n  border: 2px dashed #facc15;\n  border-radius: 6px;\n  background: rgba(250, 204, 21, 0.05);\n  color: #f4f4f5;\n  text-align: center;\n  cursor: pointer;\n  font-family: system-ui, sans-serif;\n  transition: background 0.2s, border-color 0.2s;\n}\n.dropzone:hover, .dropzone.dragover { background: rgba(250, 204, 21, 0.14); border-color: #fde047; }\n.dropzone p { margin: 6px 0 0; font-size: 12px; color: #a1a1aa; }\n</style>\n\n<script>\nconst dz = document.getElementById('dropzone');\nconst inp = document.getElementById('file-inp');\nconst info = document.getElementById('drop-info');\n\nfunction handleFile(file) {\n  if (!file) return;\n  info.innerHTML = `<strong style=\"color:#facc15;\">✓ ФАЙЛ ПРИНЯТ: ${file.name}</strong><p>Объём: ${(file.size / 1024).toFixed(1)} КБ</p>`;\n}\ndz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('dragover'); });\ndz.addEventListener('dragleave', () => dz.classList.remove('dragover'));\ndz.addEventListener('drop', (e) => {\n  e.preventDefault();\n  dz.classList.remove('dragover');\n  handleFile(e.dataTransfer.files[0]);\n});\ninp.addEventListener('change', (e) => handleFile(e.target.files[0]));\n</script>"
   },
   {
     "id": "fw-tailwind-css",
@@ -271,17 +272,16 @@
     "alternatives": "Чистый CSS с переменными (Custom Properties), CSS Modules или компонентные библиотеки вроде Bootstrap 5.",
     "points": [
       "Кого заменяет: ручное написание CSS-файлов, БЭМ-нейминг (.card__header--active) и громоздкие медиа-запросы.",
-      "Подключение за 10 секунд (CDN для прототипов): <script src=\"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4\"></script>.",
+      "Подключение за 10 секунд (CDN): <script src=\"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4\"></script>.",
       "Подключение в проекте (Vite): npm install tailwindcss @tailwindcss/vite и строка @import \"tailwindcss\"; в главном CSS.",
-      "Адаптивность и состояния пишутся прямо через префиксы: hover:bg-sky-400, md:grid-cols-3, dark:bg-slate-900."
+      "Адаптивность и состояния пишутся прямо через префиксы: hover:bg-yellow-400, md:grid-cols-3, dark:bg-zinc-900."
     ],
-    "code": "<!-- 1. Подключение Tailwind CSS v4 (CDN или через Vite) -->\n<!-- <script src=\"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4\"></script> -->\n\n<!-- 2. Разметка карточки без единой строчки кастомного CSS -->\n<div class=\"tw-demo-card\">\n  <div class=\"tw-row\">\n    <span class=\"tw-badge\">Tailwind CSS v4</span>\n    <span class=\"tw-price\">0 КБ лишнего CSS</span>\n  </div>\n  <h4>Утилитарная вёрстка нового поколения</h4>\n  <p>Классы вроде <code>flex items-center justify-between gap-4 p-6 rounded-xl bg-slate-900</code> заменяют десятки строк обычного CSS.</p>\n  <button class=\"tw-btn\">Подключить в проект →</button>\n</div>\n\n<style>\n/* Эмуляция скомпилированных утилит Tailwind для автономного превью */\n.tw-demo-card { max-width: 400px; margin: 0 auto; padding: 20px; border-radius: 14px; background: #0f172a; border: 1px solid #1e293b; color: #f8fafc; font-family: system-ui, sans-serif; }\n.tw-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }\n.tw-badge { background: rgba(56,189,248,0.15); color: #38bdf8; padding: 3px 9px; border-radius: 6px; font-size: 12px; font-weight: 700; }\n.tw-price { font-size: 12px; color: #94a3b8; font-family: monospace; }\n.tw-demo-card h4 { margin: 0 0 6px; font-size: 16px; }\n.tw-demo-card p { margin: 0 0 14px; font-size: 13px; color: #94a3b8; line-height: 1.5; }\n.tw-demo-card code { color: #38bdf8; font-family: monospace; }\n.tw-btn { width: 100%; padding: 9px; border-radius: 8px; background: #38bdf8; color: #090d16; font-weight: 700; border: none; cursor: pointer; }\n</style>",
-    "example": "// Установка в Vite-проект:\n// npm install tailwindcss @tailwindcss/vite\n\n// vite.config.js:\nimport { defineConfig } from 'vite';\nimport tailwindcss from '@tailwindcss/vite';\n\nexport default defineConfig({\n  plugins: [tailwindcss()],\n});"
+    "code": "<!-- Подключение Tailwind v4 CDN: <script src=\"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4\"></script> -->\n<div class=\"tw-demo-card\" id=\"tw-card\">\n  <div class=\"tw-row\">\n    <span class=\"tw-badge\">TAILWIND CSS v4</span>\n    <span class=\"tw-price\" id=\"tw-mode-label\">DARK // MODE</span>\n  </div>\n  <h4>Утилитарная вёрстка нового поколения</h4>\n  <p>Классы <code>flex items-center justify-between gap-4 p-5 rounded bg-zinc-900</code> заменяют десятки строк обычного CSS.</p>\n  <button class=\"tw-btn\" id=\"tw-toggle-btn\">Переключить утилиту акцента →</button>\n</div>\n\n<style>\n.tw-demo-card { max-width: 410px; margin: 0 auto; padding: 18px; border-radius: 6px; background: #141619; border: 1px solid #2e323b; color: #f4f4f5; font-family: system-ui, sans-serif; transition: border-color 0.2s, box-shadow 0.2s; }\n.tw-demo-card.accent-active { border-color: #facc15; box-shadow: 4px 4px 0 #facc15; }\n.tw-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }\n.tw-badge { background: rgba(250,204,21,0.15); color: #facc15; padding: 3px 9px; border-radius: 4px; font-size: 11px; font-weight: 800; font-family: monospace; }\n.tw-price { font-size: 11px; color: #a1a1aa; font-family: monospace; }\n.tw-demo-card h4 { margin: 0 0 6px; font-size: 16px; }\n.tw-demo-card p { margin: 0 0 14px; font-size: 13px; color: #a1a1aa; line-height: 1.5; }\n.tw-demo-card code { color: #facc15; font-family: monospace; }\n.tw-btn { width: 100%; padding: 9px; border-radius: 4px; background: #facc15; color: #09090b; font-weight: 800; border: none; cursor: pointer; }\n</style>\n\n<script>\nconst card = document.getElementById('tw-card');\nconst label = document.getElementById('tw-mode-label');\ndocument.getElementById('tw-toggle-btn').addEventListener('click', () => {\n  card.classList.toggle('accent-active');\n  label.textContent = card.classList.contains('accent-active') ? 'RING-YELLOW-400 // ON' : 'DARK // MODE';\n});\n</script>"
   },
   {
     "id": "fw-react",
     "lang": "frameworks",
-    "title": "React 19 (Декларативные компоненты вместо ручного DOM API)",
+    "title": "React 19 (Декларативные компоненты и хуки вместо ручного DOM API)",
     "summary": "Библиотека для создания пользовательских интерфейсов, заменяющая императивный поиск элементов (querySelector, innerHTML) реактивными компонентами и хуками состояния.",
     "tags": [
       "framework",
@@ -301,14 +301,13 @@
       "Хук useState(initial) хранит состояние и автоматически перерисовывает только изменившуюся часть интерфейса.",
       "Хук useEffect(() => {}, [deps]) выполняет запросы к серверу и подписки при монтировании компонента."
     ],
-    "code": "// Пример компонента React 19 (CounterCard.jsx)\nimport { useState } from 'react';\n\nexport function CounterCard() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div className=\"card\">\n      <h3>Реактивный счётчик: {count}</h3>\n      <button onClick={() => setCount(prev => prev + 1)}>\n        Увеличить (+1)\n      </button>\n    </div>\n  );\n}",
-    "example": "<!-- Интерактивная демонстрация логики состояния React -->\n<div class=\"react-sim\" id=\"react-root\">\n  <span style=\"color:#38bdf8;font-size:11px;font-family:monospace;font-weight:700;\">REACT COMPONENT STATE</span>\n  <h3 id=\"r-title\" style=\"margin:8px 0;\">Реактивный счётчик: 0</h3>\n  <p style=\"font-size:13px;color:#94a3b8;margin:0 0 12px;\">При вызове <code>setCount(n + 1)</code> React сам обновляет виртуальный DOM без ручного <code>querySelector</code>.</p>\n  <button id=\"r-btn\" style=\"background:#38bdf8;color:#090d16;border:none;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;\">setCount(count + 1)</button>\n</div>\n<script>\nlet stateCount = 0;\ndocument.getElementById('r-btn').onclick = () => {\n  stateCount++;\n  document.getElementById('r-title').textContent = 'Реактивный счётчик: ' + stateCount;\n};\n</script>"
+    "code": "<!-- В проекте React (Counter.jsx):\nimport { useState } from 'react';\nexport function Counter() {\n  const [count, setCount] = useState(0);\n  return <button onClick={() => setCount(c => c + 1)}>Счёт: {count}</button>;\n}\n-->\n<div class=\"react-box\">\n  <div class=\"react-head\">\n    <span class=\"react-tag\">REACT 19 // USESTATE SIMULATOR</span>\n    <span id=\"react-renders\" class=\"react-meta\">Рендеров: 1</span>\n  </div>\n  <h3 id=\"react-title\">Состояние count = 0</h3>\n  <p>Вызов <code>setCount(prev =&gt; prev + 1)</code> обновляет Virtual DOM и точечно перерисовывает узел.</p>\n  <div class=\"react-actions\">\n    <button id=\"react-dec\" class=\"r-btn-sec\">−1</button>\n    <button id=\"react-inc\" class=\"r-btn-pri\">setCount(count + 1)</button>\n    <button id=\"react-rst\" class=\"r-btn-sec\">Сброс</button>\n  </div>\n</div>\n\n<style>\n.react-box { max-width: 410px; margin: 0 auto; padding: 18px; background: #141619; border: 1px solid #2e323b; border-left: 4px solid #facc15; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.react-head { display: flex; justify-content: space-between; font-family: monospace; font-size: 11px; margin-bottom: 8px; }\n.react-tag { color: #facc15; font-weight: 800; }\n.react-meta { color: #a1a1aa; }\n.react-box h3 { margin: 0 0 6px; font-size: 18px; font-family: monospace; }\n.react-box p { margin: 0 0 14px; font-size: 12.5px; color: #a1a1aa; }\n.react-box code { color: #fde047; }\n.react-actions { display: flex; gap: 8px; }\n.r-btn-pri { flex: 1; padding: 9px 12px; background: #facc15; color: #09090b; border: none; border-radius: 4px; font-weight: 800; cursor: pointer; font-family: monospace; }\n.r-btn-sec { padding: 9px 12px; background: #27272a; color: #f4f4f5; border: 1px solid #3f3f46; border-radius: 4px; cursor: pointer; font-weight: 700; }\n</style>\n\n<script>\nlet count = 0;\nlet renders = 1;\nconst titleEl = document.getElementById('react-title');\nconst rendersEl = document.getElementById('react-renders');\n\nfunction setCount(nextVal) {\n  count = nextVal;\n  renders++;\n  titleEl.textContent = 'Состояние count = ' + count;\n  rendersEl.textContent = 'Рендеров: ' + renders;\n}\ndocument.getElementById('react-inc').onclick = () => setCount(count + 1);\ndocument.getElementById('react-dec').onclick = () => setCount(count - 1);\ndocument.getElementById('react-rst').onclick = () => setCount(0);\n</script>"
   },
   {
     "id": "fw-vue3",
     "lang": "frameworks",
-    "title": "Vue 3 (Composition API и <script setup> — прогрессивный фреймворк)",
-    "summary": "Интуитивный фреймворк с автоматической реактивностью (ref, computed), который одинаково легко подключается одной строкой CDN на готовый сайт или собирается через Vite.",
+    "title": "Vue 3 (Composition API и <script setup> — реактивный фреймворк)",
+    "summary": "Интуитивный фреймворк с автоматической реактивностью (ref, computed) и двусторонним связыванием v-model, работающий как через Vite, так и напрямую с CDN.",
     "tags": [
       "framework",
       "фреймворк",
@@ -319,22 +318,21 @@
       "v-model",
       "реактивность"
     ],
-    "when": "Когда нужен баланс между мощью компонентного SPA и простотой привычного разделения на шаблон <template>, логику <script setup> и стили <style scoped>.",
-    "alternatives": "React 19, Svelte или Alpine.js.",
+    "when": "Когда нужен баланс между мощью компонентного SPA и чистым разделением на шаблон <template>, логику <script setup> и стили <style scoped>.",
+    "alternatives": "React 19, Svelte 5 или Alpine.js.",
     "points": [
-      "Кого заменяет: громоздкие jQuery-скрипты (при подключении через CDN) и сложный шаблонный код больших SPA.",
+      "Кого заменяет: громоздкие jQuery-скрипты и сложный шаблонный код обновления форм.",
       "Подключение без сборщика (CDN): <script src=\"https://unpkg.com/vue@3/dist/vue.global.js\"></script>.",
       "Создание проекта со сборщиком: npm create vue@latest.",
       "Директива v-model обеспечивает двустороннее связывание полей формы с переменной за 1 атрибут."
     ],
-    "code": "<!-- 1. Однофайловый компонент Vue 3 (App.vue) -->\n<script setup>\nimport { ref, computed } from 'vue';\n\nconst name = ref('Разработчик');\nconst greeting = computed(() => `Привет, ${name.value}! Добро пожаловать во Vue 3.`);\n</script>\n\n<template>\n  <div class=\"vue-card\">\n    <input v-model=\"name\" placeholder=\"Введите имя\" />\n    <p>{{ greeting }}</p>\n  </div>\n</template>",
-    "example": "<div style=\"padding:18px;background:#131c2e;border:1px solid #10b981;border-radius:12px;color:#f8fafc;font-family:system-ui,sans-serif;\">\n  <div style=\"font-size:11px;color:#10b981;font-weight:700;margin-bottom:6px;\">VUE 3 TWO-WAY BINDING (v-model)</div>\n  <input id=\"vue-inp\" value=\"Разработчик\" style=\"width:100%;padding:8px 12px;border-radius:8px;border:1px solid #334155;background:#090d16;color:#fff;margin-bottom:10px;box-sizing:border-box;\">\n  <div id=\"vue-out\" style=\"font-weight:700;color:#6ee7b7;\">Привет, Разработчик! Добро пожаловать во Vue 3.</div>\n</div>\n<script>\nconst vInp = document.getElementById('vue-inp');\nconst vOut = document.getElementById('vue-out');\nvInp.oninput = () => { vOut.textContent = 'Привет, ' + (vInp.value || 'Гость') + '! Добро пожаловать во Vue 3.'; };\n</script>"
+    "code": "<!-- В компоненте App.vue:\n<script setup>\nimport { ref, computed } from 'vue';\nconst name = ref('Инженер');\n</script>\n<template><input v-model=\"name\"><p>Привет, {{ name }}!</p></template>\n-->\n<div class=\"vue-card\">\n  <div class=\"vue-tag\">VUE 3 // V-MODEL & COMPUTED</div>\n  <label class=\"vue-label\">\n    <span>Двустороннее связывание (v-model=\"name\"):</span>\n    <input id=\"vue-inp\" value=\"Инженер DevShelf\" placeholder=\"Введите имя\">\n  </label>\n  <div id=\"vue-out\" class=\"vue-out\">Привет, Инженер DevShelf! Длина строки: 16 симв.</div>\n</div>\n\n<style>\n.vue-card { max-width: 410px; margin: 0 auto; padding: 18px; background: #141619; border: 1px solid #2e323b; border-left: 4px solid #facc15; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.vue-tag { font-size: 11px; color: #facc15; font-family: monospace; font-weight: 800; margin-bottom: 10px; }\n.vue-label { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: #a1a1aa; margin-bottom: 12px; }\n.vue-label input { padding: 9px 12px; border-radius: 4px; border: 1px solid #3f3f46; background: #0c0d0f; color: #fff; font-size: 14px; }\n.vue-out { padding: 10px 12px; background: #0c0d0f; border: 1px solid #27272a; border-radius: 4px; font-weight: 700; color: #fef08a; font-size: 13px; }\n</style>\n\n<script>\nconst vInp = document.getElementById('vue-inp');\nconst vOut = document.getElementById('vue-out');\nvInp.addEventListener('input', () => {\n  const val = vInp.value.trim() || 'Гость';\n  vOut.textContent = `Привет, ${val}! Длина строки: ${val.length} симв.`;\n});\n</script>"
   },
   {
     "id": "fw-alpinejs",
     "lang": "frameworks",
-    "title": "Alpine.js (Легковесная замена jQuery прямо в HTML-разметке)",
-    "summary": "Микро-фреймворк весом 15 КБ, позволяющий создавать модалки, табы, выпадающие меню и аккордеоны прямо через HTML-атрибуты x-data, x-show и @click без отдельных .js файлов.",
+    "title": "Alpine.js (Легковесная замена jQuery прямо в HTML-атрибутах)",
+    "summary": "Микро-фреймворк весом 15 КБ, позволяющий создавать модалки, табы, выпадающие меню и аккордеоны прямо через атрибуты x-data, x-show и @click без отдельных .js файлов.",
     "tags": [
       "framework",
       "фреймворк",
@@ -344,7 +342,7 @@
       "x-data",
       "микрофреймворк"
     ],
-    "when": "Идеальный выбор для серверных сайтов (PHP, Laravel, WordPress, Django) и лендингов, где React избыточен, а писать ручной querySelector долго.",
+    "when": "Идеальный выбор для серверных сайтов (PHP, Laravel, WordPress, Битрикс) и лендингов, где React избыточен, а писать ручной querySelector долго.",
     "alternatives": "Нативный JavaScript или HTMX.",
     "points": [
       "Кого заменяет: устаревший jQuery и десятки мелких файлов вроде tabs.js, modal.js, dropdown.js.",
@@ -352,13 +350,12 @@
       "Атрибут x-data=\"{ open: false }\" объявляет локальное реактивное состояние прямо на HTML-теге.",
       "Атрибуты @click=\"open = !open\" и x-show=\"open\" управляют видимостью блока без единого ID или класса."
     ],
-    "code": "<!-- 1. Подключение Alpine.js одной строкой (без npm и сборки!) -->\n<script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\"></script>\n\n<!-- 2. Выпадающее меню прямо в HTML -->\n<div x-data=\"{ open: false }\" class=\"alpine-box\">\n  <button @click=\"open = !open\" class=\"alpine-btn\">\n    Настройки профиля ▾\n  </button>\n\n  <div x-show=\"open\" class=\"alpine-menu\">\n    <p>Аккаунт: <strong>PRO</strong></p>\n    <p>Вся логика описана в атрибутах <code>x-data</code> и <code>x-show</code>!</p>\n  </div>\n</div>",
-    "example": "<div style=\"padding:18px;background:#131c2e;border:1px solid #38bdf8;border-radius:12px;color:#f8fafc;font-family:system-ui,sans-serif;\">\n  <button id=\"alp-btn\" style=\"background:#38bdf8;color:#090d16;border:none;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;\">Настройки профиля (x-data=\"{ open }\") ▾</button>\n  <div id=\"alp-menu\" style=\"margin-top:10px;padding:12px;background:#090d16;border:1px solid #334155;border-radius:8px;font-size:13px;\">\n    ✓ Блок управляется декларативно без единого <code>document.querySelector</code>!\n  </div>\n</div>\n<script>\nconst aBtn = document.getElementById('alp-btn');\nconst aMenu = document.getElementById('alp-menu');\naBtn.onclick = () => { aMenu.hidden = !aMenu.hidden; };\n</script>"
+    "code": "<!-- Подключение: <script defer src=\"https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js\"></script> -->\n<div class=\"alpine-box\" x-data=\"{ open: true }\">\n  <div class=\"alpine-tag\">ALPINE.JS // X-DATA & X-SHOW</div>\n  <button id=\"alp-btn\" class=\"alpine-btn\">\n    Переключить панель (x-on:click=\"open = !open\") ▾\n  </button>\n  <div id=\"alp-menu\" class=\"alpine-menu\">\n    <p><strong>Статус узла:</strong> АКТИВЕН</p>\n    <p>Вся логика открытия/закрытия описывается прямо в HTML-разметке через <code>x-data=\"{ open: false }\"</code> и <code>x-show=\"open\"</code>.</p>\n  </div>\n</div>\n\n<style>\n.alpine-box { max-width: 410px; margin: 0 auto; padding: 18px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.alpine-tag { font-size: 11px; color: #facc15; font-family: monospace; font-weight: 800; margin-bottom: 10px; }\n.alpine-btn { width: 100%; background: #facc15; color: #09090b; border: none; padding: 9px 14px; border-radius: 4px; font-weight: 800; cursor: pointer; text-align: left; }\n.alpine-menu { margin-top: 10px; padding: 12px; background: #0c0d0f; border: 1px solid #3f3f46; border-radius: 4px; font-size: 13px; color: #d4d4d8; }\n.alpine-menu p { margin: 0 0 6px; }\n.alpine-menu p:last-child { margin: 0; }\n.alpine-menu code { color: #facc15; }\n</style>\n\n<script>\nconst aBtn = document.getElementById('alp-btn');\nconst aMenu = document.getElementById('alp-menu');\naBtn.addEventListener('click', () => {\n  aMenu.hidden = !aMenu.hidden;\n});\n</script>"
   },
   {
     "id": "fw-htmx",
     "lang": "frameworks",
-    "title": "HTMX (AJAX-запросы, WebSockets и динамика прямо из HTML)",
+    "title": "HTMX (AJAX-запросы, пагинация и фильтрация прямо из HTML)",
     "summary": "Библиотека, позволяющая любому HTML-элементу отправлять POST/GET-запросы и обновлять часть страницы без перезагрузки и без написания JavaScript-кода.",
     "tags": [
       "framework",
@@ -375,9 +372,9 @@
     "points": [
       "Кого заменяет: ручные цепочки fetch() -> response.text() -> document.getElementById().innerHTML.",
       "Подключение (CDN): <script src=\"https://unpkg.com/htmx.org@2.0.0\"></script>.",
-      "Атрибут hx-post=\"/api/like\" отправляет запрос по клику, а hx-target=\"#likes-count\" указывает, какой блок на странице обновить ответом сервера."
+      "Атрибут hx-post=\"/api/deploy\" отправляет запрос по клику, а hx-target=\"#hx-out\" указывает, какой блок на странице обновить ответом сервера."
     ],
-    "code": "<!-- Подключение HTMX -->\n<script src=\"https://unpkg.com/htmx.org@2.0.0\"></script>\n\n<!-- Поиск с автоподгрузкой результатов и задержкой 300ms (debounce) -->\n<input type=\"search\"\n       name=\"q\"\n       hx-get=\"/api/search\"\n       hx-trigger=\"input changed delay:300ms\"\n       hx-target=\"#search-results\"\n       placeholder=\"Живой поиск через HTMX...\">\n\n<div id=\"search-results\">Результаты появятся здесь без единой строчки JS</div>"
+    "code": "<!-- Подключение: <script src=\"https://unpkg.com/htmx.org@2.0.0\"></script> -->\n<div class=\"hx-card\">\n  <div class=\"hx-tag\">HTMX // HX-POST & HX-TARGET</div>\n  <p class=\"hx-desc\">Кнопка с атрибутами <code>hx-post=\"/api/ping\" hx-target=\"#hx-result\"</code> заменяет ручной <code>fetch()</code>:</p>\n  <button id=\"hx-btn\" class=\"hx-btn\" hx-post=\"/api/ping\" hx-target=\"#hx-result\">\n    Отправить hx-post запрос →\n  </button>\n  <div id=\"hx-result\" class=\"hx-result\">Ожидание запроса к серверу...</div>\n</div>\n\n<style>\n.hx-card { max-width: 410px; margin: 0 auto; padding: 18px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.hx-tag { font-size: 11px; color: #facc15; font-family: monospace; font-weight: 800; margin-bottom: 8px; }\n.hx-desc { font-size: 13px; color: #a1a1aa; margin: 0 0 12px; }\n.hx-desc code { color: #facc15; }\n.hx-btn { width: 100%; padding: 9px 14px; background: #facc15; color: #09090b; font-weight: 800; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }\n.hx-result { padding: 10px 12px; background: #0c0d0f; border: 1px solid #3f3f46; border-radius: 4px; font-family: monospace; font-size: 12px; color: #e4e4e7; }\n</style>\n\n<script>\nlet reqId = 100;\nconst btn = document.getElementById('hx-btn');\nconst out = document.getElementById('hx-result');\nbtn.addEventListener('click', () => {\n  reqId++;\n  out.textContent = '⏳ hx-request: отправка POST /api/ping...';\n  setTimeout(() => {\n    out.innerHTML = `<span style=\"color:#facc15;\">✓ HTTP 200 OK (Swap #hx-result)</span><br>Пакет #${reqId} получен с сервера без перезагрузки!`;\n  }, 220);\n});\n</script>"
   },
   {
     "id": "fw-bootstrap5",
@@ -394,20 +391,20 @@
       "компоненты"
     ],
     "when": "Для быстрой сборки админ-панелей, внутренних корпоративных порталов, CRM и прототипов.",
-    "alternatives": "Tailwind CSS (для уникального дизайна) или нативный CSS Grid.",
+    "alternatives": "Tailwind CSS (для кастомного дизайна) или нативный CSS Grid.",
     "points": [
       "Кого заменяет: ручное написание базовых стилей для кнопок, таблиц, алертов, модалок и колонок.",
       "В версии Bootstrap 5 полностью удалена зависимость от jQuery — все интерактивные компоненты работают на чистом JS.",
       "Подключение через CDN занимает 2 строки: один <link> для CSS и один <script> для bundle.min.js.",
       "Атрибут data-bs-theme=\"dark\" на теге <html> мгновенно переключает весь сайт в тёмную тему."
     ],
-    "code": "<!-- 1. Подключение Bootstrap 5.3 CSS в <head> -->\n<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n\n<!-- 2. Адаптивная 12-колоночная сетка -->\n<div class=\"container py-3\" data-bs-theme=\"dark\">\n  <div class=\"row g-3\">\n    <div class=\"col-12 col-md-6\">\n      <div class=\"p-3 border rounded bg-dark text-light\">Колонка 1 (50% на ПК, 100% на телефоне)</div>\n    </div>\n    <div class=\"col-12 col-md-6\">\n      <div class=\"p-3 border rounded bg-dark text-light\">Колонка 2 (50% на ПК, 100% на телефоне)</div>\n    </div>\n  </div>\n</div>"
+    "code": "<!-- Подключение: <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\"> -->\n<div class=\"bs-container\">\n  <div class=\"bs-header\">\n    <span>BOOTSTRAP 5.3 // 12-COLUMN GRID</span>\n    <button id=\"bs-toggle\" class=\"bs-btn\">Сменить col-6 ↔ col-12</button>\n  </div>\n  <div class=\"bs-row\" id=\"bs-grid\">\n    <div class=\"bs-col\">col-md-6 (Модуль А)</div>\n    <div class=\"bs-col\">col-md-6 (Модуль Б)</div>\n  </div>\n</div>\n\n<style>\n.bs-container { max-width: 420px; margin: 0 auto; padding: 16px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.bs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: monospace; font-size: 11px; color: #facc15; }\n.bs-btn { padding: 5px 10px; background: #27272a; color: #facc15; border: 1px solid #facc15; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 700; }\n.bs-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }\n.bs-row.stacked { grid-template-columns: 1fr; }\n.bs-col { padding: 12px; background: #0c0d0f; border: 1px solid #3f3f46; border-radius: 4px; text-align: center; font-size: 13px; font-family: monospace; }\n</style>\n\n<script>\nconst grid = document.getElementById('bs-grid');\ndocument.getElementById('bs-toggle').addEventListener('click', () => {\n  grid.classList.toggle('stacked');\n});\n</script>"
   },
   {
     "id": "fw-typescript",
     "lang": "frameworks",
-    "title": "TypeScript (Строгая типизация поверх JavaScript)",
-    "summary": "Надмножество JavaScript от Microsoft, добавляющее статическую проверку типов, интерфейсы и автодополнение в IDE до запуска кода в браузере.",
+    "title": "TypeScript (Строгая типизация и интерфейсы поверх JavaScript)",
+    "summary": "Надмножество JavaScript от Microsoft, добавляющее статическую проверку типов, интерфейсы и автодополнение в IDE ещё до запуска кода в браузере.",
     "tags": [
       "framework",
       "фреймворк",
@@ -425,7 +422,7 @@
       "Vite поддерживает файлы .ts и .tsx из коробки без дополнительной настройки.",
       "На этапе сборки все типы вырезаются, превращаясь в чистый совместимый JavaScript."
     ],
-    "code": "// Описание структуры пользователя через interface\ninterface UserProfile {\n  id: number;\n  name: string;\n  role: 'admin' | 'editor' | 'viewer';\n  email?: string; // Необязательное поле\n}\n\nfunction formatUserBadge(user: UserProfile): string {\n  return `[${user.role.toUpperCase()}] ${user.name} (#${user.id})`;\n}\n\nconst current: UserProfile = { id: 42, name: 'Павел', role: 'admin' };\nconsole.log(formatUserBadge(current));"
+    "code": "<!-- В файле user.ts:\ninterface UserProfile {\n  id: number;\n  name: string;\n  role: 'admin' | 'engineer' | 'viewer';\n}\n-->\n<div class=\"ts-card\">\n  <div class=\"ts-tag\">TYPESCRIPT // INTERFACE CHECKER</div>\n  <div class=\"ts-controls\">\n    <select id=\"ts-role\">\n      <option value=\"admin\">role: 'admin'</option>\n      <option value=\"engineer\">role: 'engineer'</option>\n      <option value=\"invalid\">role: 'hacker' (Ошибка типа!)</option>\n    </select>\n  </div>\n  <pre id=\"ts-output\" class=\"ts-out\"></pre>\n</div>\n\n<style>\n.ts-card { max-width: 420px; margin: 0 auto; padding: 16px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.ts-tag { font-size: 11px; color: #facc15; font-family: monospace; font-weight: 800; margin-bottom: 10px; }\n.ts-controls select { width: 100%; padding: 8px 10px; background: #0c0d0f; color: #f4f4f5; border: 1px solid #3f3f46; border-radius: 4px; font-family: monospace; margin-bottom: 10px; }\n.ts-out { margin: 0; padding: 12px; background: #0c0d0f; border: 1px solid #27272a; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: pre-wrap; color: #fef08a; }\n</style>\n\n<script>\nconst sel = document.getElementById('ts-role');\nconst out = document.getElementById('ts-output');\n\nfunction validateTS(role) {\n  if (role === 'invalid') {\n    out.style.color = '#f87171';\n    out.textContent = `TS2322: Type '\"hacker\"' is not assignable to type '\"admin\" | \"engineer\" | \"viewer\"'.`;\n  } else {\n    out.style.color = '#fef08a';\n    out.textContent = `✓ Скомпилировано успешно:\\nconst user: UserProfile = { id: 42, role: \"${role}\" };`;\n  }\n}\nsel.addEventListener('change', (e) => validateTS(e.target.value));\nvalidateTS(sel.value);\n</script>"
   },
   {
     "id": "fw-vite",
@@ -447,15 +444,15 @@
     "points": [
       "Кого заменяет: медленные конфиги Webpack на 200 строк и сложные пайплайны Gulp.",
       "Создание нового проекта за 1 команду: npm create vite@latest.",
-      "Команда npm run dev запускает локальный сервер с мгновенным обновлением стилей (HMR).",
-      "Команда npm run build собирает минифицированную папку dist/, готовую к загрузке на любой хостинг (включая Beget, GitHub Pages, Vercel)."
+      "Опция base: \"./\" в vite.config.js делает пути относительными, чтобы сайт работал в любой подпапке на GitHub Pages и Beget.",
+      "Команда npm run build собирает минифицированную папку dist/, готовую к выгрузке на хостинг."
     ],
-    "code": "// 1. Создание и запуск проекта в терминале:\n// npm create vite@latest my-project\n// cd my-project && npm install && npm run dev\n\n// 2. Пример конфигурации vite.config.js:\nimport { defineConfig } from 'vite';\n\nexport default defineConfig({\n  server: {\n    port: 3000,\n    open: true\n  },\n  build: {\n    outDir: 'dist',\n    sourcemap: false\n  }\n});"
+    "code": "<!-- Терминал: npm create vite@latest my-app -->\n<div class=\"vite-box\">\n  <div class=\"vite-tag\">VITE // CONFIG GENERATOR</div>\n  <label class=\"vite-check\">\n    <input type=\"checkbox\" id=\"vite-rel\" checked>\n    <span>Относительные пути <code>base: './'</code> (для GitHub Pages и Beget)</span>\n  </label>\n  <pre id=\"vite-code\" class=\"vite-pre\"></pre>\n</div>\n\n<style>\n.vite-box { max-width: 420px; margin: 0 auto; padding: 16px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.vite-tag { font-size: 11px; color: #facc15; font-family: monospace; font-weight: 800; margin-bottom: 10px; }\n.vite-check { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #d4d4d8; margin-bottom: 10px; cursor: pointer; }\n.vite-check code { color: #facc15; }\n.vite-pre { margin: 0; padding: 12px; background: #0c0d0f; border: 1px solid #3f3f46; border-radius: 4px; font-family: monospace; font-size: 12px; color: #fef08a; white-space: pre-wrap; }\n</style>\n\n<script>\nconst chk = document.getElementById('vite-rel');\nconst pre = document.getElementById('vite-code');\n\nfunction updateConfig() {\n  pre.textContent = `import { defineConfig } from 'vite';\n\nexport default defineConfig({\n  ${chk.checked ? \"base: './', // Работает в любой папке на Pages/Beget\\n  \" : ''}build: { outDir: 'dist' }\n});`;\n}\nchk.addEventListener('change', updateConfig);\nupdateConfig();\n</script>"
   },
   {
     "id": "fw-laravel",
     "lang": "frameworks",
-    "title": "Laravel 11 (Современный PHP-фреймворк вместо процедурного PHP)",
+    "title": "Laravel 11 (Современный PHP-фреймворк и Eloquent ORM)",
     "summary": "Самый популярный PHP-фреймворк с элегантным роутингом, ORM Eloquent (вместо сырых SQL-запросов), шаблонизатором Blade, очередями и встроенной авторизацией.",
     "tags": [
       "framework",
@@ -472,10 +469,10 @@
     "points": [
       "Кого заменяет: разрозненные файлы index.php, login.php, db.php с ручным PDO и смешиванием SQL с HTML.",
       "Установка через Composer: composer create-project laravel/laravel my-app.",
-      "Eloquent ORM позволяет писать Product::where(\"active\", true)->get() вместо ручного написания SQL.",
+      "Eloquent ORM позволяет писать Project::where(\"active\", true)->get() вместо ручного написания SQL.",
       "Шаблонизатор Blade автоматически экранирует вывод {{ $user->name }} для полной защиты от XSS."
     ],
-    "code": "<?php\n// 1. Маршрут в routes/web.php (Laravel 11)\nuse App\\Models\\Project;\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::get('/projects', function () {\n    // Eloquent ORM: безопасная выборка без ручного SQL\n    $projects = Project::where('is_published', true)\n        ->orderByDesc('created_at')\n        ->take(10)\n        ->get();\n\n    return view('projects.index', compact('projects'));\n});"
+    "code": "<!-- Маршрут routes/web.php:\nRoute::get('/api/projects', fn() => Project::where('active', true)->get());\n-->\n<div class=\"lrv-card\">\n  <div class=\"lrv-tag\">LARAVEL 11 // ELOQUENT ORM BUILDER</div>\n  <div class=\"lrv-row\">\n    <button class=\"lrv-btn active\" data-q=\"all\">Project::all()</button>\n    <button class=\"lrv-btn\" data-q=\"active\">->where('active', 1)</button>\n  </div>\n  <pre id=\"lrv-sql\" class=\"lrv-sql\"></pre>\n</div>\n\n<style>\n.lrv-card { max-width: 420px; margin: 0 auto; padding: 16px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.lrv-tag { font-size: 11px; color: #facc15; font-family: monospace; font-weight: 800; margin-bottom: 10px; }\n.lrv-row { display: flex; gap: 8px; margin-bottom: 10px; }\n.lrv-btn { flex: 1; padding: 7px 10px; background: #0c0d0f; color: #a1a1aa; border: 1px solid #3f3f46; border-radius: 4px; font-family: monospace; font-size: 12px; cursor: pointer; }\n.lrv-btn.active { background: #facc15; color: #09090b; border-color: #facc15; font-weight: 800; }\n.lrv-sql { margin: 0; padding: 12px; background: #0c0d0f; border: 1px solid #27272a; border-radius: 4px; font-family: monospace; font-size: 12px; color: #fef08a; white-space: pre-wrap; }\n</style>\n\n<script>\nconst sqlEl = document.getElementById('lrv-sql');\nconst btns = document.querySelectorAll('.lrv-btn');\n\nfunction renderQuery(mode) {\n  sqlEl.textContent = mode === 'all'\n    ? 'Eloquent: Project::orderByDesc(\"id\")->get();\\nSQL: SELECT * FROM projects ORDER BY id DESC;'\n    : 'Eloquent: Project::where(\"active\", true)->get();\\nSQL: SELECT * FROM projects WHERE active = 1;';\n}\nbtns.forEach(b => b.addEventListener('click', () => {\n  btns.forEach(x => x.classList.remove('active'));\n  b.classList.add('active');\n  renderQuery(b.dataset.q);\n}));\nrenderQuery('all');\n</script>"
   },
   {
     "id": "fw-nextjs",
@@ -497,16 +494,16 @@
     "points": [
       "Кого заменяет: клиентский React SPA (Create React App), который отдаёт поисковым роботам пустой <div id=\"root\"></div>.",
       "Быстрый старт: npx create-next-app@latest.",
-      "Файловый роутинг: файл app/about/page.tsx автоматически становится страницей по адресу /about.",
+      "Файловый роутинг: файл app/catalog/page.tsx автоматически становится страницей по адресу /catalog.",
       "Серверные компоненты (RSC) выполняют запросы к БД прямо на сервере и не отправляют лишний JS в браузер."
     ],
-    "code": "// Файл app/blog/page.tsx (Серверный компонент Next.js)\nexport const metadata = {\n  title: 'Блог разработчика — DevShelf',\n  description: 'Статьи рендерятся на сервере и мгновенно индексируются поисковиками.'\n};\n\nexport default async function BlogPage() {\n  // Запрос выполняется на сервере до отправки HTML в браузер!\n  const res = await fetch('https://api.example.com/posts', { next: { revalidate: 60 } });\n  const posts = await res.json();\n\n  return (\n    <main>\n      <h1>Статьи ({posts.length})</h1>\n    </main>\n  );\n}"
+    "code": "<!-- Файл app/catalog/page.tsx (Next.js App Router) -->\n<div class=\"nx-card\">\n  <div class=\"nx-tag\">NEXT.JS 15 // APP ROUTER SIMULATOR</div>\n  <div class=\"nx-routes\">\n    <button class=\"nx-route active\" data-path=\"app/page.tsx\">/</button>\n    <button class=\"nx-route\" data-path=\"app/docs/page.tsx\">/docs</button>\n    <button class=\"nx-route\" data-path=\"app/api/route.ts\">/api (JSON)</button>\n  </div>\n  <div id=\"nx-view\" class=\"nx-view\"></div>\n</div>\n\n<style>\n.nx-card { max-width: 420px; margin: 0 auto; padding: 16px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.nx-tag { font-size: 11px; color: #facc15; font-family: monospace; font-weight: 800; margin-bottom: 10px; }\n.nx-routes { display: flex; gap: 6px; margin-bottom: 10px; }\n.nx-route { flex: 1; padding: 7px; background: #0c0d0f; color: #a1a1aa; border: 1px solid #3f3f46; border-radius: 4px; font-family: monospace; font-size: 12px; cursor: pointer; }\n.nx-route.active { background: #facc15; color: #09090b; border-color: #facc15; font-weight: 800; }\n.nx-view { padding: 12px; background: #0c0d0f; border: 1px solid #27272a; border-radius: 4px; font-family: monospace; font-size: 12px; color: #e4e4e7; }\n</style>\n\n<script>\nconst view = document.getElementById('nx-view');\nconst rBtns = document.querySelectorAll('.nx-route');\n\nfunction setRoute(file) {\n  view.innerHTML = `Файл: <strong style=\"color:#facc15;\">${file}</strong><br>Рендер: Server Component (SSR HTML готов для SEO)`;\n}\nrBtns.forEach(b => b.addEventListener('click', () => {\n  rBtns.forEach(x => x.classList.remove('active'));\n  b.classList.add('active');\n  setRoute(b.dataset.path);\n}));\nsetRoute('app/page.tsx');\n</script>"
   },
   {
     "id": "fw-scss-sass",
     "lang": "frameworks",
     "title": "Sass / SCSS (Препроцессор CSS: миксины, функции и модули)",
-    "summary": "Метаязык поверх CSS, добавляющий переиспользуемые миксины (@mixin), математические циклы, функции и модульную архитектуру (@use).",
+    "summary": "Метаязык поверх CSS, добавляющий переиспользуемые миксины (@mixin), математические вычисления, функции и модульную архитектуру (@use).",
     "tags": [
       "framework",
       "фреймворк",
@@ -516,19 +513,19 @@
       "mixin",
       "css"
     ],
-    "when": "В крупных дизайн-системах и проектах со сложной генерацией тем и повторяющимися медиа-запросами.",
+    "when": "В крупных дизайн-системах и проектах со сложной генерацией тем и переиспользуемыми миксинами.",
     "alternatives": "Современный нативный CSS (который уже поддерживает переменные var() и вложенность & из коробки) или Tailwind CSS.",
     "points": [
       "Кого упрощает: многократное дублирование медиа-запросов и шаблонных комбинаций свойств в CSS.",
       "Подключение в Vite: достаточно выполнить npm add -D sass-embedded и переименовать файл в styles.scss.",
       "Директива @mixin позволяет упаковать набор стилей с параметрами и подключать его через @include."
     ],
-    "code": "// 1. Объявление переиспользуемого миксина в SCSS\n@mixin glass-panel($blur: 12px, $alpha: 0.65) {\n  background: rgba(15, 23, 42, $alpha);\n  backdrop-filter: blur($blur);\n  border: 1px solid rgba(255, 255, 255, 0.14);\n  border-radius: 14px;\n}\n\n// 2. Использование с вложенностью\n.header-bar {\n  @include glass-panel(16px, 0.8);\n  padding: 16px 24px;\n\n  &__title {\n    color: #38bdf8;\n    font-weight: 700;\n  }\n}"
+    "code": "<!-- В файле styles.scss:\n@mixin industrial-panel($accent: #facc15) {\n  border: 1px solid $accent;\n  box-shadow: 4px 4px 0 $accent;\n}\n-->\n<div class=\"scss-demo\" id=\"scss-box\">\n  <div class=\"scss-tag\">SCSS // @MIXIN INDUSTRIAL-PANEL($ACCENT)</div>\n  <p>Выберите аргумент миксина <code>@include industrial-panel($color)</code>:</p>\n  <div class=\"scss-btns\">\n    <button class=\"scss-btn\" data-clr=\"#facc15\">#facc15 (Жёлтый)</button>\n    <button class=\"scss-btn\" data-clr=\"#f97316\">#f97316 (Янтарный)</button>\n    <button class=\"scss-btn\" data-clr=\"#22c55e\">#22c55e (Сигнальный)</button>\n  </div>\n</div>\n\n<style>\n.scss-demo { max-width: 410px; margin: 0 auto; padding: 18px; background: #141619; border: 1px solid #facc15; box-shadow: 4px 4px 0 #facc15; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; transition: all 0.2s; }\n.scss-tag { font-size: 11px; color: #facc15; font-family: monospace; font-weight: 800; margin-bottom: 6px; }\n.scss-demo p { font-size: 13px; color: #a1a1aa; margin: 0 0 12px; }\n.scss-demo code { color: #fef08a; }\n.scss-btns { display: flex; gap: 6px; flex-wrap: wrap; }\n.scss-btn { flex: 1; padding: 7px 10px; background: #0c0d0f; color: #f4f4f5; border: 1px solid #3f3f46; border-radius: 4px; font-size: 11px; font-family: monospace; cursor: pointer; }\n</style>\n\n<script>\nconst box = document.getElementById('scss-box');\ndocument.querySelectorAll('.scss-btn').forEach(btn => {\n  btn.addEventListener('click', () => {\n    const c = btn.dataset.clr;\n    box.style.borderColor = c;\n    box.style.boxShadow = '4px 4px 0 ' + c;\n  });\n});\n</script>"
   },
   {
     "id": "fw-gsap",
     "lang": "frameworks",
-    "title": "GSAP (GreenSock — профессиональная веб-анимация и ScrollTrigger)",
+    "title": "GSAP (GreenSock — профессиональная таймлайн-анимация и Stagger)",
     "summary": "Индустриальный стандарт для сложных таймлайнов, плавной анимации SVG, морфинга и скролл-сцен (ScrollTrigger), работающий стабильно во всех браузерах.",
     "tags": [
       "framework",
@@ -546,7 +543,7 @@
       "Установка через npm: npm install gsap.",
       "Свойство stagger: 0.1 автоматически запускает анимацию списка карточек каскадом с интервалом 0.1 секунды."
     ],
-    "code": "// 1. Подключение GSAP:\n// import gsap from 'gsap';\n\n// 2. Каскадное появление карточек с пружинной физикой\ngsap.from('.feature-card', {\n  y: 30,\n  opacity: 0,\n  duration: 0.6,\n  stagger: 0.12,\n  ease: 'power3.out'\n});"
+    "code": "<!-- В проекте: gsap.from('.stagger-item', { y: 24, opacity: 0, stagger: 0.1 }) -->\n<div class=\"gsap-box\">\n  <div class=\"gsap-head\">\n    <span>GSAP // STAGGER TIMELINE</span>\n    <button id=\"gsap-play\" class=\"gsap-btn\">▶ Запустить stagger</button>\n  </div>\n  <div class=\"gsap-grid\">\n    <div class=\"stagger-item\">MOD // 01</div>\n    <div class=\"stagger-item\">MOD // 02</div>\n    <div class=\"stagger-item\">MOD // 03</div>\n    <div class=\"stagger-item\">MOD // 04</div>\n  </div>\n</div>\n\n<style>\n.gsap-box { max-width: 420px; margin: 0 auto; padding: 16px; background: #141619; border: 1px solid #2e323b; border-radius: 6px; color: #f4f4f5; font-family: system-ui, sans-serif; }\n.gsap-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: monospace; font-size: 11px; color: #facc15; }\n.gsap-btn { padding: 6px 12px; background: #facc15; color: #09090b; border: none; border-radius: 4px; font-weight: 800; cursor: pointer; font-family: monospace; }\n.gsap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }\n.stagger-item { padding: 14px 6px; background: #0c0d0f; border: 1px solid #facc15; border-radius: 4px; text-align: center; font-family: monospace; font-size: 11px; font-weight: 800; color: #fef08a; }\n</style>\n\n<script>\nconst nodes = document.querySelectorAll('.stagger-item');\nfunction runStagger() {\n  nodes.forEach((el, i) => {\n    el.animate([\n      { transform: 'translateY(18px) scale(0.92)', opacity: 0 },\n      { transform: 'translateY(0) scale(1)', opacity: 1 }\n    ], { duration: 420, delay: i * 90, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' });\n  });\n}\ndocument.getElementById('gsap-play').addEventListener('click', runStagger);\nrunStagger();\n</script>"
   },
   {
     "lang": "html",
