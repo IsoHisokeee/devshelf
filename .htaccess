@@ -1,27 +1,15 @@
 # ==============================================================================
-# DevShelf — Конфигурация Apache для хостинга Beget
+# DevShelf — Конфигурация для хостинга Beget
 # ==============================================================================
 
-# Принудительное включение UTF-8
+# Принудительная кодировка UTF-8
 AddDefaultCharset UTF-8
 
-# Запрет просмотра листинга каталогов
+# Запрет листинга каталогов
 Options -Indexes
 
 # ------------------------------------------------------------------------------
-# 1. Принудительный 301-редирект с HTTP на HTTPS
-# ------------------------------------------------------------------------------
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-
-  # Проверка протокола (для Beget и Nginx reverse proxy)
-  RewriteCond %{HTTPS} off [OR]
-  RewriteCond %{HTTP:X-Forwarded-Proto} !https
-  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-</IfModule>
-
-# ------------------------------------------------------------------------------
-# 2. Правильные MIME-типы для современных веб-стандартов
+# MIME-типы для современных веб-форматов (XML, JSON, SVG, WOFF2)
 # ------------------------------------------------------------------------------
 <IfModule mod_mime.c>
   AddType application/json               json
@@ -34,7 +22,7 @@ Options -Indexes
 </IfModule>
 
 # ------------------------------------------------------------------------------
-# 3. Gzip-сжатие текстовых ресурсов
+# Gzip-сжатие
 # ------------------------------------------------------------------------------
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
@@ -43,10 +31,8 @@ Options -Indexes
 </IfModule>
 
 # ------------------------------------------------------------------------------
-# 4. Базовые заголовки безопасности
+# Безопасность
 # ------------------------------------------------------------------------------
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
-  Header set X-XSS-Protection "1; mode=block"
-  Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>

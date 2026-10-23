@@ -1,16 +1,9 @@
 # ==============================================================================
-# DevShelf — Конфигурация Apache для хостинга Beget
+# DevShelf — Конфигурация для хостинга Beget
 # ==============================================================================
 
 AddDefaultCharset UTF-8
 Options -Indexes
-
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteCond %{HTTPS} off [OR]
-  RewriteCond %{HTTP:X-Forwarded-Proto} !https
-  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-</IfModule>
 
 <IfModule mod_mime.c>
   AddType application/json               json
@@ -30,6 +23,4 @@ Options -Indexes
 
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
-  Header set X-XSS-Protection "1; mode=block"
-  Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
